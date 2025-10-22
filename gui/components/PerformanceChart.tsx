@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { MODELS_DATA } from '../constants';
 import type { ModelData } from '../types';
+import { apiService } from '../services/api';
 
 interface PerformanceChartProps {
     valueType: '$' | '%';
@@ -140,8 +141,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, t
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8003/api/performance/chart');
-                const data = await response.json();
+                const data = await apiService.getPerformanceChart();
                 if (data && data.length > 0) {
                     setRawChartData(data);
                 }

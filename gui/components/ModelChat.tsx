@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MODELS_DATA } from '../constants';
+import { apiService } from '../services/api';
 
 interface Decision {
   id: string;
@@ -74,8 +75,8 @@ export const ModelChat: React.FC = () => {
       const agents = MODELS_DATA.filter(m => m.id !== 'btcHold').map(m => m.id);
       const responses = await Promise.all(
         agents.map(agentId =>
-          fetch(`http://localhost:8002/api/agents/${agentId}/decisions?limit=50`)
-            .then(res => res.ok ? res.json() : null)
+          apiService.getAgentDecisions(agentId, 50)
+            .then(data => data)
             .catch(() => null)
         )
       );

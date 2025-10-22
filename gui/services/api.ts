@@ -500,7 +500,35 @@ export const tradingServiceApi = {
     );
   },
 
+  /**
+   * Get performance chart data
+   */
+  getPerformanceChart: async (): Promise<any[]> => {
+    return fetchApi<any[]>(
+      `${API_CONFIG.tradingServiceUrl}/api/performance/chart`,
+      undefined,
+      'Trading Service'
+    );
+  },
+
+  /**
+   * Get agent decisions
+   */
+  getAgentDecisions: async (agentId: string, limit: number = 50): Promise<any> => {
+    return fetchApi<any>(
+      `${API_CONFIG.decisionEngineUrl}/api/agents/${agentId}/decisions?limit=${limit}`,
+      undefined,
+      'Decision Engine'
+    );
+  },
+
 };
+
+// ============================================================================
+// Unified API Service Export
+// ============================================================================
+
+export const apiService = tradingServiceApi;
 
 // ============================================================================
 // Combined API Functions
