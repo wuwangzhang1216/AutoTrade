@@ -23,9 +23,17 @@ class RedisCache:
         """连接Redis"""
         if self.url:
             # 使用URL连接（Heroku）
+            # Heroku Redis uses SSL (rediss://), so we need to configure SSL
+            import ssl
+            ssl_params = {}
+            if self.url.startswith('rediss://'):
+                # Disable SSL certificate verification for Heroku Redis
+                ssl_params['ssl_cert_reqs'] = ssl.CERT_NONE
+
             self.redis = await redis.from_url(
                 self.url,
-                decode_responses=True
+                decode_responses=True,
+                **ssl_params
             )
             logger.info(f"Connected to Redis using URL")
         else:
