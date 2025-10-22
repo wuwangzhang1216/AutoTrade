@@ -2,6 +2,7 @@ import React from 'react';
 import { MODELS_DATA } from '../constants';
 import type { AgentLeaderboardEntry } from '../services/api';
 import { BtcIcon, EthIcon, SolIcon, DogeIcon, BnbIcon, XrpIcon } from './Icons';
+import { formatCurrency } from '../utils/format';
 
 interface WinningModelCardProps {
   winner: AgentLeaderboardEntry;
@@ -15,10 +16,6 @@ export const WinningModelCard: React.FC<WinningModelCardProps> = ({ winner, posi
   }, [winner.agent_id]);
 
   const Icon = model?.icon;
-
-  const formatCurrency = (value: number) => {
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
 
   // Mock crypto icons for active positions
   const positionIcons = [

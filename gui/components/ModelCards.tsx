@@ -14,8 +14,8 @@ interface ModelCardProps {
 
 const ModelCard: React.FC<ModelCardProps> = ({ model, isLive, liveValue, liveReturn, onSelect }) => {
   const { name, value, icon: Icon, color, id } = model;
-  const displayValue = liveValue !== undefined ? liveValue : value;
-  const returnPercent = liveReturn !== undefined ? liveReturn : ((value - 10000) / 10000) * 100;
+  const displayValue = liveValue !== undefined && liveValue !== null ? liveValue : value;
+  const returnPercent = liveReturn !== undefined && liveReturn !== null ? liveReturn : ((value - 10000) / 10000) * 100;
   const isPositive = returnPercent >= 0;
 
   return (
@@ -33,10 +33,16 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, isLive, liveValue, liveRet
       </div>
       <div className="text-[9px] sm:text-[10px] md:text-xs text-arena-gray-400 mb-1 font-semibold truncate px-1">{name}</div>
       <p className="font-bold text-white text-xs sm:text-sm md:text-base mb-0.5 sm:mb-1 truncate px-1">
-        ${displayValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+        {displayValue !== null && displayValue !== undefined && !isNaN(displayValue)
+          ? `$${displayValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+          : 'N/A'
+        }
       </p>
       <div className={`text-[9px] sm:text-[10px] md:text-xs font-bold ${isPositive ? 'text-green-400' : 'text-red-400'} truncate`}>
-        {isPositive ? '+' : ''}{returnPercent.toFixed(2)}%
+        {returnPercent !== null && returnPercent !== undefined && !isNaN(returnPercent)
+          ? `${isPositive ? '+' : ''}${returnPercent.toFixed(2)}%`
+          : 'N/A'
+        }
       </div>
     </div>
   );

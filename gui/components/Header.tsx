@@ -21,8 +21,8 @@ const CRYPTO_ICONS: Record<string, any> = {
 
 interface CryptoTickerItemProps {
   symbol: string;
-  price: number;
-  change24h?: number;
+  price: number | null;
+  change24h?: number | null;
   isLive?: boolean;
 }
 
@@ -61,10 +61,13 @@ const CryptoTickerItem: React.FC<CryptoTickerItemProps> = ({ symbol, price, chan
           {/* Price and change */}
           <div className="flex items-center space-x-2 mt-0.5">
             <p className="text-sm font-bold text-white tabular-nums">
-              ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: price < 1 ? 4 : 2 })}
+              {price !== null && price !== undefined
+                ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: price < 1 ? 4 : 2 })}`
+                : <span className="text-arena-gray-500 text-xs">No data</span>
+              }
             </p>
 
-            {change24h !== undefined && (
+            {change24h !== undefined && change24h !== null && (
               <span className={`text-xs font-semibold px-1.5 py-0.5 rounded border ${changeColor} ${changeBgColor} ${changeBorderColor} tabular-nums`}>
                 {change24h > 0 ? '+' : ''}{change24h.toFixed(2)}%
               </span>
@@ -236,9 +239,12 @@ export const Header: React.FC<HeaderProps> = ({ currentView = 'dashboard', onVie
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold text-arena-gray-400 flex-shrink-0">{item.symbol}</span>
                     <span className="text-[10px] font-bold text-white tabular-nums flex-shrink-0">
-                      ${item.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      {item.price !== null && item.price !== undefined
+                        ? `$${item.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                        : <span className="text-arena-gray-500">N/A</span>
+                      }
                     </span>
-                    {item.change24h !== undefined && (
+                    {item.change24h !== undefined && item.change24h !== null && (
                       <span className={`text-[10px] font-semibold flex-shrink-0 ${item.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {item.change24h > 0 ? '+' : ''}{item.change24h.toFixed(1)}%
                       </span>

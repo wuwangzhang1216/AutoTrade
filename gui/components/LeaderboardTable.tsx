@@ -1,6 +1,7 @@
 import React from 'react';
 import { MODELS_DATA } from '../constants';
 import type { AgentLeaderboardEntry } from '../services/api';
+import { formatCurrency, formatPercent, formatNumber } from '../utils/format';
 
 interface LeaderboardTableProps {
   leaderboard: AgentLeaderboardEntry[];
@@ -17,19 +18,6 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
     });
     return map;
   }, []);
-
-  const formatCurrency = (value: number) => {
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
-
-  const formatPercent = (value: number) => {
-    const sign = value >= 0 ? '+' : '';
-    return `${sign}${value.toFixed(2)}%`;
-  };
-
-  const formatNumber = (value: number) => {
-    return value.toLocaleString('en-US');
-  };
 
   // Get trade stats from leaderboard entry if available
   const getTradeStats = (entry: AgentLeaderboardEntry) => {
@@ -171,7 +159,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
                     {/* Sharpe */}
                     <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
                       <div className="text-xs sm:text-sm text-arena-gray-300">
-                        {sharpe.toFixed(3)}
+                        {sharpe !== null && sharpe !== undefined && !isNaN(sharpe) ? sharpe.toFixed(3) : 'N/A'}
                       </div>
                     </td>
 
@@ -238,7 +226,9 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
 
                     {/* % Long */}
                     <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.percentLong.toFixed(2)}%</div>
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
+                        {stats.percentLong !== null && stats.percentLong !== undefined && !isNaN(stats.percentLong) ? `${stats.percentLong.toFixed(2)}%` : 'N/A'}
+                      </div>
                     </td>
 
                     {/* Expectancy */}
@@ -250,12 +240,16 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
 
                     {/* Avg Confidence */}
                     <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.avgConfidence.toFixed(1)}%</div>
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
+                        {stats.avgConfidence !== null && stats.avgConfidence !== undefined && !isNaN(stats.avgConfidence) ? `${stats.avgConfidence.toFixed(1)}%` : 'N/A'}
+                      </div>
                     </td>
 
                     {/* Median Confidence */}
                     <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right">
-                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.medianConfidence.toFixed(1)}%</div>
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
+                        {stats.medianConfidence !== null && stats.medianConfidence !== undefined && !isNaN(stats.medianConfidence) ? `${stats.medianConfidence.toFixed(1)}%` : 'N/A'}
+                      </div>
                     </td>
 </>
                 )}

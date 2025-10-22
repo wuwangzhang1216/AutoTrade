@@ -113,8 +113,18 @@ export const CompletedTrades: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex justify-between text-arena-gray-400">
-                    <span>${(trade.price || trade.average_price || trade.entry_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                    <span>{(trade.quantity || trade.filled_quantity || 0).toFixed(4)}</span>
+                    <span>
+                      {(() => {
+                        const price = trade.price || trade.average_price || trade.entry_price || 0;
+                        return price !== null && price !== undefined && !isNaN(price) ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : 'N/A';
+                      })()}
+                    </span>
+                    <span>
+                      {(() => {
+                        const qty = trade.quantity || trade.filled_quantity || 0;
+                        return qty !== null && qty !== undefined && !isNaN(qty) ? qty.toFixed(4) : 'N/A';
+                      })()}
+                    </span>
                   </div>
                 </div>
               );
@@ -151,13 +161,19 @@ export const CompletedTrades: React.FC = () => {
                     {trade.side}
                   </div>
                   <div className={`col-span-1 text-center font-bold ${leverageColor}`}>
-                    {leverage.toFixed(1)}x
+                    {leverage !== null && leverage !== undefined && !isNaN(leverage) ? `${leverage.toFixed(1)}x` : 'N/A'}
                   </div>
                   <div className="col-span-2 text-right text-arena-gray-400">
-                    ${(trade.price || trade.average_price || trade.entry_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {(() => {
+                      const price = trade.price || trade.average_price || trade.entry_price || 0;
+                      return price !== null && price !== undefined && !isNaN(price) ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : 'N/A';
+                    })()}
                   </div>
                   <div className="col-span-2 text-right">
-                    {(trade.quantity || trade.filled_quantity || 0).toFixed(4)}
+                    {(() => {
+                      const qty = trade.quantity || trade.filled_quantity || 0;
+                      return qty !== null && qty !== undefined && !isNaN(qty) ? qty.toFixed(4) : 'N/A';
+                    })()}
                   </div>
                 </div>
               );

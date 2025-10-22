@@ -196,13 +196,13 @@ export const ModelChat: React.FC = () => {
                       )}
                       {decision.quantity > 0 && (
                         <span className="hidden sm:inline text-xs text-arena-gray-400">
-                          Qty: {decision.quantity.toFixed(4)}
+                          Qty: {decision.quantity !== null && decision.quantity !== undefined && !isNaN(decision.quantity) ? decision.quantity.toFixed(4) : 'N/A'}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                       <span className={`text-[10px] sm:text-xs font-bold ${getConfidenceColor(decision.confidence)}`}>
-                        {(decision.confidence * 100).toFixed(0)}%
+                        {decision.confidence !== null && decision.confidence !== undefined && !isNaN(decision.confidence) ? (decision.confidence * 100).toFixed(0) : 'N/A'}%
                       </span>
                       <span className="text-[10px] sm:text-xs text-arena-gray-500">
                         {formatDate(decision.timestamp)}
