@@ -7,9 +7,9 @@ export interface ApiConfig {
 }
 
 const API_CONFIG: ApiConfig = {
-  marketDataUrl: 'http://localhost:8001',
-  decisionEngineUrl: 'http://localhost:8002',
-  tradingServiceUrl: 'http://localhost:8003',
+  marketDataUrl: import.meta.env.VITE_MARKET_DATA_URL || 'https://autotrade-market-data-d2f753ef6179.herokuapp.com',
+  decisionEngineUrl: import.meta.env.VITE_DECISION_ENGINE_URL || 'https://autotrade-decision-engine-4a1bc03a6cbe.herokuapp.com',
+  tradingServiceUrl: import.meta.env.VITE_TRADING_SERVICE_URL || 'https://autotrade-trading-service-46410e1c9eaa.herokuapp.com',
 };
 
 // Market Data Service Types
