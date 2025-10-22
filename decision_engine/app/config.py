@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -7,6 +8,10 @@ class Settings(BaseSettings):
 
     # OpenRouter API
     OPENROUTER_API_KEY: str
+
+    # Heroku URLs (优先使用)
+    DATABASE_URL: Optional[str] = None
+    REDIS_URL: Optional[str] = None
 
     # Redis配置
     REDIS_HOST: str = "localhost"
@@ -41,10 +46,27 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """获取数据库连接URL"""
+        # 优先使用Heroku的DATABASE_URL
+        if self.DATABASE_URL:
+            url = self.DATABASE_URL
+            # Heroku uses postgres:// but SQLAlchemy 1.4+ requires postgresql://
+            if url.startswith("postgres://"):
+                url = url.replace("postgres://", "postgresql://", 1)
+            return url
+        # 否则使用本地配置
         return (
             f"postgresql://{self.TIMESCALE_USER}:{self.TIMESCALE_PASSWORD}"
             f"@{self.TIMESCALE_HOST}:{self.TIMESCALE_PORT}/{self.TIMESCALE_DB}"
         )
+
+    @property
+    def redis_url(self) -> str:
+        """获取Redis连接URL"""
+        # 优先使用Heroku的REDIS_URL
+        if self.REDIS_URL:
+            return self.REDIS_URL
+        # 否则使用本地配置
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
 
 @lru_cache()

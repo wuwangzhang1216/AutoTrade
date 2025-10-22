@@ -1,9 +1,13 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import Optional
 
 
 class Settings(BaseSettings):
     """应用配置"""
+
+    # Heroku URLs (优先使用)
+    DATABASE_URL: Optional[str] = None
 
     # PostgreSQL配置
     TIMESCALE_HOST: str = "localhost"
@@ -26,6 +30,14 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """获取数据库连接URL"""
+        # 优先使用Heroku的DATABASE_URL
+        if self.DATABASE_URL:
+            url = self.DATABASE_URL
+            # Heroku uses postgres:// but SQLAlchemy 1.4+ requires postgresql://
+            if url.startswith("postgres://"):
+                url = url.replace("postgres://", "postgresql://", 1)
+            return url
+        # 否则使用本地配置
         return (
             f"postgresql://{self.TIMESCALE_USER}:{self.TIMESCALE_PASSWORD}"
             f"@{self.TIMESCALE_HOST}:{self.TIMESCALE_PORT}/{self.TIMESCALE_DB}"
