@@ -137,12 +137,17 @@ async def get_market_data(symbol: str):
 
             logger.warning(f"No cached data found for {symbol} or mapped symbols")
 
-        # If no cached data, return error - don't return fake data
-        logger.error(f"No real data available for {symbol}")
-        raise HTTPException(
-            status_code=404,
-            detail=f"No market data available for {symbol}. Service may still be initializing."
-        )
+        # If no cached data, return 200 with null data instead of 404
+        logger.warning(f"No real data available for {symbol}")
+        return {
+            "symbol": symbol,
+            "price": None,
+            "volume_24h": None,
+            "change_24h": None,
+            "timestamp": datetime.utcnow().isoformat(),
+            "status": "no_data",
+            "message": "Market data not available. Service may still be initializing or data source is unavailable."
+        }
 
     except HTTPException:
         raise
