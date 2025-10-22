@@ -1,0 +1,68 @@
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Smooth scrolling on mobile */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better mobile text rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Better touch response */
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+  touch-action: manipulation;
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  /* Touch targets should be at least 44x44px for accessibility */
+  button:not(.no-min-height) {
+    min-height: 44px;
+  }
+
+  a:not(.no-min-height) {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Improve readability on small screens */
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Better spacing for mobile */
+  h1, h2, h3, h4, h5, h6 {
+    word-wrap: break-word;
+  }
+}
+
+/* Prevent zoom on input focus in iOS */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}

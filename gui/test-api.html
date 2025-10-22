@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Trading Service API Test</h1>
+
+    <div>
+        <button onclick="testLeaderboard()">Test Leaderboard API</button>
+        <button onclick="testTrades()">Test Trades API</button>
+        <button onclick="testPositions()">Test Positions API</button>
+        <button onclick="testHealth()">Test Health API</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8003';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(title, data, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'result ' + (isError ? 'error' : 'success');
+            div.innerHTML = `<h3>${title}</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            resultsDiv.insertBefore(div, resultsDiv.firstChild);
+        }
+
+        async function testLeaderboard() {
+            try {
+                const response = await fetch(`${API_BASE}/api/agents/leaderboard`);
+                const data = await response.json();
+                addResult('Leaderboard', data);
+            } catch (error) {
+                addResult('Leaderboard Error', { error: error.message }, true);
+            }
+        }
+
+        async function testTrades() {
+            try {
+                const response = await fetch(`${API_BASE}/api/trades/all?limit=50`);
+                const data = await response.json();
+                addResult('All Trades', { count: data.length, trades: data });
+            } catch (error) {
+                addResult('Trades Error', { error: error.message }, true);
+            }
+        }
+
+        async function testPositions() {
+            try {
+                const response = await fetch(`${API_BASE}/api/positions/all`);
+                const data = await response.json();
+                addResult('All Positions', { count: data.length, positions: data });
+            } catch (error) {
+                addResult('Positions Error', { error: error.message }, true);
+            }
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                addResult('Health Check', data);
+            } catch (error) {
+                addResult('Health Error', { error: error.message }, true);
+            }
+        }
+
+        // Auto-test all on load
+        window.onload = () => {
+            setTimeout(() => {
+                testHealth();
+                testLeaderboard();
+                testTrades();
+                testPositions();
+            }, 500);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库（支持TimescaleDB）
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: trading_postgres
+    environment:
+      POSTGRES_DB: trading_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - trading_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d trading_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: trading_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trading_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 行情数据服务
+  market_data_service:
+    build:
+      context: ./market_data_service
+      dockerfile: Dockerfile
+    container_name: market_data_service
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TIMESCALE_HOST: postgres
+      TIMESCALE_PORT: 5432
+      TIMESCALE_DB: trading_platform
+      TIMESCALE_USER: admin
+      TIMESCALE_PASSWORD: password
+      DATA_COLLECTION_INTERVAL: 5
+      SYMBOLS: BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT,DOGEUSDT,XRPUSDT
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - trading_network
+    restart: unless-stopped
+
+  # 决策引擎服务
+  decision_engine:
+    build:
+      context: ./decision_engine
+      dockerfile: Dockerfile
+    container_name: decision_engine
+    environment:
+      REDIS_HOST: redis
+      TIMESCALE_HOST: postgres
+      TIMESCALE_PORT: 5432
+      TIMESCALE_DB: trading_platform
+      TIMESCALE_USER: admin
+      TIMESCALE_PASSWORD: password
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      INITIAL_BALANCE: 10000.0
+      MAX_POSITION_SIZE: 0.3
+      RISK_PER_TRADE: 0.02
+      DECISION_INTERVAL: 60
+      MARKET_DATA_PORT: 8001
+    ports:
+      - "8002:8002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      market_data_service:
+        condition: service_started
+    networks:
+      - trading_network
+    restart: unless-stopped
+
+  # 交易执行服务
+  trading_service:
+    build:
+      context: ./trading_service
+      dockerfile: Dockerfile
+    container_name: trading_service
+    environment:
+      TIMESCALE_HOST: postgres
+      TIMESCALE_PORT: 5432
+      TIMESCALE_DB: trading_platform
+      TIMESCALE_USER: admin
+      TIMESCALE_PASSWORD: password
+      DECISION_ENGINE_PORT: 8002
+      COMMISSION_RATE: 0.001
+      SLIPPAGE_RATE: 0.0005
+    ports:
+      - "8003:8003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      decision_engine:
+        condition: service_started
+    networks:
+      - trading_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  trading_network:
+    driver: bridge
