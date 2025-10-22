@@ -1,4 +1,5 @@
 // API Service Layer for connecting to backend microservices
+// Rebuild trigger
 
 export interface ApiConfig {
   marketDataUrl: string;
