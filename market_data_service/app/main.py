@@ -52,11 +52,16 @@ async def startup_event():
     logger.info("Initializing Market Data Service...")
 
     # 初始化Redis
-    redis_cache = RedisCache(
-        host=settings.REDIS_HOST,
-        port=settings.REDIS_PORT,
-        db=settings.REDIS_DB
-    )
+    if settings.REDIS_URL:
+        # Heroku deployment
+        redis_cache = RedisCache(url=settings.redis_url)
+    else:
+        # Local development
+        redis_cache = RedisCache(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB
+        )
     await redis_cache.connect()
 
     # 初始化TimescaleDB

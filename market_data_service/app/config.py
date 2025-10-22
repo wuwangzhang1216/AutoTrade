@@ -1,17 +1,22 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
+import os
 
 
 class Settings(BaseSettings):
     """应用配置"""
 
-    # Redis配置
+    # Heroku URLs (优先使用)
+    DATABASE_URL: Optional[str] = None
+    REDIS_URL: Optional[str] = None
+
+    # Redis配置 (本地开发使用)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
 
-    # TimescaleDB配置
+    # TimescaleDB配置 (本地开发使用)
     TIMESCALE_HOST: str = "localhost"
     TIMESCALE_PORT: int = 5432
     TIMESCALE_DB: str = "trading_platform"
@@ -36,10 +41,23 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """获取数据库连接URL"""
+        # 优先使用Heroku的DATABASE_URL
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        # 否则使用本地配置
         return (
             f"postgresql://{self.TIMESCALE_USER}:{self.TIMESCALE_PASSWORD}"
             f"@{self.TIMESCALE_HOST}:{self.TIMESCALE_PORT}/{self.TIMESCALE_DB}"
         )
+
+    @property
+    def redis_url(self) -> str:
+        """获取Redis连接URL"""
+        # 优先使用Heroku的REDIS_URL
+        if self.REDIS_URL:
+            return self.REDIS_URL
+        # 否则使用本地配置
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
 
 @lru_cache()

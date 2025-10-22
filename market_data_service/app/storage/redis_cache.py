@@ -12,21 +12,31 @@ logger = logging.getLogger(__name__)
 class RedisCache:
     """Redis缓存管理"""
 
-    def __init__(self, host: str, port: int, db: int):
+    def __init__(self, url: Optional[str] = None, host: str = "localhost", port: int = 6379, db: int = 0):
         self.redis: Optional[redis.Redis] = None
+        self.url = url
         self.host = host
         self.port = port
         self.db = db
 
     async def connect(self):
         """连接Redis"""
-        self.redis = await redis.Redis(
-            host=self.host,
-            port=self.port,
-            db=self.db,
-            decode_responses=True
-        )
-        logger.info(f"Connected to Redis at {self.host}:{self.port}")
+        if self.url:
+            # 使用URL连接（Heroku）
+            self.redis = await redis.from_url(
+                self.url,
+                decode_responses=True
+            )
+            logger.info(f"Connected to Redis using URL")
+        else:
+            # 使用host/port连接（本地开发）
+            self.redis = await redis.Redis(
+                host=self.host,
+                port=self.port,
+                db=self.db,
+                decode_responses=True
+            )
+            logger.info(f"Connected to Redis at {self.host}:{self.port}")
 
     async def close(self):
         """关闭连接"""
