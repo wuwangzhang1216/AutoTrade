@@ -595,6 +595,51 @@ async def get_leaderboard():
         session.close()
 
 
+@app.get("/api/agents/{agent_id}/decisions")
+async def get_agent_decisions(agent_id: str, limit: int = 50):
+    """Get decision history for a specific agent"""
+    if not database:
+        return {"error": "Database not initialized", "decisions": [], "count": 0}
+
+    session = database.Session()
+    try:
+        from decision_engine.app.database import DecisionRecord
+        from sqlalchemy import desc
+
+        # Query decisions for this agent, ordered by timestamp descending
+        decisions_query = session.query(DecisionRecord).filter(
+            DecisionRecord.agent_id == agent_id
+        ).order_by(desc(DecisionRecord.timestamp)).limit(limit)
+
+        decisions = decisions_query.all()
+
+        return {
+            "agent_id": agent_id,
+            "decisions": [
+                {
+                    "id": str(decision.id),
+                    "timestamp": decision.timestamp.isoformat() if decision.timestamp else None,
+                    "action": decision.action,
+                    "symbol": decision.symbol,
+                    "quantity": float(decision.quantity) if decision.quantity else 0,
+                    "reasoning": decision.reasoning,
+                    "confidence": float(decision.confidence) if decision.confidence else 0,
+                    "stop_loss": float(decision.stop_loss) if decision.stop_loss else None,
+                    "take_profit": float(decision.take_profit) if decision.take_profit else None,
+                    "leverage": float(decision.leverage) if decision.leverage else 1.0,
+                    "current_price": float(decision.current_price) if decision.current_price else None,
+                }
+                for decision in decisions
+            ],
+            "count": len(decisions)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching decisions for {agent_id}: {e}")
+        return {"error": str(e), "decisions": [], "count": 0}
+    finally:
+        session.close()
+
+
 if __name__ == "__main__":
     import uvicorn
 
