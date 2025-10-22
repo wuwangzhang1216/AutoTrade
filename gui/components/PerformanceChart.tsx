@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Customized, DotProps } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { MODELS_DATA } from '../constants';
 import type { ModelData } from '../types';
 
@@ -9,51 +9,27 @@ interface PerformanceChartProps {
     timeRange: 'ALL' | '72H';
 }
 
-const CustomizedLabel: React.FC<any> = (props) => {
-    const { x, y, index, data, dataKey, valueType, isMobile } = props;
-    const model = MODELS_DATA.find(m => m.id === dataKey);
+const CustomDot: React.FC<any> = (props) => {
+    const { cx, cy, dataKey, index, payload, onClick } = props;
 
-    // Hide labels on mobile to prevent overflow
-    if (!model || index !== data.length - 1 || isMobile) {
+    // Validate that we have all required data
+    if (!payload || index === undefined || cx === undefined || cy === undefined || isNaN(cx) || isNaN(cy)) {
         return null;
     }
 
-    const { icon: Icon, color } = model;
-    const currentValue = data[index][dataKey];
+    // Validate that cx and cy are reasonable values (not 0, not at edges)
+    if (cx <= 0 || cy <= 0) {
+        return null;
+    }
 
-    // When valueType is '%', the data is already converted to percentage
-    const displayValue = valueType === '%'
-        ? `${currentValue.toFixed(2)}%`
-        : `$${currentValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    // Check if the actual data value exists for this model
+    const value = payload[dataKey];
+    if (value === undefined || value === null || isNaN(value)) {
+        return null;
+    }
 
-    return (
-        <g transform={`translate(${x},${y})`}>
-            <foreignObject x={15} y={-18} width="150" height="36">
-                <div
-                    className="flex items-center space-x-2 px-3 py-1.5 rounded-md shadow-2xl border border-opacity-20"
-                    style={{
-                        backgroundColor: `${color}f0`, // Add slight transparency
-                        color: model.id === 'grok' ? '#0D0D0D' : '#FFFFFF',
-                        borderColor: 'rgba(255, 255, 255, 0.2)',
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
-                    }}
-                >
-                    <Icon style={{ color: model.id === 'grok' ? '#0D0D0D' : '#FFFFFF' }} size={16} />
-                    <span className="whitespace-nowrap">{displayValue}</span>
-                </div>
-            </foreignObject>
-        </g>
-    );
-};
-
-const CustomizedEndPoint: React.FC<any> = (props) => {
-    const { cx, cy, dataKey, index, data } = props;
     const model = MODELS_DATA.find(m => m.id === dataKey);
-
-    if (!model || index !== data.length - 1) {
+    if (!model) {
         return null;
     }
 
@@ -61,73 +37,95 @@ const CustomizedEndPoint: React.FC<any> = (props) => {
 
     // For BTC, use smaller size as it's a baseline
     const isBtc = model.id === 'btcHold';
-    const outerRadius = isBtc ? 10 : 12;
-    const mainRadius = isBtc ? 7.5 : 9;
-    const innerRadius = isBtc ? 6 : 7;
-    const iconSize = isBtc ? 12 : 14;
+    const outerRadius = isBtc ? 8 : 11;
+    const mainRadius = isBtc ? 6.5 : 9;
+    const iconSize = isBtc ? 10 : 14;
+    const halfIconSize = iconSize / 2;
 
     return (
-        <g>
+        <g
+            onClick={(e) => {
+                e.stopPropagation();
+                if (onClick) onClick();
+            }}
+            style={{ cursor: 'pointer' }}
+        >
             {/* Outer glow effect */}
-            <circle cx={cx} cy={cy} r={outerRadius} fill={color} opacity={isBtc ? 0.15 : 0.2} />
+            <circle cx={cx} cy={cy} r={outerRadius} fill={color} opacity={0.3} />
             {/* Main circle with model color */}
-            <circle cx={cx} cy={cy} r={mainRadius} fill={color} stroke="none" opacity={isBtc ? 0.7 : 1} />
-            {/* Icon container with white or dark background */}
-            <circle cx={cx} cy={cy} r={innerRadius} fill={model.id === 'grok' ? '#0D0D0D' : '#FFFFFF'} opacity={0.95} />
-            <foreignObject x={cx - 9} y={cy - 9} width="18" height="18">
+            <circle cx={cx} cy={cy} r={mainRadius} fill={color} stroke="rgba(0,0,0,0.2)" strokeWidth={1} />
+            {/* Icon - white color for visibility */}
+            <foreignObject
+                x={cx - halfIconSize}
+                y={cy - halfIconSize}
+                width={iconSize}
+                height={iconSize}
+                style={{ overflow: 'visible', pointerEvents: 'none' }}
+            >
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '18px',
-                    height: '18px'
+                    width: `${iconSize}px`,
+                    height: `${iconSize}px`
                 }}>
-                    <Icon style={{ color: color }} size={iconSize} />
+                    <Icon style={{ color: '#FFFFFF' }} size={iconSize} />
                 </div>
             </foreignObject>
         </g>
     )
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label, valueType }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="bg-arena-black border border-arena-gray-700 p-4 rounded-lg shadow-2xl backdrop-blur-sm" style={{ backgroundColor: 'rgba(13, 13, 13, 0.95)' }}>
-                <p className="label text-sm text-arena-gray-400 mb-2 font-semibold">{`${label}`}</p>
-                {payload.map((pld: any) => {
-                    const model = MODELS_DATA.find(m => m.id === pld.dataKey);
-                    if (!model) return null;
-
-                    const currentValue = pld.value;
-
-                    // When valueType is '%', the data is already converted to percentage
-                    const displayValue = valueType === '%'
-                        ? `${currentValue.toFixed(2)}%`
-                        : `$${currentValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-                    const Icon = model.icon;
-
-                    return (
-                        <div key={pld.dataKey} className="flex items-center justify-between space-x-6 py-1">
-                            <div className="flex items-center space-x-2">
-                                <Icon style={{ color: pld.color }} size={16} />
-                                <span className="text-sm" style={{ color: pld.color }}>{model.name}</span>
-                            </div>
-                            <span className="font-bold text-sm" style={{ color: pld.color }}>
-                                {displayValue}
-                            </span>
-                        </div>
-                    );
-                })}
-            </div>
-        );
+const CustomTooltip: React.FC<any> = ({ active, payload, valueType, selectedLine }) => {
+    if (!active || !payload || !payload.length || !selectedLine) {
+        return null;
     }
 
-    return null;
-};
+    // Only show tooltip for the selected line
+    const selectedEntry = payload.find((entry: any) => entry.dataKey === selectedLine);
+    if (!selectedEntry) return null;
+
+    const model = MODELS_DATA.find(m => m.id === selectedLine);
+    if (!model) return null;
+
+    const value = selectedEntry.value;
+    const formattedValue = valueType === '%'
+        ? `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+        : `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    return (
+        <div
+            className="bg-[#1a1a1a] border-2 rounded-lg px-3 py-2 shadow-xl"
+            style={{ borderColor: model.color }}
+        >
+            <div className="flex items-center gap-2">
+                <span className="text-xs font-bold" style={{ color: model.color }}>
+                    {formattedValue}
+                </span>
+            </div>
+        </div>
+    );
+}
 
 
 export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, timeRange }) => {
+    // Responsive window width detection - must be defined first
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+    // Track which line is selected (clicked)
+    const [selectedLine, setSelectedLine] = useState<string | null>(null);
+
+    // Track which line is being hovered for visual feedback
+    const [hoveredLine, setHoveredLine] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const isMobile = windowWidth < 768;
+
     const [rawChartData, setRawChartData] = useState<any[]>([{
         date: "Now",
         gpt5: 10000,
@@ -171,6 +169,17 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, t
         return rawChartData.slice(-hours72InPoints);
     }, [rawChartData, timeRange]);
 
+    // On mobile, sample the data to reduce points and improve performance
+    const optimizedData = useMemo(() => {
+        if (!isMobile || filteredData.length <= 50) {
+            return filteredData;
+        }
+        // Sample every nth point to keep around 40-50 points on mobile
+        const sampleRate = Math.ceil(filteredData.length / 45);
+        const sampled = filteredData.filter((_, index) => index % sampleRate === 0 || index === filteredData.length - 1);
+        return sampled;
+    }, [filteredData, isMobile]);
+
     // Get the initial values for percentage calculation
     const initialValues = useMemo(() => {
         if (filteredData.length === 0) return {};
@@ -187,13 +196,13 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, t
     // Transform data based on value type
     const chartData = useMemo(() => {
         if (valueType === '$') {
-            return filteredData;
+            return optimizedData;
         }
 
         // Convert to percentage
-        if (filteredData.length === 0) return [];
+        if (optimizedData.length === 0) return [];
 
-        return filteredData.map(point => {
+        return optimizedData.map(point => {
             const newPoint: any = { date: point.date };
             MODELS_DATA.forEach(model => {
                 const currentValue = point[model.id];
@@ -206,41 +215,57 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, t
             });
             return newPoint;
         });
-    }, [filteredData, valueType, initialValues]);
+    }, [optimizedData, valueType, initialValues]);
 
     // Calculate smart interval for x-axis based on data length
     const xAxisInterval = useMemo(() => {
         const dataLength = chartData.length;
+
+        if (isMobile) {
+            // Fewer labels on mobile for better readability
+            if (dataLength <= 20) return Math.floor(dataLength / 8); // ~8 labels max
+            if (dataLength <= 40) return Math.floor(dataLength / 6); // ~6 labels
+            return Math.floor(dataLength / 5); // ~5 labels for more data
+        }
+
+        // Desktop interval calculation
         if (dataLength <= 20) return 0; // Show all labels
         if (dataLength <= 50) return Math.floor(dataLength / 15); // ~15 labels
         if (dataLength <= 100) return Math.floor(dataLength / 12); // ~12 labels
         if (dataLength <= 200) return Math.floor(dataLength / 10); // ~10 labels
         return Math.floor(dataLength / 8); // ~8 labels for very large datasets
-    }, [chartData.length]);
+    }, [chartData.length, isMobile]);
 
-    // Responsive margins based on screen width
-    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
-
-    useEffect(() => {
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const isMobile = windowWidth < 768;
+    // Chart responsive settings - minimal margins for maximum chart space
     const chartMargins = isMobile
-        ? { top: 20, right: 10, left: -5, bottom: 5 }
-        : { top: 30, right: 150, left: 15, bottom: 15 };
+        ? { top: 10, right: 5, left: -5, bottom: 2 }
+        : { top: 15, right: 10, left: 5, bottom: 5 };
     const fontSize = isMobile ? 8 : 10;
     const xAxisAngle = isMobile ? -45 : -15;
-    const yAxisWidth = isMobile ? 45 : 65;
-    const xAxisHeight = isMobile ? 40 : 55;
+    const yAxisWidth = isMobile ? 42 : 55;
+    const xAxisHeight = isMobile ? 35 : 45;
 
     return (
+        <div
+            style={{ width: '100%', height: '100%', touchAction: 'pan-y' }}
+            onClick={(e) => {
+                // If clicking on the container (not on a line), deselect
+                if (e.target === e.currentTarget) {
+                    setSelectedLine(null);
+                }
+            }}
+        >
         <ResponsiveContainer width="100%" height="100%">
             <LineChart
                 data={chartData}
                 margin={chartMargins}
+                style={{ touchAction: 'pan-y' }}
+                onClick={(e) => {
+                    // If clicking on chart background (not on a line), deselect
+                    if (!e || !e.activeLabel) {
+                        setSelectedLine(null);
+                    }
+                }}
             >
                 <defs>
                     {MODELS_DATA.map((model: ModelData) => (
@@ -292,41 +317,118 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ valueType, t
                                 ? isMobile ? `$${(value / 1000).toFixed(1)}k` : `$${(value / 1000).toFixed(1)}k`
                                 : `$${value.toFixed(0)}`
                     }
-                    domain={valueType === '%' ? ['auto', 'auto'] : ['dataMin - 500', 'dataMax + 500']}
+                    domain={valueType === '%' ? ['auto', 'auto'] : ['dataMin - 100', 'dataMax + 100']}
                     tickCount={isMobile ? 5 : 6}
                     width={yAxisWidth}
                 />
                 <Tooltip
-                    content={<CustomTooltip valueType={valueType} />}
-                    cursor={{ stroke: '#444444', strokeWidth: 1, strokeDasharray: '5 5' }}
+                    content={<CustomTooltip valueType={valueType} selectedLine={selectedLine} />}
+                    cursor={selectedLine ? {
+                        stroke: MODELS_DATA.find(m => m.id === selectedLine)?.color || 'rgba(255, 255, 255, 0.3)',
+                        strokeWidth: 2,
+                        strokeDasharray: '5 5'
+                    } : false}
+                    animationDuration={0}
                 />
 
-                {MODELS_DATA.map((model: ModelData) => (
-                    <Line
-                        key={model.id}
-                        type="monotone"
-                        dataKey={model.id}
-                        stroke={model.color}
-                        strokeWidth={isMobile ? (model.id === 'btcHold' ? 1.5 : 2) : (model.id === 'btcHold' ? 2 : 2.5)}
-                        dot={false}
-                        activeDot={{ r: isMobile ? 4 : 6, strokeWidth: 2, stroke: model.color, fill: 'rgba(13, 13, 13, 0.95)' }}
-                        strokeDasharray={model.id === 'btcHold' ? '5 5' : '0'}
-                        animationDuration={1000}
-                        animationEasing="ease-in-out"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        opacity={model.id === 'btcHold' ? 0.7 : 1}
-                    >
-                         {/* This renders the icon and label at the end of the line */}
-                        <Customized
-                            component={(props: any) => <CustomizedEndPoint {...props} data={chartData} />}
-                        />
-                         <Customized
-                            component={(props: any) => <CustomizedLabel {...props} data={chartData} valueType={valueType} isMobile={isMobile} />}
-                        />
-                    </Line>
-                ))}
+                {MODELS_DATA.map((model: ModelData) => {
+                    // Calculate opacity based on selected state
+                    let lineOpacity = model.id === 'btcHold' ? 0.7 : 1;
+                    if (selectedLine) {
+                        // If a line is selected, dim all other lines
+                        lineOpacity = selectedLine === model.id
+                            ? 1  // Selected line at full opacity
+                            : 0.15;  // Other lines dimmed
+                    } else if (hoveredLine && hoveredLine !== model.id) {
+                        // If hovering over a different line, slightly dim this one
+                        lineOpacity = model.id === 'btcHold' ? 0.4 : 0.3;
+                    }
+
+                    // Calculate stroke width based on selected and hover state
+                    const baseStrokeWidth = model.id === 'btcHold' ? 2 : 2.5;
+                    let strokeWidth = baseStrokeWidth;
+
+                    // If selected, make thicker
+                    if (selectedLine === model.id) {
+                        strokeWidth = baseStrokeWidth + 1.5;
+                    }
+                    // If hovered, make slightly thicker for immediate feedback
+                    else if (hoveredLine === model.id) {
+                        strokeWidth = baseStrokeWidth + 1;
+                    }
+
+                    // Find the last valid data point index for this specific model
+                    let lastValidIndex = -1;
+                    for (let i = chartData.length - 1; i >= 0; i--) {
+                        const value = chartData[i]?.[model.id];
+                        if (value !== undefined && value !== null && !isNaN(value)) {
+                            lastValidIndex = i;
+                            break;
+                        }
+                    }
+
+                    const handleLineClick = () => {
+                        // Toggle selection: if already selected, deselect; otherwise select
+                        setSelectedLine(prev => prev === model.id ? null : model.id);
+                    };
+
+                    return (
+                        <React.Fragment key={model.id}>
+                            {/* Invisible wider line for easier clicking/hovering */}
+                            <Line
+                                type="monotone"
+                                dataKey={model.id}
+                                stroke="transparent"
+                                strokeWidth={15}
+                                dot={false}
+                                activeDot={false}
+                                isAnimationActive={false}
+                                onMouseEnter={() => setHoveredLine(model.id)}
+                                onMouseLeave={() => setHoveredLine(null)}
+                                onClick={handleLineClick}
+                                style={{ cursor: 'pointer' }}
+                            />
+                            {/* Visible line with styling */}
+                            <Line
+                                type="monotone"
+                                dataKey={model.id}
+                                stroke={model.color}
+                                strokeWidth={strokeWidth}
+                                dot={(props: any) => {
+                                    // Only show dot at the last valid point for this model
+                                    if (props.index === lastValidIndex) {
+                                        return <CustomDot {...props} onClick={handleLineClick} />;
+                                    }
+                                    return null;
+                                }}
+                                activeDot={selectedLine === model.id ? {
+                                    r: isMobile ? 6 : 7,
+                                    strokeWidth: 3,
+                                    stroke: model.color,
+                                    fill: 'rgba(13, 13, 13, 0.95)',
+                                    style: { cursor: 'pointer' },
+                                    onClick: (e: any) => {
+                                        e.stopPropagation();
+                                        handleLineClick();
+                                    }
+                                } : false}
+                                strokeDasharray={model.id === 'btcHold' ? '5 5' : '0'}
+                                animationDuration={isMobile ? 0 : 800}
+                                animationEasing="ease-in-out"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                opacity={lineOpacity}
+                                isAnimationActive={false}
+                                style={{
+                                    cursor: 'pointer',
+                                    pointerEvents: 'none' // Let the invisible line handle clicks
+                                }}
+                            />
+                        </React.Fragment>
+                    );
+                })}
             </LineChart>
         </ResponsiveContainer>
+        </div>
     );
 };

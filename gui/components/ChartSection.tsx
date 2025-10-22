@@ -24,15 +24,22 @@ export const ChartSection: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'72H' | 'ALL'>('ALL');
 
   return (
-    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 p-2 sm:p-3 md:p-4 rounded-lg">
+    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 p-2 sm:p-3 md:p-4 rounded-lg overflow-hidden outline-none">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 gap-2 sm:gap-3">
-        <h3 className="text-[10px] sm:text-xs md:text-sm font-bold tracking-widest text-arena-gray-400">TOTAL ACCOUNT VALUE</h3>
+        <h3 className="text-[9px] sm:text-xs md:text-sm font-bold tracking-wider sm:tracking-widest text-arena-gray-400 truncate max-w-full">TOTAL ACCOUNT VALUE</h3>
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           <ToggleButton options={['$', '%']} active={valueType} onToggle={setValueType as any} />
           <ToggleButton options={['ALL', '72H']} active={timeRange} onToggle={setTimeRange as any} />
         </div>
       </div>
-      <div className="h-[200px] sm:h-[280px] md:h-[350px] lg:h-[400px] w-full relative">
+      <div
+        className="h-[300px] sm:h-[400px] md:h-[500px] lg:h-[550px] w-full relative select-none outline-none"
+        style={{
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none'
+        }}
+      >
         <PerformanceChart valueType={valueType} timeRange={timeRange} />
       </div>
     </div>

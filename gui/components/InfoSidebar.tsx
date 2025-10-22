@@ -29,23 +29,23 @@ const PerformanceSummary: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col sm:flex-row flex-nowrap justify-between text-[10px] sm:text-[11px] border border-arena-gray-800 rounded p-2 gap-2 overflow-hidden">
-            <div className="flex flex-nowrap items-center space-x-1 sm:space-x-1.5 whitespace-nowrap min-w-0">
-                <span className="text-arena-gray-400 flex-shrink-0">HIGHEST:</span>
-                <HighestIcon className="flex-shrink-0" style={{color: highest.color}} size={14} />
-                <span className="font-bold truncate text-[10px] sm:text-[11px]">{highest.name}</span>
-                <span className="font-bold flex-shrink-0">${(highestValue / 1000).toFixed(1)}k</span>
-                <span className={`font-bold flex-shrink-0 ${highestPerf >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {highestPerf >= 0 ? '+' : ''}{highestPerf.toFixed(2)}%
+        <div className="flex flex-col sm:flex-row flex-nowrap justify-between text-[9px] sm:text-[10px] border border-arena-gray-800 rounded p-2 gap-2 overflow-hidden">
+            <div className="flex flex-nowrap items-center space-x-1 whitespace-nowrap min-w-0 overflow-hidden">
+                <span className="text-arena-gray-400 flex-shrink-0 text-[8px] sm:text-[9px]">HIGH:</span>
+                <HighestIcon className="flex-shrink-0" style={{color: highest.color}} size={12} />
+                <span className="font-bold truncate text-[9px] sm:text-[10px]">{highest.name}</span>
+                <span className="font-bold flex-shrink-0 text-[9px] sm:text-[10px]">${(highestValue / 1000).toFixed(1)}k</span>
+                <span className={`font-bold flex-shrink-0 text-[9px] sm:text-[10px] ${highestPerf >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {highestPerf >= 0 ? '+' : ''}{highestPerf.toFixed(1)}%
                 </span>
             </div>
-            <div className="flex flex-nowrap items-center space-x-1 sm:space-x-1.5 whitespace-nowrap min-w-0">
-                <span className="text-arena-gray-400 flex-shrink-0">LOWEST:</span>
-                 <LowestIcon className="flex-shrink-0" style={{color: lowest.color}} size={14} />
-                <span className="font-bold truncate text-[10px] sm:text-[11px]">{lowest.name}</span>
-                <span className="font-bold flex-shrink-0">${(lowestValue / 1000).toFixed(1)}k</span>
-                <span className={`font-bold flex-shrink-0 ${lowestPerf >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {lowestPerf >= 0 ? '+' : ''}{lowestPerf.toFixed(2)}%
+            <div className="flex flex-nowrap items-center space-x-1 whitespace-nowrap min-w-0 overflow-hidden">
+                <span className="text-arena-gray-400 flex-shrink-0 text-[8px] sm:text-[9px]">LOW:</span>
+                 <LowestIcon className="flex-shrink-0" style={{color: lowest.color}} size={12} />
+                <span className="font-bold truncate text-[9px] sm:text-[10px]">{lowest.name}</span>
+                <span className="font-bold flex-shrink-0 text-[9px] sm:text-[10px]">${(lowestValue / 1000).toFixed(1)}k</span>
+                <span className={`font-bold flex-shrink-0 text-[9px] sm:text-[10px] ${lowestPerf >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {lowestPerf >= 0 ? '+' : ''}{lowestPerf.toFixed(1)}%
                 </span>
             </div>
         </div>
@@ -53,20 +53,27 @@ const PerformanceSummary: React.FC = () => {
 }
 
 const InfoTabs: React.FC<{ activeTab: string; setActiveTab: (tab: string) => void; }> = ({ activeTab, setActiveTab }) => {
-    const tabs = ["COMPLETED TRADES", "MODELCHAT", "POSITIONS", "README.TXT"];
+    const tabs = [
+        { key: "COMPLETED TRADES", label: "TRADES", fullLabel: "COMPLETED TRADES" },
+        { key: "MODELCHAT", label: "CHAT", fullLabel: "MODELCHAT" },
+        { key: "POSITIONS", label: "POS", fullLabel: "POSITIONS" },
+        { key: "README.TXT", label: "INFO", fullLabel: "README.TXT" }
+    ];
     return (
         <div className="flex border-b border-arena-gray-800 overflow-x-auto scrollbar-hide">
             {tabs.map(tab => (
                 <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`text-[10px] sm:text-xs font-bold py-2 px-2 sm:px-4 border-b-2 transition-colors duration-150 focus:outline-none whitespace-nowrap flex-shrink-0 ${
-                        activeTab === tab
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`text-[9px] sm:text-xs font-bold py-2 px-2 sm:px-4 border-b-2 transition-colors duration-150 focus:outline-none whitespace-nowrap flex-shrink-0 ${
+                        activeTab === tab.key
                         ? 'border-white text-white bg-gray-900 bg-opacity-60'
                         : 'border-transparent text-arena-gray-500 hover:text-white'
-                    } ${tab === "README.TXT" ? `${activeTab !== tab ? 'bg-gray-900 bg-opacity-40' : ''}` : ""}`}
+                    } ${tab.key === "README.TXT" ? `${activeTab !== tab.key ? 'bg-gray-900 bg-opacity-40' : ''}` : ""}`}
+                    title={tab.fullLabel}
                 >
-                    {tab}
+                    <span className="sm:hidden">{tab.label}</span>
+                    <span className="hidden sm:inline">{tab.fullLabel}</span>
                 </button>
             ))}
         </div>
@@ -145,9 +152,9 @@ export const InfoSidebar: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className="w-full overflow-hidden">
             <PerformanceSummary />
-            <div className="mt-3 sm:mt-4">
+            <div className="mt-3 sm:mt-4 overflow-hidden">
                 <InfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 {renderContent()}
             </div>

@@ -53,31 +53,31 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
             <tr className="border-b border-arena-gray-700">
               {viewType === 'overall' ? (
                 <>
-                  <th className="px-2 py-3 text-left text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RANK</th>
-                  <th className="px-2 py-3 text-left text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MODEL</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">ACCT VALUE ↓</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RETURN %</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">TOTAL P&L</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">FEES</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">WIN RATE</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">BIGGEST WIN</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">BIGGEST LOSS</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">SHARPE</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider">TRADES</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-left text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RANK</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-left text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MODEL</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">ACCT VALUE ↓</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RETURN %</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">TOTAL P&L</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">FEES</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">WIN RATE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">BIGGEST WIN</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">BIGGEST LOSS</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">SHARPE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider">TRADES</th>
                 </>
               ) : (
                 <>
-                  <th className="px-2 py-3 text-left text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RANK</th>
-                  <th className="px-2 py-3 text-left text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MODEL</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">ACCT VALUE ↓</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG TRADE SIZE</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MEDIAN TRADE SIZE</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG HOLD</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MEDIAN HOLD</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">% LONG</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">EXPECTANCY</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG CONFIDENCE</th>
-                  <th className="px-2 py-3 text-right text-[10px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider">MEDIAN CONFIDENCE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-left text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">RANK</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-left text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MODEL</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">ACCT VALUE ↓</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG TRADE SIZE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MEDIAN TRADE SIZE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG HOLD</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">MEDIAN HOLD</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">% LONG</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">EXPECTANCY</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider border-r border-arena-gray-800">AVG CONFIDENCE</th>
+                  <th className="px-1.5 sm:px-2 py-2 sm:py-3 text-right text-[8px] sm:text-xs font-bold text-arena-gray-400 uppercase tracking-wider">MEDIAN CONFIDENCE</th>
                 </>
               )}
             </tr>
@@ -99,163 +99,165 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ leaderboard,
                 {viewType === 'overall' ? (
                   <>
                     {/* Rank */}
-                    <td className="px-2 py-3 text-center border-r border-arena-gray-800">
-                      <div className="text-sm font-bold text-white">{entry.rank}</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-center border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-white">{entry.rank}</div>
                     </td>
 
                     {/* Model */}
-                    <td className="px-2 py-3 border-r border-arena-gray-800">
-                      <div className="flex items-center space-x-2">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 border-r border-arena-gray-800">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
                         {Icon && (
                           <Icon
                             style={{ color: model?.color }}
-                            size={16}
+                            size={14}
+                            className="sm:w-4 sm:h-4"
                           />
                         )}
-                        <span className="text-xs font-bold text-arena-gray-100">
+                        <span className="text-[10px] sm:text-xs font-bold text-arena-gray-100">
                           {model?.name || entry.agent_id}
                         </span>
                       </div>
                     </td>
 
                     {/* Account Value */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm font-bold text-white">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-white">
                         {formatCurrency(entry.total_value)}
                       </div>
                     </td>
 
                     {/* Return % */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className={`text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className={`text-xs sm:text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                         {formatPercent(entry.total_pnl_percent)}
                       </div>
                     </td>
 
                     {/* Total P&L */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className={`text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className={`text-xs sm:text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                         {formatCurrency(entry.total_pnl)}
                       </div>
                     </td>
 
                     {/* Fees */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {formatCurrency(entry.cash_balance * 0.01)}
                       </div>
                     </td>
 
                     {/* Win Rate - would need to fetch from performance API */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {entry.trades_count > 0 ? '0%' : '0%'}
                       </div>
                     </td>
 
                     {/* Biggest Win - would need to fetch from trade history */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-green-400">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-green-400">
                         $0
                       </div>
                     </td>
 
                     {/* Biggest Loss - would need to fetch from trade history */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-red-400">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-red-400">
                         $0
                       </div>
                     </td>
 
                     {/* Sharpe */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {sharpe.toFixed(3)}
                       </div>
                     </td>
 
                     {/* Trades */}
-                    <td className="px-2 py-3 text-right">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {formatNumber(entry.trades_count)}
                       </div>
                     </td>
-                  </>
+</>
                 ) : (
                   <>
                     {/* Rank */}
-                    <td className="px-2 py-3 text-center border-r border-arena-gray-800">
-                      <div className="text-sm font-bold text-white">{entry.rank}</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-center border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-white">{entry.rank}</div>
                     </td>
 
                     {/* Model */}
-                    <td className="px-2 py-3 border-r border-arena-gray-800">
-                      <div className="flex items-center space-x-2">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 border-r border-arena-gray-800">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
                         {Icon && (
                           <Icon
                             style={{ color: model?.color }}
-                            size={16}
+                            size={14}
+                            className="sm:w-4 sm:h-4"
                           />
                         )}
-                        <span className="text-xs font-bold text-arena-gray-100">
+                        <span className="text-[10px] sm:text-xs font-bold text-arena-gray-100">
                           {model?.name || entry.agent_id}
                         </span>
                       </div>
                     </td>
 
                     {/* Account Value */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm font-bold text-white">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-white">
                         {formatCurrency(entry.total_value)}
                       </div>
                     </td>
 
                     {/* Avg Trade Size */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {formatCurrency(stats.avgTradeSize)}
                       </div>
                     </td>
 
                     {/* Median Trade Size */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">
                         {formatCurrency(stats.medianTradeSize)}
                       </div>
                     </td>
 
                     {/* Avg Hold */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">{stats.avgHold}</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.avgHold}</div>
                     </td>
 
                     {/* Median Hold */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">{stats.medianHold}</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.medianHold}</div>
                     </td>
 
                     {/* % Long */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">{stats.percentLong.toFixed(2)}%</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.percentLong.toFixed(2)}%</div>
                     </td>
 
                     {/* Expectancy */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className={`text-sm ${stats.expectancy >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className={`text-xs sm:text-sm ${stats.expectancy >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {formatCurrency(stats.expectancy)}
                       </div>
                     </td>
 
                     {/* Avg Confidence */}
-                    <td className="px-2 py-3 text-right border-r border-arena-gray-800">
-                      <div className="text-sm text-arena-gray-300">{stats.avgConfidence.toFixed(1)}%</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right border-r border-arena-gray-800">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.avgConfidence.toFixed(1)}%</div>
                     </td>
 
                     {/* Median Confidence */}
-                    <td className="px-2 py-3 text-right">
-                      <div className="text-sm text-arena-gray-300">{stats.medianConfidence.toFixed(1)}%</div>
+                    <td className="px-1.5 sm:px-2 py-2 sm:py-3 text-right">
+                      <div className="text-xs sm:text-sm text-arena-gray-300">{stats.medianConfidence.toFixed(1)}%</div>
                     </td>
-                  </>
+</>
                 )}
               </tr>
             );

@@ -147,25 +147,25 @@ export const PositionsContent: React.FC = () => {
   const hasPositions = positions && positions.length > 0;
 
   return (
-    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm text-arena-gray-200 text-sm font-sans py-4">
+    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm text-arena-gray-200 text-sm font-sans py-3 sm:py-4">
       {/* Status Indicator */}
-      <div className="px-4 mb-4 flex items-center justify-between">
+      <div className="px-3 sm:px-4 mb-3 sm:mb-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <label className="text-arena-gray-500 font-bold mr-2 text-xs">STATUS:</label>
+          <label className="text-arena-gray-500 font-bold mr-2 text-[10px] sm:text-xs">STATUS:</label>
           {loading ? (
-            <span className="text-xs text-yellow-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-yellow-400 flex items-center">
               <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse" />
-              Loading...
+              <span className="hidden sm:inline">Loading...</span>
             </span>
           ) : hasLiveData ? (
-            <span className="text-xs text-green-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-green-400 flex items-center">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-              Live Data
+              <span className="hidden sm:inline">Live Data</span>
             </span>
           ) : (
-            <span className="text-xs text-red-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-red-400 flex items-center">
               <div className="w-2 h-2 bg-red-400 rounded-full mr-2" />
-              Using Demo Data
+              <span className="hidden sm:inline">Using Demo Data</span>
             </span>
           )}
         </div>
@@ -202,42 +202,42 @@ export const PositionsContent: React.FC = () => {
               const AgentIcon = model.icon;
 
               return (
-                <div key={model.id} className="bg-gray-900 bg-opacity-30 rounded-lg p-3 border border-arena-gray-800">
+                <div key={model.id} className="bg-gray-900 bg-opacity-30 rounded-lg p-2 sm:p-3 border border-arena-gray-800">
                   {/* Agent Header */}
                   <div className="flex items-center justify-between mb-2 pb-2 border-b border-arena-gray-800">
-                    <div className="flex items-center space-x-2">
-                      <AgentIcon style={{ color: model.color }} size={24} />
-                      <h3 className="font-bold text-base uppercase" style={{ color: model.color }}>
-                        {model.name}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <AgentIcon style={{ color: model.color }} size={20} />
+                      <h3 className="font-bold text-sm sm:text-base uppercase" style={{ color: model.color }}>
+                        <span className="sm:hidden">{model.name.split(' ')[0]}</span>
+                        <span className="hidden sm:inline">{model.name}</span>
                       </h3>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-arena-gray-400">TOTAL UNREALIZED P&L:</div>
-                      <div className="font-bold text-base">
+                      <div className="text-[9px] sm:text-xs text-arena-gray-400">P&L:</div>
+                      <div className="font-bold text-xs sm:text-base">
                         <PnL value={totalPnL} />
                       </div>
                     </div>
                   </div>
 
-                  {/* Positions Table Header */}
-                  <div className="grid grid-cols-6 gap-2 text-[10px] text-arena-gray-500 mb-2 font-mono uppercase">
+                  {/* Desktop: Table Header */}
+                  <div className="hidden md:grid grid-cols-6 gap-2 text-[10px] text-arena-gray-500 mb-2 font-mono uppercase">
                     <div className="col-span-1">SIDE</div>
                     <div className="col-span-1">COIN</div>
-                    <div className="col-span-1 text-center">LEVERAGE</div>
-                    <div className="col-span-1 text-right">NOTIONAL</div>
-                    <div className="col-span-1 text-center">EXIT PLAN</div>
-                    <div className="col-span-1 text-right">UNREAL P&L</div>
+                    <div className="col-span-1 text-center">LEV</div>
+                    <div className="col-span-1 text-right">VALUE</div>
+                    <div className="col-span-1 text-center">PLAN</div>
+                    <div className="col-span-1 text-right">P&L</div>
                   </div>
 
-                  {/* Positions */}
-                  <div className="space-y-1 font-mono">
+                  {/* Mobile: Compact cards */}
+                  <div className="md:hidden space-y-1.5">
                     {agentPositions.map((pos, index) => {
                       const CoinIcon = CRYPTO_ICONS[pos.symbol] || BtcIcon;
                       const sideColor = pos.side === 'long' ? 'text-green-400' : 'text-red-400';
                       const leverage = pos.leverage || 1.0;
                       const side = pos.side || 'long';
 
-                      // 计算盈亏（考虑leverage）
                       let unrealized_pnl;
                       if (side === 'long') {
                         unrealized_pnl = (pos.current_price - pos.entry_price) * pos.quantity * leverage;
@@ -246,8 +246,49 @@ export const PositionsContent: React.FC = () => {
                       }
 
                       const notional = pos.current_price * pos.quantity;
+                      const leverageColor = leverage >= 7 ? 'text-red-400' : leverage >= 4 ? 'text-orange-400' : 'text-blue-400';
 
-                      // Leverage显示颜色：高杠杆用橙色/红色警告
+                      return (
+                        <div key={index} className="border border-arena-gray-800 rounded p-1.5 bg-gray-900/30 text-[10px]">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-1">
+                              <CoinIcon className="w-4 h-4" />
+                              <span className="font-bold text-white">{pos.symbol}</span>
+                              <span className={`font-bold uppercase ${sideColor} text-[9px]`}>{pos.side}</span>
+                              <span className={`font-bold ${leverageColor} text-[9px]`}>{leverage.toFixed(1)}x</span>
+                            </div>
+                            <PnL value={unrealized_pnl} />
+                          </div>
+                          <div className="flex justify-between items-center text-arena-gray-400">
+                            <span>${notional.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <button
+                              onClick={() => setSelectedPosition(pos)}
+                              className="border border-arena-gray-700 px-2 py-0.5 rounded text-[9px] hover:bg-arena-gray-800 transition-colors"
+                            >
+                              VIEW
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop: Table rows */}
+                  <div className="hidden md:block space-y-1 font-mono">
+                    {agentPositions.map((pos, index) => {
+                      const CoinIcon = CRYPTO_ICONS[pos.symbol] || BtcIcon;
+                      const sideColor = pos.side === 'long' ? 'text-green-400' : 'text-red-400';
+                      const leverage = pos.leverage || 1.0;
+                      const side = pos.side || 'long';
+
+                      let unrealized_pnl;
+                      if (side === 'long') {
+                        unrealized_pnl = (pos.current_price - pos.entry_price) * pos.quantity * leverage;
+                      } else {
+                        unrealized_pnl = (pos.entry_price - pos.current_price) * pos.quantity * leverage;
+                      }
+
+                      const notional = pos.current_price * pos.quantity;
                       const leverageColor = leverage >= 7 ? 'text-red-400' : leverage >= 4 ? 'text-orange-400' : 'text-blue-400';
 
                       return (
@@ -282,10 +323,10 @@ export const PositionsContent: React.FC = () => {
                   </div>
 
                   {/* Available Cash */}
-                  <div className="mt-2 pt-2 border-t border-arena-gray-800 text-xs">
-                    <span className="text-arena-gray-400">AVAILABLE CASH: </span>
+                  <div className="mt-2 pt-2 border-t border-arena-gray-800 text-[10px] sm:text-xs">
+                    <span className="text-arena-gray-400">CASH: </span>
                     <span className="font-bold text-white">
-                      ${availableCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${availableCash.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                   </div>
                 </div>

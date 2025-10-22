@@ -28,10 +28,10 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 font-mono text-arena-gray-100">
-      <div className="h-screen max-w-[1600px] mx-auto flex flex-col p-2 sm:p-3 md:p-4 lg:p-6">
+      <div className="h-screen w-full max-w-[1600px] mx-auto flex flex-col px-2 py-2 sm:p-3 md:p-4 lg:p-6 overflow-x-hidden">
         <Header currentView={currentView} onViewChange={(view) => setCurrentView(view as ViewType)} />
 
-        <main className="mt-2 sm:mt-3 md:mt-4 flex-1 overflow-y-auto pb-3 sm:pb-4">
+        <main className="mt-2 sm:mt-3 md:mt-4 flex-1 overflow-y-auto pb-3 sm:pb-4 overflow-x-hidden">
           {currentView === 'dashboard' && (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">

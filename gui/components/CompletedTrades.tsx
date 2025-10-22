@@ -51,25 +51,25 @@ export const CompletedTrades: React.FC = () => {
   const hasLiveData = !loading && !error && trades && trades.length > 0;
 
   return (
-    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm text-arena-gray-200 text-sm font-sans py-4">
+    <div className="bg-gray-900 bg-opacity-40 backdrop-blur-sm text-arena-gray-200 text-sm font-sans py-3 sm:py-4">
       {/* Status Indicator */}
-      <div className="px-4 mb-4 flex items-center justify-between">
+      <div className="px-3 sm:px-4 mb-3 sm:mb-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <label className="text-arena-gray-500 font-bold mr-2 text-xs">STATUS:</label>
+          <label className="text-arena-gray-500 font-bold mr-2 text-[10px] sm:text-xs">STATUS:</label>
           {loading ? (
-            <span className="text-xs text-yellow-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-yellow-400 flex items-center">
               <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse" />
-              Loading...
+              <span className="hidden sm:inline">Loading...</span>
             </span>
           ) : hasLiveData ? (
-            <span className="text-xs text-green-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-green-400 flex items-center">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-              Live Data
+              <span className="hidden sm:inline">Live Data</span>
             </span>
           ) : (
-            <span className="text-xs text-red-400 flex items-center">
+            <span className="text-[10px] sm:text-xs text-red-400 flex items-center">
               <div className="w-2 h-2 bg-red-400 rounded-full mr-2" />
-              No Data Available
+              <span className="hidden sm:inline">No Data Available</span>
             </span>
           )}
         </div>
@@ -77,22 +77,52 @@ export const CompletedTrades: React.FC = () => {
 
       {/* Live Trades Table */}
       {hasLiveData ? (
-        <div className="px-4">
-          <h4 className="font-bold text-base mb-3 text-white">TRADE HISTORY</h4>
+        <div className="px-3 sm:px-4 overflow-x-auto">
+          <h4 className="font-bold text-sm sm:text-base mb-2 sm:mb-3 text-white">TRADE HISTORY</h4>
 
-          {/* Table Header */}
-          <div className="grid grid-cols-12 gap-3 text-xs text-arena-gray-500 mb-2 font-mono">
+          {/* Desktop Table Header */}
+          <div className="hidden md:grid grid-cols-12 gap-3 text-xs text-arena-gray-500 mb-2 font-mono">
             <div className="col-span-2">TIME</div>
             <div className="col-span-2">AGENT</div>
             <div className="col-span-2">SYMBOL</div>
             <div className="col-span-1">SIDE</div>
-            <div className="col-span-1 text-center">LEVERAGE</div>
+            <div className="col-span-1 text-center">LEV</div>
             <div className="col-span-2 text-right">PRICE</div>
             <div className="col-span-2 text-right">QTY</div>
           </div>
 
-          {/* Table Body */}
-          <div className="space-y-1 font-mono max-h-[40vh] overflow-y-auto">
+          {/* Mobile: Compact vertical cards */}
+          <div className="md:hidden space-y-2 max-h-[40vh] overflow-y-auto">
+            {trades.map((trade: any, index: number) => {
+              const CoinIcon = CRYPTO_ICONS[trade.symbol] || BtcIcon;
+              const sideColor = trade.side === 'buy' ? 'text-green-400' : 'text-red-400';
+              const agentModel = MODELS_DATA.find(m => m.id === trade.agent_id);
+              const AgentIcon = agentModel?.icon;
+
+              return (
+                <div key={index} className="border border-arena-gray-800 rounded p-2 bg-gray-900/30 text-[10px]">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-1.5">
+                      {AgentIcon && <AgentIcon style={{color: agentModel?.color}} size={14} title={agentModel?.name} />}
+                      <CoinIcon className="w-4 h-4" />
+                      <span className="font-bold text-white">{trade.symbol}</span>
+                      <span className={`font-bold uppercase ${sideColor}`}>{trade.side}</span>
+                    </div>
+                    <span className="text-arena-gray-400">
+                      {formatDate(trade.timestamp || trade.created_at || trade.updated_at)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-arena-gray-400">
+                    <span>${(trade.price || trade.average_price || trade.entry_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span>{(trade.quantity || trade.filled_quantity || 0).toFixed(4)}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table Body */}
+          <div className="hidden md:block space-y-1 font-mono max-h-[40vh] overflow-y-auto">
             {trades.map((trade: any, index: number) => {
               const CoinIcon = CRYPTO_ICONS[trade.symbol] || BtcIcon;
               const sideColor = trade.side === 'buy' ? 'text-green-400' : 'text-red-400';
@@ -111,7 +141,7 @@ export const CompletedTrades: React.FC = () => {
                   </div>
                   <div className="col-span-2 flex items-center space-x-1">
                     {AgentIcon && <AgentIcon style={{color: agentModel?.color}} size={16} />}
-                    <span className="font-bold text-xs">{agentModel?.name || trade.agent_id}</span>
+                    <span className="font-bold text-xs truncate">{agentModel?.name || trade.agent_id}</span>
                   </div>
                   <div className="col-span-2 flex items-center space-x-2">
                     <CoinIcon className="w-5 h-5" />

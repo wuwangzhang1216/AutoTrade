@@ -176,12 +176,12 @@ export const ModelChat: React.FC = () => {
                 >
                   {/* Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
-                    <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
-                      {/* Agent Info */}
+                    <div className="flex items-center flex-wrap gap-x-1.5 sm:gap-x-2 gap-y-1">
+                      {/* Agent Info - Icon only on mobile */}
                       {agentModel && AgentIcon && (
                         <div className="flex items-center space-x-1">
-                          <AgentIcon style={{ color: agentModel.color }} size={14} />
-                          <span className="text-[10px] sm:text-xs font-semibold" style={{ color: agentModel.color }}>
+                          <AgentIcon style={{ color: agentModel.color }} size={14} title={agentModel.name} />
+                          <span className="hidden sm:inline text-xs font-semibold" style={{ color: agentModel.color }}>
                             {agentModel.name}
                           </span>
                         </div>
@@ -194,7 +194,7 @@ export const ModelChat: React.FC = () => {
                         <span className="font-bold text-[10px] sm:text-xs text-white">{decision.symbol}</span>
                       )}
                       {decision.quantity > 0 && (
-                        <span className="text-[10px] sm:text-xs text-arena-gray-400">
+                        <span className="hidden sm:inline text-xs text-arena-gray-400">
                           Qty: {decision.quantity.toFixed(4)}
                         </span>
                       )}
@@ -209,9 +209,9 @@ export const ModelChat: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Reasoning */}
+                  {/* Reasoning - Hidden on mobile */}
                   {decision.reasoning && (
-                    <div className="text-[10px] sm:text-xs text-arena-gray-300 leading-relaxed mt-2 p-2 bg-gray-900 bg-opacity-60 rounded">
+                    <div className="hidden sm:block text-xs text-arena-gray-300 leading-relaxed mt-2 p-2 bg-gray-900 bg-opacity-60 rounded">
                       <span className="text-arena-gray-500 font-bold">REASONING: </span>
                       {decision.reasoning}
                     </div>

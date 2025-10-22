@@ -114,10 +114,10 @@ export const Header: React.FC<HeaderProps> = ({ currentView = 'dashboard', onVie
   };
 
   return (
-    <header className="font-sans">
-      <div className="flex justify-between items-center">
-        <div className="flex items-end space-x-2 sm:space-x-3">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent" style={{fontFamily: "'Bit_VCR', monospace"}}>
+    <header className="font-sans w-full overflow-hidden">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex items-end space-x-2 sm:space-x-3 flex-shrink-0">
+          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap" style={{fontFamily: "'Bit_VCR', monospace"}}>
             TradeForge
           </h1>
         </div>
@@ -192,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({ currentView = 'dashboard', onVie
       )}
 
       {/* Crypto Ticker Bar */}
-      <div className="mt-4 relative overflow-hidden rounded-lg border border-arena-gray-800 bg-gradient-to-r from-gray-900/50 via-gray-800/30 to-gray-900/50 backdrop-blur-sm">
+      <div className="mt-3 sm:mt-4 relative overflow-hidden rounded-lg border border-arena-gray-800 bg-gradient-to-r from-gray-900/50 via-gray-800/30 to-gray-900/50 backdrop-blur-sm w-full">
         {/* Subtle shine effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -223,8 +223,8 @@ export const Header: React.FC<HeaderProps> = ({ currentView = 'dashboard', onVie
         </div>
 
         {/* Mobile - Show summary with horizontal scroll for top items */}
-        <div className="md:hidden">
-          <div className="flex overflow-x-auto scrollbar-hide p-2 space-x-2">
+        <div className="md:hidden w-full">
+          <div className="flex overflow-x-auto scrollbar-hide p-1.5 sm:p-2 gap-1.5 sm:gap-2 w-full">
             {loading ? (
               <div className="flex items-center justify-center space-x-2 w-full py-2">
                 <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -232,14 +232,14 @@ export const Header: React.FC<HeaderProps> = ({ currentView = 'dashboard', onVie
               </div>
             ) : (
               displayData.slice(0, 3).map(item => (
-                <div key={item.symbol} className="flex-shrink-0 px-3 py-2 border border-arena-gray-800 rounded bg-gray-900/50">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold text-arena-gray-400">{item.symbol}</span>
-                    <span className="text-xs font-bold text-white tabular-nums">
+                <div key={item.symbol} className="flex-shrink-0 px-2 py-1.5 border border-arena-gray-800 rounded bg-gray-900/50 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold text-arena-gray-400 flex-shrink-0">{item.symbol}</span>
+                    <span className="text-[10px] font-bold text-white tabular-nums flex-shrink-0">
                       ${item.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                     {item.change24h !== undefined && (
-                      <span className={`text-xs font-semibold ${item.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <span className={`text-[10px] font-semibold flex-shrink-0 ${item.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {item.change24h > 0 ? '+' : ''}{item.change24h.toFixed(1)}%
                       </span>
                     )}

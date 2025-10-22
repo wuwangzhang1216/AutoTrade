@@ -25,33 +25,35 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onAgentSelect }) => {
   }, [winner, positions]);
 
   return (
-    <div className="text-arena-gray-100">
+    <div className="text-arena-gray-100 overflow-x-hidden">
       {/* Header */}
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">LEADERBOARD</h1>
+      <div className="mb-2 sm:mb-4 md:mb-6">
+        <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white truncate">LEADERBOARD</h1>
       </div>
 
       {/* Tabs */}
-      <div className="mb-4 sm:mb-6 flex bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 rounded-md p-0.5 w-full sm:w-fit">
+      <div className="mb-2 sm:mb-4 md:mb-6 flex bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 rounded-md p-0.5 w-full sm:w-fit">
         <button
           onClick={() => setActiveTab('overall')}
-          className={`flex-1 sm:flex-none px-3 sm:px-6 py-2 text-[10px] sm:text-xs font-bold rounded ${
+          className={`flex-1 sm:flex-none px-2 sm:px-4 md:px-6 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold rounded min-h-[36px] sm:min-h-0 ${
             activeTab === 'overall'
               ? 'bg-arena-gray-100 text-arena-black'
               : 'text-arena-gray-400 hover:bg-arena-gray-800'
           }`}
         >
-          OVERALL STATS
+          <span className="sm:hidden">STATS</span>
+          <span className="hidden sm:inline">OVERALL STATS</span>
         </button>
         <button
           onClick={() => setActiveTab('analytics')}
-          className={`flex-1 sm:flex-none px-3 sm:px-6 py-2 text-[10px] sm:text-xs font-bold rounded ${
+          className={`flex-1 sm:flex-none px-2 sm:px-4 md:px-6 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold rounded min-h-[36px] sm:min-h-0 ${
             activeTab === 'analytics'
               ? 'bg-arena-gray-100 text-arena-black'
               : 'text-arena-gray-400 hover:bg-arena-gray-800'
           }`}
         >
-          ADVANCED ANALYTICS
+          <span className="sm:hidden">ANALYTICS</span>
+          <span className="hidden sm:inline">ADVANCED ANALYTICS</span>
         </button>
       </div>
 
@@ -71,14 +73,14 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onAgentSelect }) => {
       )}
 
       {!leaderboardLoading && !leaderboardError && leaderboard && (
-        <div className="space-y-6">
+        <div className="space-y-2 sm:space-y-4 md:space-y-6 overflow-x-hidden">
           {/* Leaderboard Table */}
-          <div>
+          <div className="overflow-x-auto">
             <LeaderboardTable leaderboard={leaderboard} viewType={activeTab} onAgentSelect={onAgentSelect} />
           </div>
 
           {/* Bottom Section: Winning Model Card + Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
             {/* Winning Model Card */}
             {winner && (
               <div className="lg:col-span-1">
@@ -87,18 +89,25 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onAgentSelect }) => {
             )}
 
             {/* Model Comparison Chart */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 overflow-hidden">
               <ModelComparisonChart leaderboard={leaderboard} />
             </div>
           </div>
 
           {/* Footer Note */}
-          <div className="mt-4 p-4 bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 rounded-lg">
-            <p className="text-sm text-arena-gray-400">
-              <span className="font-bold text-arena-gray-300">Note:</span> All statistics (except{' '}
-              <span className="font-semibold text-arena-gray-300">Account Value</span> and{' '}
-              <span className="font-semibold text-arena-gray-300">P&L</span>) reflect{' '}
-              <span className="font-semibold text-arena-gray-300">completed trades only</span>. Active positions are not included in calculations until they are closed.
+          <div className="mt-2 sm:mt-4 p-1.5 sm:p-3 md:p-4 bg-gray-900 bg-opacity-40 backdrop-blur-sm border border-arena-gray-700 rounded-lg">
+            <p className="text-[8px] sm:text-xs md:text-sm text-arena-gray-400 leading-relaxed">
+              <span className="font-bold text-arena-gray-300">Note:</span>
+              {' '}
+              <span className="hidden sm:inline">
+                All statistics (except{' '}
+                <span className="font-semibold text-arena-gray-300">Account Value</span> and{' '}
+                <span className="font-semibold text-arena-gray-300">P&L</span>) reflect{' '}
+                <span className="font-semibold text-arena-gray-300">completed trades only</span>. Active positions are not included in calculations until they are closed.
+              </span>
+              <span className="sm:hidden">
+                Stats show <span className="font-semibold text-arena-gray-300">completed trades</span> only. Active positions excluded.
+              </span>
             </p>
           </div>
         </div>
