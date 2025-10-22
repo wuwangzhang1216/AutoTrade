@@ -534,9 +534,11 @@ async def websocket_endpoint(websocket: WebSocket):
             active_connections.remove(websocket)
 
 
-# Include API routes from services with prefixes
-app.include_router(market_routes.router, prefix="/market", tags=["Market Data"])
-app.include_router(trading_routes.router, prefix="/api", tags=["Trading"])
+# Include API routes from services
+# Note: Routes already have their paths defined (e.g., /api/market/, /api/agents/)
+# So we include them without additional prefixes to avoid duplication
+app.include_router(market_routes.router, tags=["Market Data"])
+app.include_router(trading_routes.router, tags=["Trading"])
 
 
 # Additional endpoints for compatibility
