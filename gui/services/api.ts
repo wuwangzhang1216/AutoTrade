@@ -6,10 +6,15 @@ export interface ApiConfig {
   tradingServiceUrl: string;
 }
 
+// Support both unified service and separate services
+// If VITE_UNIFIED_SERVICE_URL is set, use it for all services
+// Otherwise, fall back to separate service URLs
+const UNIFIED_URL = import.meta.env.VITE_UNIFIED_SERVICE_URL;
+
 const API_CONFIG: ApiConfig = {
-  marketDataUrl: import.meta.env.VITE_MARKET_DATA_URL || 'https://autotrade-market-data-d2f753ef6179.herokuapp.com',
-  decisionEngineUrl: import.meta.env.VITE_DECISION_ENGINE_URL || 'https://autotrade-decision-engine-4a1bc03a6cbe.herokuapp.com',
-  tradingServiceUrl: import.meta.env.VITE_TRADING_SERVICE_URL || 'https://autotrade-trading-service-46410e1c9eaa.herokuapp.com',
+  marketDataUrl: UNIFIED_URL || import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:8080',
+  decisionEngineUrl: UNIFIED_URL || import.meta.env.VITE_DECISION_ENGINE_URL || 'http://localhost:8080',
+  tradingServiceUrl: UNIFIED_URL || import.meta.env.VITE_TRADING_SERVICE_URL || 'http://localhost:8080',
 };
 
 // Market Data Service Types
@@ -206,8 +211,12 @@ export const marketDataApi = {
    * Get current market data for a symbol
    */
   getMarketData: async (symbol: string): Promise<MarketDataResponse> => {
+    // Try unified service endpoint first, then fall back to market prefix
+    const url = UNIFIED_URL
+      ? `${API_CONFIG.marketDataUrl}/api/market/${symbol}`
+      : `${API_CONFIG.marketDataUrl}/market/api/market/${symbol}`;
     return fetchApi<MarketDataResponse>(
-      `${API_CONFIG.marketDataUrl}/api/market/${symbol}`,
+      url,
       undefined,
       'Market Data Service'
     );

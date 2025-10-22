@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库（支持TimescaleDB）
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: trading_postgres
+    environment:
+      POSTGRES_DB: trading_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - trading_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d trading_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: trading_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trading_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 统一交易平台服务 (合并了所有三个服务)
+  unified_service:
+    build:
+      context: .
+      dockerfile: unified_service/Dockerfile
+    container_name: unified_service
+    environment:
+      # Database
+      TIMESCALE_HOST: postgres
+      TIMESCALE_PORT: 5432
+      TIMESCALE_DB: trading_platform
+      TIMESCALE_USER: admin
+      TIMESCALE_PASSWORD: password
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      # Market Data
+      DATA_COLLECTION_INTERVAL: 5
+      SYMBOLS: BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT,DOGEUSDT,XRPUSDT
+      # Decision Engine
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      INITIAL_BALANCE: 10000.0
+      MAX_POSITION_SIZE: 0.3
+      RISK_PER_TRADE: 0.02
+      DECISION_INTERVAL: 60
+      # Trading Service
+      COMMISSION_RATE: 0.001
+      SLIPPAGE_RATE: 0.0005
+      # Port
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - trading_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  trading_network:
+    driver: bridge
