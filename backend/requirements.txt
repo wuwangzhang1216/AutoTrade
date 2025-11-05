@@ -1,0 +1,50 @@
+# Core Trading Dependencies
+ccxt>=4.2.0                    # Cryptocurrency exchange API
+pandas>=2.1.0                  # Data manipulation
+pandas-ta>=0.3.14b             # Technical analysis indicators
+numpy>=1.24.0                  # Numerical computing
+
+# AI and API
+openai>=1.12.0                 # OpenRouter client (OpenAI SDK compatible)
+anthropic>=0.21.0              # Backup for direct Anthropic API if needed
+
+# Database
+sqlalchemy>=2.0.25             # ORM
+alembic>=1.13.1                # Database migrations
+psycopg2-binary>=2.9.9         # PostgreSQL driver
+
+# HTTP and APIs
+requests>=2.31.0               # HTTP requests
+aiohttp>=3.9.0                 # Async HTTP
+python-dotenv>=1.0.0           # Environment variables
+
+# Scheduling and Async
+schedule>=1.2.0                # Task scheduling
+asyncio>=3.4.3                 # Async support
+
+# Logging and Output
+rich>=13.7.0                   # Beautiful terminal output
+colorlog>=6.8.0                # Colored logging
+
+# Data validation
+pydantic>=2.5.0                # Data validation
+pydantic-settings>=2.1.0       # Settings management
+
+# Utilities
+pytz>=2024.1                   # Timezone support
+python-dateutil>=2.8.2         # Date utilities
+tenacity>=8.2.3                # Retry logic
+
+# Caching
+diskcache>=5.6.3               # Disk-based caching
+
+# Optional - for future web interface
+fastapi>=0.109.0               # Web framework (Phase 3)
+uvicorn>=0.27.0                # ASGI server (Phase 3)
+websockets>=12.0               # WebSocket support (Phase 3)
+
+# Development tools
+pytest>=7.4.0                  # Testing
+pytest-asyncio>=0.21.0         # Async testing
+black>=24.1.0                  # Code formatting
+flake8>=7.0.0                  # Linting
