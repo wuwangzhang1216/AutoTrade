@@ -12,33 +12,45 @@ interface EquityDataPoint {
 }
 
 // CRITICAL: Deep validation function to ensure data point is 100% valid
-function isValidDataPoint(point: LineData): boolean {
+// This prevents ANY null/undefined/NaN values from reaching lightweight-charts
+function isValidDataPoint(point: any): point is LineData {
   try {
+    // Reject completely null/undefined objects
+    if (point == null || typeof point !== 'object') {
+      console.warn('Data point is null or not an object:', point)
+      return false
+    }
+
     const time = point.time as number
     const value = point.value
 
-    // Check all fields exist
+    // Check all fields exist (strict null check)
     if (time == null || value == null) {
+      console.warn('Time or value is null/undefined:', { time, value })
       return false
     }
 
     // Check types
     if (typeof time !== 'number' || typeof value !== 'number') {
+      console.warn('Time or value is not a number:', { time: typeof time, value: typeof value })
       return false
     }
 
     // Check for NaN and Infinity
     if (isNaN(time) || isNaN(value) || !isFinite(time) || !isFinite(value)) {
+      console.warn('Time or value is NaN or Infinity:', { time, value })
       return false
     }
 
     // Check positive values for time, allow value >= 0 (equity can be 0)
     if (time <= 0 || value < 0) {
+      console.warn('Time or value is out of valid range:', { time, value })
       return false
     }
 
     return true
-  } catch {
+  } catch (error) {
+    console.error('Exception during validation:', error, point)
     return false
   }
 }
@@ -57,23 +69,55 @@ export default function EquityChart() {
   // Safe chart update function with validation
   const safeSetData = useCallback((chartData: LineData[]) => {
     // Triple validation before setting data
-    if (!isMountedRef.current) return false
-    if (!equitySeriesRef.current) return false
-    if (!chartRef.current) return false
+    if (!isMountedRef.current) {
+      console.warn('Cannot set data: component not mounted')
+      return false
+    }
+    if (!equitySeriesRef.current) {
+      console.warn('Cannot set data: series not initialized')
+      return false
+    }
+    if (!chartRef.current) {
+      console.warn('Cannot set data: chart not initialized')
+      return false
+    }
+
+    // Validate input is array
+    if (!Array.isArray(chartData)) {
+      console.error('Chart data is not an array:', chartData)
+      return false
+    }
 
     // Validate ALL data points
     const validData = chartData.filter(isValidDataPoint)
 
     if (validData.length === 0) {
-      console.warn('No valid data points to set')
+      console.warn('No valid data points to set after filtering')
+      return false
+    }
+
+    // CRITICAL: Deep clone and sanitize data before passing to chart
+    // This ensures no reference issues can cause null values
+    const sanitizedData = validData.map(point => ({
+      time: Number(point.time) as Time,
+      value: Number(point.value)
+    }))
+
+    // Final validation after sanitization
+    const finalValidData = sanitizedData.filter(isValidDataPoint)
+
+    if (finalValidData.length === 0) {
+      console.error('All data became invalid after sanitization')
       return false
     }
 
     try {
-      equitySeriesRef.current.setData(validData)
+      equitySeriesRef.current.setData(finalValidData)
+      console.log(`Successfully set ${finalValidData.length} data points`)
       return true
     } catch (error) {
-      console.error('Chart setData failed:', error)
+      console.error('Chart setData failed with error:', error)
+      console.error('Failed data sample:', finalValidData.slice(0, 3))
       // Try to rebuild chart on next render
       setChartKey(prev => prev + 1)
       return false
@@ -83,9 +127,18 @@ export default function EquityChart() {
   // Safe chart update function for single point
   const safeUpdatePoint = useCallback((point: LineData) => {
     // Triple validation before updating
-    if (!isMountedRef.current) return false
-    if (!equitySeriesRef.current) return false
-    if (!chartRef.current) return false
+    if (!isMountedRef.current) {
+      console.warn('Cannot update point: component not mounted')
+      return false
+    }
+    if (!equitySeriesRef.current) {
+      console.warn('Cannot update point: series not initialized')
+      return false
+    }
+    if (!chartRef.current) {
+      console.warn('Cannot update point: chart not initialized')
+      return false
+    }
 
     // Validate the point
     if (!isValidDataPoint(point)) {
@@ -93,11 +146,25 @@ export default function EquityChart() {
       return false
     }
 
+    // CRITICAL: Sanitize point before update to prevent reference issues
+    const sanitizedPoint = {
+      time: Number(point.time) as Time,
+      value: Number(point.value)
+    }
+
+    // Validate sanitized point
+    if (!isValidDataPoint(sanitizedPoint)) {
+      console.error('Point became invalid after sanitization:', point, sanitizedPoint)
+      return false
+    }
+
     try {
-      equitySeriesRef.current.update(point)
+      equitySeriesRef.current.update(sanitizedPoint)
+      console.log('Successfully updated chart point:', sanitizedPoint)
       return true
     } catch (error) {
-      console.error('Chart update failed:', error)
+      console.error('Chart update failed with error:', error)
+      console.error('Failed point:', sanitizedPoint)
       // Try to rebuild chart on next render
       setChartKey(prev => prev + 1)
       return false
@@ -173,12 +240,25 @@ export default function EquityChart() {
     chartRef.current = chart
     equitySeriesRef.current = equitySeries
 
-    // Handle resize
+    // CRITICAL: Initialize with empty data to prevent null errors
+    // This "primes" the chart and prevents lightweight-charts internal null issues
+    try {
+      equitySeries.setData([])
+      console.log('Chart initialized with empty dataset')
+    } catch (initError) {
+      console.error('Failed to initialize chart with empty data:', initError)
+    }
+
+    // Handle resize with error protection
     const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-        })
+      try {
+        if (chartContainerRef.current && chartRef.current) {
+          chartRef.current.applyOptions({
+            width: chartContainerRef.current.clientWidth,
+          })
+        }
+      } catch (resizeError) {
+        console.error('Error during chart resize:', resizeError)
       }
     }
 
