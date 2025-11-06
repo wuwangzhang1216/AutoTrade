@@ -239,13 +239,16 @@ class AIDecisionScheduler:
 
         try:
             if decision == "BUY":
-                # BUG FIX: BUY should close SHORT positions or open LONG
+                # BUY Decision:
+                # 1. If has SHORT position -> Close it
+                # 2. If has LONG position -> Stack (add to it)
+                # 3. If no position -> Open new LONG
+
                 if symbol in self.trading_engine.positions:
                     position = self.trading_engine.positions[symbol]
 
                     if position.side.value == "SHORT":
                         # Close SHORT position (reverse trade)
-                        # BUG FIX: close_position now returns (success, pnl) tuple
                         success, pnl = self.trading_engine.close_position(
                             symbol=symbol,
                             price=current_price,
@@ -253,7 +256,6 @@ class AIDecisionScheduler:
                         )
 
                         if success:
-                            # BUG FIX: Pass PnL to log_trade so it gets saved to database
                             self.db.log_trade(
                                 symbol=symbol,
                                 order_type="CLOSE_SHORT",
@@ -266,7 +268,6 @@ class AIDecisionScheduler:
                             )
                             log_trade(f"BUY executed (closed SHORT): {symbol} @ {current_price}")
 
-                            # Update AI decision status
                             self.db.update_ai_decision_execution(
                                 decision_id=ai_decision_id,
                                 executed=True,
@@ -274,50 +275,50 @@ class AIDecisionScheduler:
                             )
 
                         return success
-                    else:
-                        # Already have LONG position
-                        log_info(f"Already have LONG position in {symbol}, skipping BUY")
-                        return False
-                else:
-                    # Open new LONG position
-                    success = self.trading_engine.open_long(
+
+                # Open new LONG or stack existing LONG (open_long handles both)
+                success = self.trading_engine.open_long(
+                    symbol=symbol,
+                    amount=amount,
+                    price=current_price,
+                    reason=reasoning
+                )
+
+                if success:
+                    self.db.log_trade(
                         symbol=symbol,
+                        order_type="OPEN_LONG",
+                        side="LONG",
                         amount=amount,
                         price=current_price,
+                        fee=self.trading_engine.calculate_fee(current_price, amount),
+                        margin=self.trading_engine.get_position_size(current_price, amount),
+                        leverage=self.trading_engine.leverage,
                         reason=reasoning
                     )
 
-                    if success:
-                        self.db.log_trade(
-                            symbol=symbol,
-                            order_type="OPEN_LONG",
-                            side="LONG",
-                            amount=amount,
-                            price=current_price,
-                            fee=self.trading_engine.calculate_fee(current_price, amount),
-                            margin=self.trading_engine.get_position_size(current_price, amount),
-                            leverage=self.trading_engine.leverage,
-                            reason=reasoning
-                        )
-                        log_trade(f"BUY executed (opened LONG): {symbol} @ {current_price} (amount: {amount:.6f})")
+                    action = "stacked to" if symbol in self.trading_engine.positions else "opened"
+                    log_trade(f"BUY executed ({action} LONG): {symbol} @ {current_price} (amount: {amount:.6f})")
 
-                        # Update AI decision status
-                        self.db.update_ai_decision_execution(
-                            decision_id=ai_decision_id,
-                            executed=True,
-                            execution_reason="BUY order executed successfully"
-                        )
+                    self.db.update_ai_decision_execution(
+                        decision_id=ai_decision_id,
+                        executed=True,
+                        execution_reason=f"BUY order executed ({action} long position)"
+                    )
 
-                    return success
+                return success
 
             elif decision == "SELL":
-                # BUG FIX: SELL should close LONG positions or open SHORT
+                # SELL Decision:
+                # 1. If has LONG position -> Close it
+                # 2. If has SHORT position -> Stack (add to it)
+                # 3. If no position -> Open new SHORT
+
                 if symbol in self.trading_engine.positions:
                     position = self.trading_engine.positions[symbol]
 
                     if position.side.value == "LONG":
                         # Close LONG position (reverse trade)
-                        # BUG FIX: close_position now returns (success, pnl) tuple
                         success, pnl = self.trading_engine.close_position(
                             symbol=symbol,
                             price=current_price,
@@ -325,7 +326,6 @@ class AIDecisionScheduler:
                         )
 
                         if success:
-                            # BUG FIX: Pass PnL to log_trade so it gets saved to database
                             self.db.log_trade(
                                 symbol=symbol,
                                 order_type="CLOSE_LONG",
@@ -338,7 +338,6 @@ class AIDecisionScheduler:
                             )
                             log_trade(f"SELL executed (closed LONG): {symbol} @ {current_price}")
 
-                            # Update AI decision status
                             self.db.update_ai_decision_execution(
                                 decision_id=ai_decision_id,
                                 executed=True,
@@ -346,41 +345,38 @@ class AIDecisionScheduler:
                             )
 
                         return success
-                    else:
-                        # Already have SHORT position
-                        log_info(f"Already have SHORT position in {symbol}, skipping SELL")
-                        return False
-                else:
-                    # Open new SHORT position
-                    success = self.trading_engine.open_short(
+
+                # Open new SHORT or stack existing SHORT (open_short handles both)
+                success = self.trading_engine.open_short(
+                    symbol=symbol,
+                    amount=amount,
+                    price=current_price,
+                    reason=reasoning
+                )
+
+                if success:
+                    self.db.log_trade(
                         symbol=symbol,
+                        order_type="OPEN_SHORT",
+                        side="SHORT",
                         amount=amount,
                         price=current_price,
+                        fee=self.trading_engine.calculate_fee(current_price, amount),
+                        margin=self.trading_engine.get_position_size(current_price, amount),
+                        leverage=self.trading_engine.leverage,
                         reason=reasoning
                     )
 
-                    if success:
-                        self.db.log_trade(
-                            symbol=symbol,
-                            order_type="OPEN_SHORT",
-                            side="SHORT",
-                            amount=amount,
-                            price=current_price,
-                            fee=self.trading_engine.calculate_fee(current_price, amount),
-                            margin=self.trading_engine.get_position_size(current_price, amount),
-                            leverage=self.trading_engine.leverage,
-                            reason=reasoning
-                        )
-                        log_trade(f"SELL executed (opened SHORT): {symbol} @ {current_price} (amount: {amount:.6f})")
+                    action = "stacked to" if symbol in self.trading_engine.positions else "opened"
+                    log_trade(f"SELL executed ({action} SHORT): {symbol} @ {current_price} (amount: {amount:.6f})")
 
-                        # Update AI decision status
-                        self.db.update_ai_decision_execution(
-                            decision_id=ai_decision_id,
-                            executed=True,
-                            execution_reason="SELL order executed (opened short position)"
-                        )
+                    self.db.update_ai_decision_execution(
+                        decision_id=ai_decision_id,
+                        executed=True,
+                        execution_reason=f"SELL order executed ({action} short position)"
+                    )
 
-                    return success
+                return success
 
             return False
 
