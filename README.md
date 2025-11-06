@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MPL--2.0-blue.svg)](LICENSE)
 
 </div>
 
@@ -378,7 +378,8 @@ Visit **http://localhost:8888/docs** for:
 │   │ - 20x leverage (configurable)                │   │
 │   │ - Liquidation detection & auto-closure       │   │
 │   │ - Reverse trading logic (close opposite)     │   │
-│   │ - Risk management (max 5 positions)          │   │
+│   │ - Position stacking (DCA strategy support)   │   │
+│   │ - Risk management (max 100 positions)        │   │
 │   │ - Commission tracking (0.1%)                 │   │
 │   │ - Capital & margin management                │   │
 │   │ - Crash recovery (restore from database)     │   │
@@ -732,7 +733,8 @@ All decisions are logged with full transparency.
 
 ### ✅ Risk Management
 - Position size limits
-- Maximum concurrent positions
+- Position stacking (DCA - Dollar Cost Averaging strategy)
+- Maximum concurrent positions (configurable, default 100)
 - Leverage control
 - Liquidation tracking
 - Confidence thresholds
@@ -784,7 +786,7 @@ COMMISSION_RATE=0.001           # 0.1% trading fee
 
 # Trading Behavior
 TRADING_INTERVAL_MINUTES=15     # Analysis frequency
-MAX_POSITIONS=5                 # Max concurrent positions
+MAX_POSITIONS=100               # Max concurrent positions (HIGH RISK)
 POSITION_SIZE_PERCENT=20        # % of capital per trade
 CONFIDENCE_THRESHOLD=0.60       # Minimum AI confidence
 
@@ -808,8 +810,8 @@ DEFAULT_PAIRS = [
     "ADA/USDT",
     "DOGE/USDT",
     "AVAX/USDT",
-    "LINK/USDT",
-    "MATIC/USDT",
+    "DOT/USDT",
+    # "POL/USDT",  # Not available on Kraken
 ]
 ```
 
@@ -1149,6 +1151,39 @@ This project demonstrates:
 - Sub-second page transitions
 - Smooth animations without jank
 - 50% reduction in AI decision latency (parallel execution)
+
+### Recent Enhancements (January 2025)
+
+#### Position Stacking & Unlimited Positions
+**Feature**: Implemented position stacking (DCA - Dollar Cost Averaging strategy)
+
+**Changes**:
+- **Position Stacking**: Can now stack positions in the same direction (multiple LONG or SHORT positions on same symbol)
+- **Average Entry Price**: System automatically calculates weighted average entry price when stacking
+- **Unlimited Positions**: MAX_POSITIONS increased from 5 to 100 (effectively unlimited)
+- **Risk Warning**: This significantly increases risk exposure - use with caution
+
+**Technical Details**:
+- Modified `TradingEngine.can_open_position()` to allow same-direction stacking
+- Updated `open_long()` and `open_short()` to handle position stacking
+- Average entry price calculation: `(old_value + new_value) / total_amount`
+- Position margin and liquidation price recalculated on each stack
+
+**Trade Logic**:
+- **BUY Decision**:
+  - If has SHORT position → Close it first
+  - If has LONG position → Stack (add to existing LONG)
+  - If no position → Open new LONG
+- **SELL Decision**:
+  - If has LONG position → Close it first
+  - If has SHORT position → Stack (add to existing SHORT)
+  - If no position → Open new SHORT
+
+#### Configuration Updates
+- **MAX_POSITIONS**: 5 → 100 (HIGH RISK configuration)
+- **Trading Pairs**: Removed POL/USDT (not available on Kraken exchange)
+- **License**: Changed from MIT to Mozilla Public License 2.0 (MPL-2.0)
+- **Copyright**: Updated to W Axis Inc.
 
 ### Critical Bug Fixes
 
@@ -1510,7 +1545,15 @@ Contributions welcome! Areas for improvement:
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) file for details.
+Mozilla Public License 2.0 (MPL-2.0) - See [LICENSE](LICENSE) file for details.
+
+Copyright (C) 2025 W Axis Inc.
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+- File-level copyleft: Modified files must be open-sourced
+- Larger works: Can combine with proprietary code
+- Patent grants: Includes patent protection
+- Commercial use: Allowed with proper attribution
 
 ---
 
