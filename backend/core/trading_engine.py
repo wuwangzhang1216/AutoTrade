@@ -468,24 +468,28 @@ class TradingEngine:
         """Calculate trading fee"""
         return price * amount * self.commission_rate
 
-    def can_open_position(self, symbol: str, price: float, amount: float) -> Tuple[bool, str]:
+    def can_open_position(self, symbol: str, price: float, amount: float, side: Optional[PositionSide] = None) -> Tuple[bool, str]:
         """
-        Check if a new position can be opened
+        Check if a new position can be opened or added to
 
         Args:
             symbol: Trading pair
             price: Entry price
             amount: Position size
+            side: Position side (LONG/SHORT) - if provided, allows stacking same direction
 
         Returns:
             (can_open, reason)
         """
-        # Check if already have position in this symbol
-        if symbol in self.positions:
-            return False, f"Already have open position in {symbol}"
+        # If side is provided, check if we can stack (same direction) or need to close (opposite)
+        if symbol in self.positions and side is not None:
+            existing_position = self.positions[symbol]
+            if existing_position.side != side:
+                return False, f"Cannot open {side.value} - opposite {existing_position.side.value} position exists. Close it first."
+            # Same direction - allow stacking (will be handled in open_long/open_short)
 
-        # Check max positions limit
-        if len(self.positions) >= self.max_positions:
+        # Check max positions limit (only for new symbols)
+        if symbol not in self.positions and len(self.positions) >= self.max_positions:
             return False, f"Maximum positions ({self.max_positions}) reached"
 
         # Check capital availability
@@ -500,7 +504,7 @@ class TradingEngine:
 
     def open_long(self, symbol: str, amount: float, price: float, reason: str = "") -> bool:
         """
-        Open a long position
+        Open a long position or add to existing LONG position
 
         Args:
             symbol: Trading pair
@@ -515,7 +519,7 @@ class TradingEngine:
         if not self._validate_trade_inputs(symbol, amount, price):
             return False
 
-        can_open, message = self.can_open_position(symbol, price, amount)
+        can_open, message = self.can_open_position(symbol, price, amount, PositionSide.LONG)
         if not can_open:
             log_error(f"Cannot open LONG {symbol}: {message}")
             return False
@@ -523,44 +527,80 @@ class TradingEngine:
         margin = self.get_position_size(price, amount)
         fee = self.calculate_fee(price, amount)
 
-        # Create position
-        # BUG FIX: Pass commission_rate for accurate liquidation price calculation
-        position = Position(
-            symbol=symbol,
-            side=PositionSide.LONG,
-            amount=amount,
-            entry_price=price,
-            leverage=self.leverage,
-            margin=margin,
-            open_time=datetime.now(),
-            commission_rate=self.commission_rate
-        )
+        # Check if already have LONG position - if so, add to it (stack)
+        if symbol in self.positions:
+            existing = self.positions[symbol]
 
-        # Update capital
-        self.capital -= (margin + fee)
-        self.total_fees += fee
+            # Calculate new average entry price
+            total_value_old = existing.entry_price * existing.amount
+            total_value_new = price * amount
+            new_amount = existing.amount + amount
+            new_entry_price = (total_value_old + total_value_new) / new_amount
 
-        # Record
-        self.positions[symbol] = position
-        self.orders.append(Order(
-            timestamp=datetime.now(),
-            order_type=OrderType.OPEN_LONG,
-            symbol=symbol,
-            amount=amount,
-            price=price,
-            fee=fee,
-            reason=reason
-        ))
+            # Update position
+            existing.amount = new_amount
+            existing.entry_price = new_entry_price
+            existing.margin += margin
+            existing.liquidation_price = existing._calculate_liquidation_price()
 
-        log_trade(f"LONG {symbol} | Amount: {amount} | Price: {format_currency(price)}")
-        logger.info(f"Margin: {format_currency(margin)} | Fee: {format_currency(fee)} | Available: {format_currency(self.capital)}")
-        logger.info(f"Liquidation Price: {format_currency(position.liquidation_price)}")
+            # Update capital
+            self.capital -= (margin + fee)
+            self.total_fees += fee
+
+            # Record order
+            self.orders.append(Order(
+                timestamp=datetime.now(),
+                order_type=OrderType.OPEN_LONG,
+                symbol=symbol,
+                amount=amount,
+                price=price,
+                fee=fee,
+                reason=f"STACK: {reason}"
+            ))
+
+            log_trade(f"STACKED LONG {symbol} | Added: {amount} | Price: {format_currency(price)} | New Avg: {format_currency(new_entry_price)}")
+            logger.info(f"Total Amount: {new_amount} | Total Margin: {format_currency(existing.margin)}")
+            logger.info(f"New Liquidation Price: {format_currency(existing.liquidation_price)}")
+
+        else:
+            # Create new position
+            # BUG FIX: Pass commission_rate for accurate liquidation price calculation
+            position = Position(
+                symbol=symbol,
+                side=PositionSide.LONG,
+                amount=amount,
+                entry_price=price,
+                leverage=self.leverage,
+                margin=margin,
+                open_time=datetime.now(),
+                commission_rate=self.commission_rate
+            )
+
+            # Update capital
+            self.capital -= (margin + fee)
+            self.total_fees += fee
+
+            # Record
+            self.positions[symbol] = position
+            self.orders.append(Order(
+                timestamp=datetime.now(),
+                order_type=OrderType.OPEN_LONG,
+                symbol=symbol,
+                amount=amount,
+                price=price,
+                fee=fee,
+                reason=reason
+            ))
+
+            log_trade(f"LONG {symbol} | Amount: {amount} | Price: {format_currency(price)}")
+            logger.info(f"Margin: {format_currency(margin)} | Fee: {format_currency(fee)} | Available: {format_currency(self.capital)}")
+            logger.info(f"Liquidation Price: {format_currency(position.liquidation_price)}")
 
         return True
 
     def open_short(self, symbol: str, amount: float, price: float, reason: str = "") -> bool:
         """
-        Open a short position
+        Open a short position or add to existing SHORT position
 
         Args:
             symbol: Trading pair
@@ -575,7 +615,7 @@ class TradingEngine:
         if not self._validate_trade_inputs(symbol, amount, price):
             return False
 
-        can_open, message = self.can_open_position(symbol, price, amount)
+        can_open, message = self.can_open_position(symbol, price, amount, PositionSide.SHORT)
         if not can_open:
             log_error(f"Cannot open SHORT {symbol}: {message}")
             return False
@@ -583,38 +623,74 @@ class TradingEngine:
         margin = self.get_position_size(price, amount)
         fee = self.calculate_fee(price, amount)
 
-        # Create position
-        # BUG FIX: Pass commission_rate for accurate liquidation price calculation
-        position = Position(
-            symbol=symbol,
-            side=PositionSide.SHORT,
-            amount=amount,
-            entry_price=price,
-            leverage=self.leverage,
-            margin=margin,
-            open_time=datetime.now(),
-            commission_rate=self.commission_rate
-        )
+        # Check if already have SHORT position - if so, add to it (stack)
+        if symbol in self.positions:
+            existing = self.positions[symbol]
 
-        # Update capital
-        self.capital -= (margin + fee)
-        self.total_fees += fee
+            # Calculate new average entry price
+            total_value_old = existing.entry_price * existing.amount
+            total_value_new = price * amount
+            new_amount = existing.amount + amount
+            new_entry_price = (total_value_old + total_value_new) / new_amount
 
-        # Record
-        self.positions[symbol] = position
-        self.orders.append(Order(
-            timestamp=datetime.now(),
-            order_type=OrderType.OPEN_SHORT,
-            symbol=symbol,
-            amount=amount,
-            price=price,
-            fee=fee,
-            reason=reason
-        ))
+            # Update position
+            existing.amount = new_amount
+            existing.entry_price = new_entry_price
+            existing.margin += margin
+            existing.liquidation_price = existing._calculate_liquidation_price()
 
-        log_trade(f"SHORT {symbol} | Amount: {amount} | Price: {format_currency(price)}")
-        logger.info(f"Margin: {format_currency(margin)} | Fee: {format_currency(fee)} | Available: {format_currency(self.capital)}")
-        logger.info(f"Liquidation Price: {format_currency(position.liquidation_price)}")
+            # Update capital
+            self.capital -= (margin + fee)
+            self.total_fees += fee
+
+            # Record order
+            self.orders.append(Order(
+                timestamp=datetime.now(),
+                order_type=OrderType.OPEN_SHORT,
+                symbol=symbol,
+                amount=amount,
+                price=price,
+                fee=fee,
+                reason=f"STACK: {reason}"
+            ))
+
+            log_trade(f"STACKED SHORT {symbol} | Added: {amount} | Price: {format_currency(price)} | New Avg: {format_currency(new_entry_price)}")
+            logger.info(f"Total Amount: {new_amount} | Total Margin: {format_currency(existing.margin)}")
+            logger.info(f"New Liquidation Price: {format_currency(existing.liquidation_price)}")
+
+        else:
+            # Create new position
+            # BUG FIX: Pass commission_rate for accurate liquidation price calculation
+            position = Position(
+                symbol=symbol,
+                side=PositionSide.SHORT,
+                amount=amount,
+                entry_price=price,
+                leverage=self.leverage,
+                margin=margin,
+                open_time=datetime.now(),
+                commission_rate=self.commission_rate
+            )
+
+            # Update capital
+            self.capital -= (margin + fee)
+            self.total_fees += fee
+
+            # Record
+            self.positions[symbol] = position
+            self.orders.append(Order(
+                timestamp=datetime.now(),
+                order_type=OrderType.OPEN_SHORT,
+                symbol=symbol,
+                amount=amount,
+                price=price,
+                fee=fee,
+                reason=reason
+            ))
+
+            log_trade(f"SHORT {symbol} | Amount: {amount} | Price: {format_currency(price)}")
+            logger.info(f"Margin: {format_currency(margin)} | Fee: {format_currency(fee)} | Available: {format_currency(self.capital)}")
+            logger.info(f"Liquidation Price: {format_currency(position.liquidation_price)}")
 
         return True
 

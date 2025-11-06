@@ -71,7 +71,7 @@ class TradingPairsConfig:
         "DOGE/USDT",
         "AVAX/USDT",
         "DOT/USDT",
-        "POL/USDT",  # Changed from MATIC/USDT (Polygon migrated to POL)
+        # "POL/USDT",  # Removed - Not available on Kraken exchange
     ]
 
     # Technical analysis timeframes
@@ -87,29 +87,24 @@ class TradingPairsConfig:
     PRIMARY_TIMEFRAME: str = "15m"
 
     # Maximum number of concurrent positions
-    MAX_POSITIONS: int = 5
+    MAX_POSITIONS: int = 100  # Unlimited positions - HIGH RISK
 
     # Position size (percentage of available capital per trade)
-    # SUPER AGGRESSIVE CONFIGURATION - EXTREME RISK WARNING:
-    # With 20x leverage and 15% position size:
-    # - 5 positions × 15% = 75% capital utilization
+    # ULTRA AGGRESSIVE CONFIGURATION - EXTREME RISK WARNING:
+    # With unlimited positions and 15% position size:
     # - Each position controls 20x the margin (e.g., $1500 margin → $30,000 exposure)
     # - Liquidation at ~4.5% adverse price movement (half the buffer of 10x leverage)
-    # - Total exposure can reach $150,000 on $10,000 capital (15x account size)
+    # - Can stack multiple positions in same direction on same symbol
     #
-    # Risk factors to monitor:
-    # 1. Extreme volatility can trigger cascading liquidations
-    # 2. Trading fees (0.1% per trade) eat into thin liquidation buffer
-    # 3. Multiple correlated positions amplify systemic risk
-    # 4. Requires constant monitoring during high volatility periods
+    # EXTREME Risk factors:
+    # 1. Unlimited positions = unlimited exposure
+    # 2. Position stacking amplifies both gains and losses
+    # 3. Cascading liquidations can wipe out entire account
+    # 4. Requires CONSTANT monitoring 24/7
     #
-    # Formula: MAX_POSITIONS * POSITION_SIZE_PERCENT = 75% capital utilization
-    # THIS IS A SUPER AGGRESSIVE SETUP - ONLY FOR EXPERIENCED TRADERS
+    # WARNING: This configuration can lead to 100%+ capital utilization
+    # ONLY FOR EXPERT TRADERS WITH STRICT RISK MANAGEMENT
     POSITION_SIZE_PERCENT: float = 15.0  # 15% per position with 20x leverage
-
-    # Alternative conservative setting for risk-averse users:
-    # MAX_POSITIONS: int = 4
-    # POSITION_SIZE_PERCENT: float = 18.0  # 4 × 18% = 72% utilization
 
 
 class TechnicalIndicatorsConfig:
