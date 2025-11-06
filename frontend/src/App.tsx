@@ -81,6 +81,34 @@ function App() {
         <main className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4 relative z-10">
           <Dashboard />
         </main>
+
+        {/* Footer */}
+        <motion.footer
+          className="mt-8 py-6 border-t border-primary-900/20 bg-elite-950/60 backdrop-blur-xl relative z-20"
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4">
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <p className="text-sm text-silver-400">
+                © 2025{' '}
+                <a
+                  href="https://www.waxis.org/en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold-400 hover:text-gold-300 transition-colors duration-200 font-medium"
+                >
+                  W Axis Inc
+                </a>
+                . All rights reserved.
+              </p>
+              <p className="text-xs text-silver-500">
+                Educational software for paper trading only - Not financial advice
+              </p>
+            </div>
+          </div>
+        </motion.footer>
       </div>
     </GridBackground>
   )
