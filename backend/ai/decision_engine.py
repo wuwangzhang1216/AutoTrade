@@ -545,17 +545,27 @@ class AIDecisionEngine:
                 )
                 return False
 
-        # Both models available - use standard threshold
+        # Both models available - check confidence of models that voted for winning decision
         else:
-            if avg_confidence >= min_confidence:
+            # Find which models voted for the winning decision
+            winning_confidences = []
+            if model_1_decision and model_1_decision['decision'] == decision:
+                winning_confidences.append(model_1_decision['confidence'])
+            if model_2_decision and model_2_decision['decision'] == decision:
+                winning_confidences.append(model_2_decision['confidence'])
+
+            # Check if at least one winning model meets the threshold
+            max_winning_confidence = max(winning_confidences) if winning_confidences else 0
+
+            if max_winning_confidence >= min_confidence:
                 logger.info(
-                    f"Both models available: Average confidence {avg_confidence:.2f} "
-                    f"meets threshold {min_confidence:.2f}"
+                    f"Both models available: Winning model confidence {max_winning_confidence:.2f} "
+                    f"meets threshold {min_confidence:.2f} (average: {avg_confidence:.2f})"
                 )
                 return True
             else:
                 logger.warning(
-                    f"Both models available: Average confidence {avg_confidence:.2f} "
+                    f"Both models available: Winning model confidence {max_winning_confidence:.2f} "
                     f"below threshold {min_confidence:.2f}. Skipping execution."
                 )
                 return False
