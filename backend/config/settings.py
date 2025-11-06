@@ -61,17 +61,19 @@ class TradingPairsConfig:
     """Trading pairs configuration"""
 
     # Default trading pairs to monitor
+    # Reduced to 3 major pairs to minimize API costs
     DEFAULT_PAIRS: List[str] = [
         "BTC/USDT",
         "ETH/USDT",
         "SOL/USDT",
-        "BNB/USDT",
-        "XRP/USDT",
-        "ADA/USDT",
-        "DOGE/USDT",
-        "AVAX/USDT",
-        "DOT/USDT",
-        # "POL/USDT",  # Removed - Not available on Kraken exchange
+        # Additional pairs commented out to reduce costs (each adds 2 API calls per cycle)
+        # "BNB/USDT",
+        # "XRP/USDT",
+        # "ADA/USDT",
+        # "DOGE/USDT",
+        # "AVAX/USDT",
+        # "DOT/USDT",
+        # "POL/USDT",  # Not available on Kraken exchange
     ]
 
     # Technical analysis timeframes
