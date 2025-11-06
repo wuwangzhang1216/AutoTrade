@@ -1614,4 +1614,10 @@ Built with ❤️ using Python, React, DeepSeek, and Qwen
 
 *Educational software for paper trading only - Not financial advice*
 
+---
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=wuwangzhang1216/AutoTrade&type=Date)](https://star-history.com/#wuwangzhang1216/AutoTrade&Date)
+
 </div>
