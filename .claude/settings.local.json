@@ -53,7 +53,17 @@
       "Bash(git subtree push:*)",
       "Bash(timeout /t 10 /nobreak)",
       "Bash(git reset:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(git subtree:*)",
+      "Bash(git merge:*)",
+      "Bash(copy diagnose_win_rate.py backenddiagnose_win_rate.py)",
+      "Bash(heroku buildpacks:*)",
+      "Bash(heroku ps:*)",
+      "Bash(heroku ps:type:*)",
+      "Bash(set \"DATABASE_URL=postgres://u1065566plgi7t:p443db95d21e555a7ff883e875fdca5073503a3cbb11ff4f878e5afde0920db09@c57oa7dm3pc281.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/df7aq2912aj504\")",
+      "Bash(heroku releases:*)"
     ],
     "deny": [],
     "ask": []
