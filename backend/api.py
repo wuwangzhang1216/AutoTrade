@@ -8,6 +8,7 @@ from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import asyncio
 import json
+import os
 
 from pydantic import BaseModel
 from sqlalchemy import desc
@@ -26,14 +27,26 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware
+# CORS middleware - allow frontend origins from environment variable
+allowed_origins = [
+    "http://localhost:5888",
+    "http://localhost:5173",
+]
+
+# Add production frontend URL from environment variable
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+    logger.info(f"CORS: Added frontend URL from environment: {frontend_url}")
+
+# Fallback to old Heroku URL if FRONTEND_URL not set
+if not frontend_url:
+    allowed_origins.append("https://autotrade-frontend-wang-1d47c1aff417.herokuapp.com")
+    logger.info("CORS: Using fallback Heroku frontend URL")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5888",
-        "http://localhost:5173",
-        "https://autotrade-frontend-wang-1d47c1aff417.herokuapp.com"  # Production frontend
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
