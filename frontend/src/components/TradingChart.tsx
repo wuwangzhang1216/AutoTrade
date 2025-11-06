@@ -86,27 +86,53 @@ export default function TradingChart({ symbol, data }: TradingChartProps) {
       }
 
       // Additional validation: ensure all data points are valid
-      const invalidPoint = data.find(
-        (d) =>
+      const validData = data.filter((d) => {
+        // Check all fields exist and are valid numbers
+        if (
+          d == null ||
           d.time == null ||
           d.open == null ||
           d.high == null ||
           d.low == null ||
-          d.close == null ||
-          isNaN(d.open) ||
-          isNaN(d.high) ||
-          isNaN(d.low) ||
-          isNaN(d.close)
-      )
+          d.close == null
+        ) {
+          return false
+        }
 
-      if (invalidPoint) {
-        console.error('Invalid data point detected:', invalidPoint)
+        // Check all price values are valid numbers
+        const open = Number(d.open)
+        const high = Number(d.high)
+        const low = Number(d.low)
+        const close = Number(d.close)
+
+        if (
+          isNaN(open) ||
+          isNaN(high) ||
+          isNaN(low) ||
+          isNaN(close) ||
+          !isFinite(open) ||
+          !isFinite(high) ||
+          !isFinite(low) ||
+          !isFinite(close) ||
+          open < 0 ||
+          high < 0 ||
+          low < 0 ||
+          close < 0
+        ) {
+          return false
+        }
+
+        return true
+      })
+
+      if (validData.length === 0) {
+        console.error('No valid candlestick data after filtering')
         setError('Invalid chart data detected')
         return
       }
 
       // Set data with try-catch protection
-      candlestickSeriesRef.current.setData(data)
+      candlestickSeriesRef.current.setData(validData)
 
       // Fit content with error handling
       if (chartRef.current) {

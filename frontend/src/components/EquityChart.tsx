@@ -32,8 +32,8 @@ function isValidDataPoint(point: LineData): boolean {
       return false
     }
 
-    // Check positive values
-    if (time <= 0 || value <= 0) {
+    // Check positive values for time, allow value >= 0 (equity can be 0)
+    if (time <= 0 || value < 0) {
       return false
     }
 
@@ -228,30 +228,52 @@ export default function EquityChart() {
           .filter((point) => {
             // Filter out points with null/undefined/NaN equity or timestamp
             return (
+              point != null &&
               point.timestamp != null &&
               point.equity != null &&
+              typeof point.timestamp === 'number' &&
+              typeof point.equity === 'number' &&
               !isNaN(point.equity) &&
+              !isNaN(point.timestamp) &&
               isFinite(point.equity) &&
-              point.timestamp > 0
+              isFinite(point.timestamp) &&
+              point.timestamp > 0 &&
+              point.equity >= 0  // Allow 0 equity
             )
           })
           .map((point) => {
             const time = Math.floor(point.timestamp / 1000)
+            const value = Number(point.equity)  // Explicitly convert to number
+
+            // Return null for invalid conversions, will be filtered out
+            if (!isFinite(time) || !isFinite(value) || time <= 0 || value < 0) {
+              return null
+            }
+
             return {
               time: time as Time,
-              value: point.equity,
+              value: value,
             }
           })
-          .filter((point) => {
+          .filter((point): point is LineData => {
+            // Type guard: ensure point is not null and has valid properties
+            if (point == null) return false
+
+            const time = point.time as number
+            const value = point.value
+
             // Second pass: ensure converted values are valid
             return (
-              point.time != null &&
-              point.value != null &&
-              !isNaN(point.time as number) &&
-              !isNaN(point.value) &&
-              isFinite(point.time as number) &&
-              isFinite(point.value) &&
-              (point.time as number) > 0
+              time != null &&
+              value != null &&
+              typeof time === 'number' &&
+              typeof value === 'number' &&
+              !isNaN(time) &&
+              !isNaN(value) &&
+              isFinite(time) &&
+              isFinite(value) &&
+              time > 0 &&
+              value >= 0  // Allow 0 equity
             )
           })
 
@@ -317,19 +339,28 @@ export default function EquityChart() {
 
     // Strict validation: ensure equity is a valid number
     if (
+      data != null &&
       data.equity != null &&
       typeof data.equity === 'number' &&
       !isNaN(data.equity) &&
       isFinite(data.equity) &&
-      data.equity > 0
+      data.equity >= 0  // Allow 0 equity
     ) {
       const time = Math.floor(now / 1000)
+      const value = Number(data.equity)  // Explicitly convert to number
 
-      // Validate time is also valid
-      if (!isNaN(time) && isFinite(time) && time > 0) {
+      // Validate both time and value are valid before creating point
+      if (
+        !isNaN(time) &&
+        !isNaN(value) &&
+        isFinite(time) &&
+        isFinite(value) &&
+        time > 0 &&
+        value >= 0
+      ) {
         const newPoint: LineData = {
           time: time as Time,
-          value: data.equity,
+          value: value,
         }
 
         // CRITICAL: Use safe function to update with full validation
@@ -338,6 +369,8 @@ export default function EquityChart() {
         if (success) {
           lastUpdateTimeRef.current = now // Update last update time only on success
         }
+      } else {
+        console.warn('Invalid WebSocket data point, skipping update:', { time, value, raw: data.equity })
       }
     }
   }, [lastMessage, safeUpdatePoint])
