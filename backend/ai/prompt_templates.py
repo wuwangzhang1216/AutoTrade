@@ -18,9 +18,31 @@ You must respond with a valid JSON object in this exact format:
 
 Guidelines:
 - decision: Must be exactly one of: "BUY", "SELL", or "HOLD"
-  - BUY: Open a long position (expect price to go up)
-  - SELL: Open a short position or close long (expect price to go down)
-  - HOLD: Do not trade, wait for better opportunity
+
+  POSITION CLOSING MECHANISM (CRITICAL):
+  ----------------------------------------
+  Your decision automatically manages positions based on current holdings:
+
+  IF YOU HAVE A LONG POSITION:
+    - BUY → Add to long position (stack/average up)
+    - SELL → CLOSE the long position (take profit or cut loss)
+    - HOLD → Keep the long position open
+
+  IF YOU HAVE A SHORT POSITION:
+    - BUY → CLOSE the short position (take profit or cut loss)
+    - SELL → Add to short position (stack/average down)
+    - HOLD → Keep the short position open
+
+  IF YOU HAVE NO POSITION:
+    - BUY → Open new long position (expect price to rise)
+    - SELL → Open new short position (expect price to fall)
+    - HOLD → Stay out of market, wait for better opportunity
+
+  WHEN TO CLOSE POSITIONS:
+  - Close losing positions: If P&L is significantly negative (e.g., -5% or worse)
+  - Take profit: If P&L meets target (e.g., +10% or better)
+  - Market reversal: If technical signals suggest trend has reversed
+  - Risk management: If approaching liquidation price or stop loss levels
 
 - confidence: Your confidence level as a decimal number (0.0 to 1.0)
   - 0.8-1.0: Strong signal, high confidence
@@ -29,10 +51,11 @@ Guidelines:
   - Below 0.4: Very uncertain, recommend HOLD
 
 - reasoning: Explain your decision based on:
-  1. Technical indicators (trend, momentum, overbought/oversold)
-  2. Fundamental factors (sentiment, news, social activity)
-  3. Risk considerations
-  4. Market context
+  1. Position management (if you have an open position, should you close it?)
+  2. Technical indicators (trend, momentum, overbought/oversold)
+  3. Fundamental factors (sentiment, news, social activity)
+  4. Risk considerations and P&L targets
+  5. Market context and timing
 
 IMPORTANT: Return ONLY valid JSON, no additional text before or after the JSON object.
 Be concise but thorough in your reasoning. Focus on actionable insights.
@@ -320,24 +343,53 @@ Based on this comprehensive analysis including your account status and trading h
 what is your trading recommendation for {symbol}?
 
 IMPORTANT DECISION FACTORS:
-1. POSITION MANAGEMENT: If you already have an open position for this symbol,
-   carefully evaluate whether to HOLD (let it run) or close it (take profit/cut loss).
-   Consider: Current P&L, duration held, and whether market conditions have changed.
 
-2. CAPITAL AVAILABILITY: Before recommending BUY/SELL for a new position,
-   check if sufficient capital is available. With limited capital, be highly selective.
+1. POSITION MANAGEMENT (HIGHEST PRIORITY):
 
-3. PERFORMANCE AWARENESS: Consider your recent trading performance.
-   If win rate is low, be more conservative. If performing well, maintain strategy.
+   IF YOU HAVE AN OPEN POSITION FOR THIS SYMBOL:
+   - Check the current P&L percentage and absolute value
+   - Evaluate if conditions have changed since entry
+   - Decide whether to CLOSE the position or HOLD it:
 
-4. MARKET TIMING: Consider the current trading session and liquidity.
-   High liquidity sessions are better for entries/exits.
+   TO CLOSE A LOSING POSITION (Cut Loss):
+     • If LONG and losing → recommend SELL (this closes the long)
+     • If SHORT and losing → recommend BUY (this closes the short)
+     • Consider closing if: P&L < -5%, trend reversed, or risk too high
 
-5. RISK MANAGEMENT: Never recommend trades that would overextend the account.
-   Preserve capital for future opportunities.
+   TO CLOSE A WINNING POSITION (Take Profit):
+     • If LONG and profitable → recommend SELL (this closes the long)
+     • If SHORT and profitable → recommend BUY (this closes the short)
+     • Consider closing if: P&L > +10%, overbought/oversold, or reversal signals
+
+   TO HOLD THE POSITION:
+     • Recommend HOLD if position is still valid and target not reached
+     • Only hold if trend continues and risk is manageable
+
+2. NEW POSITION ENTRY (if no current position):
+   - Only recommend BUY/SELL if you see a strong opportunity
+   - Check available capital before recommending new positions
+   - With limited capital, be highly selective
+
+3. PERFORMANCE AWARENESS:
+   - If win rate is low (<50%), be more conservative and focus on closing losers
+   - If performing well (>70%), maintain current strategy
+   - Learn from past decisions for this symbol
+
+4. MARKET TIMING:
+   - High liquidity sessions are better for entries/exits
+   - Avoid major position changes during off-peak hours
+
+5. RISK MANAGEMENT:
+   - Never let losses grow beyond -10% without closing
+   - Always have a clear profit target and stop loss in mind
+   - Preserve capital for future opportunities
+
+REMEMBER: Your primary job when you have an open position is to ACTIVELY MANAGE it.
+Don't just HOLD losing positions hoping they recover - close them if conditions have worsened.
+Don't be afraid to SELL (close LONG) or BUY (close SHORT) to protect profits or cut losses.
 
 Provide your decision in the specified JSON format (decision, confidence, reasoning).
-Focus on explaining WHY this is the right action given the FULL context, not just technical signals.
+Focus on explaining WHY this is the right action given the FULL context, especially position management.
 """
 
     return full_prompt
