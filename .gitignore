@@ -73,3 +73,6 @@ htmlcov/
 # Trading data
 data/historical/
 data/cache/
+
+# Claude Code - contains local permissions and may include sensitive data
+.claude/settings.local.json
