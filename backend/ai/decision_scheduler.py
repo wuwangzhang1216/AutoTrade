@@ -132,13 +132,56 @@ class AIDecisionScheduler:
             fundamental_analysis = analysis['fundamental_analysis']
             market_sentiment = analysis['market_sentiment']
 
-            # Get dual AI decision
+            # BUGFIX: Pass current position context to AI so it can make informed decisions
+            # about closing positions when appropriate
+            position_context = None
+            account_context = None
+
+            if self.trading_engine:
+                # Build account context
+                account_summary = self.trading_engine.get_account_summary({symbol: current_price})
+                account_context = {
+                    'total_equity': account_summary['total_equity'],
+                    'available_capital': account_summary['capital'],
+                    'total_pnl': account_summary['total_pnl'],
+                    'total_pnl_percent': account_summary['total_pnl_percent'],
+                    'open_positions': account_summary['open_positions'],
+                    'max_positions': self.trading_engine.max_positions,
+                    'total_trades': account_summary['total_trades'],
+                    'winning_trades': account_summary['winning_trades'],
+                    'losing_trades': account_summary['losing_trades'],
+                    'win_rate': account_summary['win_rate'],
+                }
+
+                # Build position context if position exists
+                if symbol in self.trading_engine.positions:
+                    position = self.trading_engine.positions[symbol]
+                    # Update unrealized PnL with current price
+                    position.update_unrealized_pnl(current_price)
+
+                    position_context = {
+                        'has_position': True,
+                        'side': position.side.value,  # LONG or SHORT
+                        'entry_price': position.entry_price,
+                        'amount': position.amount,
+                        'unrealized_pnl': position.unrealized_pnl,
+                        'pnl_percent': (position.unrealized_pnl / position.margin * 100) if position.margin > 0 else 0,  # Fixed field name
+                        'margin': position.margin,
+                        'leverage': position.leverage,
+                        'liquidation_price': position.liquidation_price,
+                    }
+
+            # Get dual AI decision with enhanced context
             model_1_decision, model_2_decision, final_decision = self.ai_engine.get_dual_model_decision(
                 symbol=symbol,
                 current_price=current_price,
                 technical_summary=technical_summary,
                 fundamental_analysis=fundamental_analysis,
                 market_sentiment=market_sentiment,
+                # Enhanced context - AI now knows about current positions and can decide to close them
+                current_time=datetime.now(),
+                account_context=account_context,
+                position_context=position_context,
             )
 
             # Log AI decision to database
