@@ -189,15 +189,19 @@ class DatabaseManager:
         try:
             # BUG FIX: Calculate actual trade statistics from database, not from memory
             # Memory statistics reset on program restart, but database persists
-            total_trades_count = session.query(Trade).count()
-
-            # Calculate winning/losing trades by checking PnL on CLOSE trades
+            # Only CLOSE trades count as completed trades (not OPEN trades)
             close_trades = session.query(Trade).filter(
                 Trade.order_type.in_(['CLOSE_LONG', 'CLOSE_SHORT'])
             ).all()
 
-            winning_trades_count = sum(1 for t in close_trades if t.pnl and t.pnl > 0)
-            losing_trades_count = sum(1 for t in close_trades if t.pnl and t.pnl < 0)
+            # BUG FIX: total_trades should only count CLOSE trades, not all trades
+            # Each completed trade has 1 OPEN + 1 CLOSE, so we only count CLOSE
+            total_trades_count = len(close_trades)
+
+            # Calculate winning/losing trades by checking PnL on CLOSE trades
+            # BUG FIX: Only count trades with non-null PnL
+            winning_trades_count = sum(1 for t in close_trades if t.pnl is not None and t.pnl > 0)
+            losing_trades_count = sum(1 for t in close_trades if t.pnl is not None and t.pnl < 0)
 
             # Serialize positions field to handle numpy types
             serialized_data = dict(account_data)

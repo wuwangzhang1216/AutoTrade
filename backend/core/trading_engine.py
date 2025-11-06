@@ -694,7 +694,7 @@ class TradingEngine:
 
         return True
 
-    def close_position(self, symbol: str, price: float, reason: str = "") -> bool:
+    def close_position(self, symbol: str, price: float, reason: str = "") -> Tuple[bool, Optional[float]]:
         """
         Close a position
 
