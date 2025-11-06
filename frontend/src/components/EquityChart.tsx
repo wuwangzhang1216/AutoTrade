@@ -66,6 +66,26 @@ export default function EquityChart() {
   const lastUpdateTimeRef = useRef<number>(0) // Track last update to avoid too frequent updates
   const isMountedRef = useRef(true) // Track if component is mounted
 
+  // CRITICAL: Global error handler for lightweight-charts async errors
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      // Check if error is from lightweight-charts ("Value is null")
+      if (event.message && event.message.includes('Value is null')) {
+        console.error('Caught lightweight-charts null error, rebuilding chart...')
+        event.preventDefault() // Prevent error from propagating
+        // Rebuild chart on next tick
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setChartKey(prev => prev + 1)
+          }
+        }, 100)
+      }
+    }
+
+    window.addEventListener('error', handleError)
+    return () => window.removeEventListener('error', handleError)
+  }, [])
+
   // Safe chart update function with validation
   const safeSetData = useCallback((chartData: LineData[]) => {
     // Triple validation before setting data
@@ -111,13 +131,42 @@ export default function EquityChart() {
       return false
     }
 
+    // CRITICAL: Sort by time (ascending) - lightweight-charts REQUIRES sorted data
+    finalValidData.sort((a, b) => (a.time as number) - (b.time as number))
+
+    // CRITICAL: Remove duplicate timestamps - lightweight-charts crashes on duplicates
+    // Keep only the LAST value for each timestamp
+    const uniqueData: LineData[] = []
+    const seenTimes = new Set<number>()
+
+    // Iterate in reverse to keep last occurrence of each timestamp
+    for (let i = finalValidData.length - 1; i >= 0; i--) {
+      const point = finalValidData[i]
+      const time = point.time as number
+
+      if (!seenTimes.has(time)) {
+        seenTimes.add(time)
+        uniqueData.unshift(point) // Add to front to maintain sorted order
+      } else {
+        console.warn('Removed duplicate timestamp:', time, point)
+      }
+    }
+
+    if (uniqueData.length === 0) {
+      console.error('No data left after deduplication')
+      return false
+    }
+
+    console.log(`Prepared ${uniqueData.length} unique data points (removed ${finalValidData.length - uniqueData.length} duplicates)`)
+
     try {
-      equitySeriesRef.current.setData(finalValidData)
-      console.log(`Successfully set ${finalValidData.length} data points`)
+      equitySeriesRef.current.setData(uniqueData)
+      console.log(`Successfully set ${uniqueData.length} data points`)
       return true
     } catch (error) {
       console.error('Chart setData failed with error:', error)
-      console.error('Failed data sample:', finalValidData.slice(0, 3))
+      console.error('Failed data sample:', uniqueData.slice(0, 5))
+      console.error('Last data sample:', uniqueData.slice(-5))
       // Try to rebuild chart on next render
       setChartKey(prev => prev + 1)
       return false
