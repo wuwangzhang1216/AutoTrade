@@ -936,17 +936,37 @@ def start_ai_scheduler_if_needed():
         import os
         global ai_scheduler
 
-        # Get interval from environment (default: 5 minutes for production)
-        interval_minutes = int(os.getenv('AI_SCHEDULER_INTERVAL_MINUTES', '5'))
+        # CRITICAL: With multiple workers, ensure only ONE worker runs the scheduler
+        # Use a simple file lock mechanism
+        lock_file = '/tmp/ai_scheduler.lock'
+        try:
+            # Try to create lock file exclusively
+            import fcntl
+            lock_fd = open(lock_file, 'w')
+            fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
-        log_info(f"Starting AI Decision Scheduler after first API request (interval: {interval_minutes} minutes)...")
-        ai_scheduler = AIDecisionScheduler(
-            broadcast_callback=manager.broadcast,
-            enable_trading=True,  # Enable automatic trading execution
-            interval_minutes=interval_minutes
-        )
-        ai_scheduler.start()
-        log_info(f"AI Decision Scheduler started successfully - Trading ENABLED (every {interval_minutes} minutes)")
+            # Successfully acquired lock - this worker will run the scheduler
+            log_info("This worker acquired scheduler lock - will run AI Decision Scheduler")
+
+            # Get interval from environment (default: 5 minutes for production)
+            interval_minutes = int(os.getenv('AI_SCHEDULER_INTERVAL_MINUTES', '5'))
+
+            log_info(f"Starting AI Decision Scheduler after first API request (interval: {interval_minutes} minutes)...")
+            ai_scheduler = AIDecisionScheduler(
+                broadcast_callback=manager.broadcast,
+                enable_trading=True,  # Enable automatic trading execution
+                interval_minutes=interval_minutes
+            )
+            ai_scheduler.start()
+            log_info(f"AI Decision Scheduler started successfully - Trading ENABLED (every {interval_minutes} minutes)")
+
+            # Keep lock file open to maintain lock
+            # Will be released when process exits
+
+        except (IOError, OSError) as e:
+            # Another worker already has the lock
+            log_info("Another worker is already running AI Decision Scheduler - this worker will skip it")
+            return
 
     import threading
     threading.Thread(target=_start_scheduler, daemon=True).start()

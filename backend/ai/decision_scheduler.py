@@ -1,6 +1,7 @@
 """
-AI Decision Scheduler - Runs AI decision-making at 1-minute intervals
-Separate from the main trading loop for frequent AI analysis
+AI Decision Scheduler - Runs AI decision-making at configurable intervals
+Default: 5 minutes (configurable via AI_SCHEDULER_INTERVAL_MINUTES env var)
+Separate from the main trading loop for periodic AI analysis
 """
 import time
 import asyncio
@@ -19,7 +20,7 @@ from .decision_engine import AIDecisionEngine
 
 class AIDecisionScheduler:
     """
-    Scheduler that runs AI decision-making every minute
+    Scheduler that runs AI decision-making at configurable intervals (default: 5 minutes)
     Independent of trading execution
     """
 
