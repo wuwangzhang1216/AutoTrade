@@ -51,8 +51,8 @@ export default function PositionsList() {
     }
 
     loadPositions()
-    // PERFORMANCE: Reduced polling from 5s to 15s (positions don't change that frequently)
-    const interval = setInterval(loadPositions, 15000)
+    // PERFORMANCE: Reduced polling from 15s to 30s (positions don't change that frequently, WebSocket handles updates)
+    const interval = setInterval(loadPositions, 30000)
 
     return () => clearInterval(interval)
   }, [])
