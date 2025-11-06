@@ -384,34 +384,60 @@ class TradingEngine:
                 ).first()
 
                 # If no close trade, position is still open - rebuild it
-                if not close_trade and symbol not in self.positions:
+                if not close_trade:
                     side = PositionSide.LONG if trade.order_type == 'OPEN_LONG' else PositionSide.SHORT
                     margin = self.get_position_size(trade.price, trade.amount)
 
-                    position = Position(
-                        symbol=symbol,
-                        side=side,
-                        amount=trade.amount,
-                        entry_price=trade.price,
-                        margin=margin,
-                        leverage=self.leverage,
-                        open_time=trade.timestamp,
-                        commission_rate=self.commission_rate
-                    )
-                    self.positions[symbol] = position
+                    # BUG FIX: Handle position stacking during restore
+                    # If position already exists for this symbol, we need to STACK it
+                    # (same as what open_long/open_short do), not skip it
+                    if symbol in self.positions:
+                        existing = self.positions[symbol]
 
-                    # BUG FIX: Do NOT deduct capital here!
-                    # Capital was already restored from database in _restore_capital_from_database()
-                    # The database capital value already has margins deducted, so deducting again
-                    # would incorrectly double-deduct and show wrong available capital.
+                        # Calculate new average entry price
+                        total_value_old = existing.entry_price * existing.amount
+                        total_value_new = trade.price * trade.amount
+                        new_amount = existing.amount + trade.amount
+                        new_entry_price = (total_value_old + total_value_new) / new_amount
 
-                    total_restored_margin += margin
-                    restored_positions_count += 1
+                        # Update position
+                        existing.amount = new_amount
+                        existing.entry_price = new_entry_price
+                        existing.margin += margin
+                        existing.liquidation_price = existing._calculate_liquidation_price()
 
-                    logger.info(
-                        f"✓ Restored {side.value} position: {symbol} @ {format_currency(trade.price)} "
-                        f"(Margin: {format_currency(margin)}, Liquidation: {format_currency(position.liquidation_price)})"
-                    )
+                        total_restored_margin += margin
+
+                        logger.info(
+                            f"✓ STACKED {side.value} position: {symbol} @ {format_currency(trade.price)} "
+                            f"(New avg entry: {format_currency(new_entry_price)}, Total margin: {format_currency(existing.margin)})"
+                        )
+                    else:
+                        # Create new position
+                        position = Position(
+                            symbol=symbol,
+                            side=side,
+                            amount=trade.amount,
+                            entry_price=trade.price,
+                            margin=margin,
+                            leverage=self.leverage,
+                            open_time=trade.timestamp,
+                            commission_rate=self.commission_rate
+                        )
+                        self.positions[symbol] = position
+
+                        # BUG FIX: Do NOT deduct capital here!
+                        # Capital was already restored from database in _restore_capital_from_database()
+                        # The database capital value already has margins deducted, so deducting again
+                        # would incorrectly double-deduct and show wrong available capital.
+
+                        total_restored_margin += margin
+                        restored_positions_count += 1
+
+                        logger.info(
+                            f"✓ Restored {side.value} position: {symbol} @ {format_currency(trade.price)} "
+                            f"(Margin: {format_currency(margin)}, Liquidation: {format_currency(position.liquidation_price)})"
+                        )
 
             session.close()
 
