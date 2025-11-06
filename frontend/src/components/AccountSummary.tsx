@@ -34,7 +34,8 @@ export default function AccountSummary() {
     }
 
     loadAccount()
-    const interval = setInterval(loadAccount, 5000) // Refresh every 5 seconds
+    // PERFORMANCE: Reduced from 5s to 30s - WebSocket handles real-time updates
+    const interval = setInterval(loadAccount, 30000) // Refresh every 30 seconds
 
     return () => clearInterval(interval)
   }, [])

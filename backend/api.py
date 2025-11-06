@@ -46,18 +46,18 @@ connected_websockets: List[WebSocket] = []
 ai_scheduler: Optional['AIDecisionScheduler'] = None
 _scheduler_started = False  # Track if scheduler has been initialized
 
-# PERFORMANCE: Simple in-memory cache for trades (expires after 5 seconds)
+# PERFORMANCE: Simple in-memory cache for trades (expires after 60 seconds)
 _trades_cache = {
     'data': None,
     'timestamp': None,
-    'ttl': 5  # 5 seconds cache
+    'ttl': 60  # 60 seconds cache (reduced frontend polling means we can cache longer)
 }
 
-# PERFORMANCE: Simple in-memory cache for positions (expires after 3 seconds)
+# PERFORMANCE: Simple in-memory cache for positions (expires after 30 seconds)
 _positions_cache = {
     'data': None,
     'timestamp': None,
-    'ttl': 3  # 3 seconds cache (positions update more frequently)
+    'ttl': 30  # 30 seconds cache (batch price fetch is fast, but still cache to reduce load)
 }
 
 
