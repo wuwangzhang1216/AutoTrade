@@ -902,23 +902,38 @@ async def broadcast_updates():
 # Helper function to start AI scheduler (called after first API request)
 def start_ai_scheduler_if_needed():
     """Start AI scheduler on first API request to avoid boot timeout"""
+    import os
     global ai_scheduler, _scheduler_started
 
     if _scheduler_started:
+        return
+
+    # Check if AI scheduler should be enabled (default: disabled in production)
+    enable_ai_scheduler = os.getenv('ENABLE_AI_SCHEDULER', 'false').lower() == 'true'
+
+    if not enable_ai_scheduler:
+        log_info("AI Decision Scheduler is DISABLED (set ENABLE_AI_SCHEDULER=true to enable)")
+        _scheduler_started = True  # Mark as started to prevent repeated checks
         return
 
     _scheduler_started = True
 
     # Start scheduler in background thread to not block the request
     def _start_scheduler():
+        import os
         global ai_scheduler
-        log_info("Starting AI Decision Scheduler after first API request...")
+
+        # Get interval from environment (default: 5 minutes for production)
+        interval_minutes = int(os.getenv('AI_SCHEDULER_INTERVAL_MINUTES', '5'))
+
+        log_info(f"Starting AI Decision Scheduler after first API request (interval: {interval_minutes} minutes)...")
         ai_scheduler = AIDecisionScheduler(
             broadcast_callback=manager.broadcast,
-            enable_trading=True  # Enable automatic trading execution
+            enable_trading=True,  # Enable automatic trading execution
+            interval_minutes=interval_minutes
         )
         ai_scheduler.start()
-        log_info("AI Decision Scheduler started successfully - Trading ENABLED")
+        log_info(f"AI Decision Scheduler started successfully - Trading ENABLED (every {interval_minutes} minutes)")
 
     import threading
     threading.Thread(target=_start_scheduler, daemon=True).start()

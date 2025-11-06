@@ -23,13 +23,14 @@ class AIDecisionScheduler:
     Independent of trading execution
     """
 
-    def __init__(self, broadcast_callback=None, enable_trading=False):
+    def __init__(self, broadcast_callback=None, enable_trading=False, interval_minutes=5):
         """
         Initialize AI decision scheduler
 
         Args:
             broadcast_callback: Optional async callback to broadcast decisions via WebSocket
             enable_trading: If True, execute trades based on AI decisions
+            interval_minutes: Decision cycle interval in minutes (default: 5 minutes)
         """
         self.ai_engine = AIDecisionEngine()
         self.market_data = MarketDataCollector()
@@ -55,8 +56,9 @@ class AIDecisionScheduler:
         self.running = False
         self.thread: Optional[Thread] = None
         self.broadcast_callback = broadcast_callback
+        self.interval_minutes = interval_minutes
 
-        log_info("AI Decision Scheduler initialized - 1 minute interval")
+        log_info(f"AI Decision Scheduler initialized - {interval_minutes} minute interval")
 
     def analyze_symbol(self, symbol: str) -> Optional[dict]:
         """
@@ -486,8 +488,9 @@ class AIDecisionScheduler:
         log_separator()
 
     def scheduler_loop(self):
-        """Main scheduler loop - runs every minute"""
-        log_info("AI Decision Scheduler started - running every 1 minute")
+        """Main scheduler loop - runs at configured interval"""
+        interval_seconds = self.interval_minutes * 60
+        log_info(f"AI Decision Scheduler started - running every {self.interval_minutes} minutes")
 
         iteration = 0
 
@@ -498,15 +501,15 @@ class AIDecisionScheduler:
                 # Run decision cycle
                 self.run_decision_cycle()
 
-                # Wait for next minute
-                log_info(f"AI Decision cycle #{iteration} complete. Next cycle in 60 seconds...")
-                time.sleep(60)
+                # Wait for next cycle
+                log_info(f"AI Decision cycle #{iteration} complete. Next cycle in {interval_seconds} seconds...")
+                time.sleep(interval_seconds)
 
             except Exception as e:
                 log_error(f"Error in scheduler loop: {e}")
                 import traceback
                 logger.error(traceback.format_exc())
-                time.sleep(60)
+                time.sleep(interval_seconds)
 
     def start(self):
         """Start the scheduler in a background thread"""
