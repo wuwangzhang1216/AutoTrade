@@ -3,7 +3,8 @@
 """
 import threading
 import time
-from typing import Dict, List, Optional
+import asyncio
+from typing import Dict, List, Optional, Callable, Awaitable
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -31,6 +32,7 @@ class EventMonitor:
         self,
         trading_symbols: Optional[List[str]] = None,
         check_interval: int = None,
+        broadcast_callback: Optional[Callable[[dict], Awaitable[None]]] = None,
     ):
         """
         初始化事件监控器
@@ -38,9 +40,11 @@ class EventMonitor:
         Args:
             trading_symbols: 要监控的交易对列表（默认使用配置中的交易对）
             check_interval: 检查间隔秒数（默认使用配置值）
+            broadcast_callback: WebSocket广播回调函数（可选）
         """
         self.symbols = trading_symbols or TradingPairsConfig.get_all_symbols()
         self.check_interval = check_interval or config.CHECK_INTERVAL_SECONDS
+        self.broadcast_callback = broadcast_callback
 
         # 初始化组件
         self.detector = EventDetector()
@@ -278,6 +282,10 @@ class EventMonitor:
         # 保存到数据库
         self._save_event_to_db(event)
 
+        # WebSocket 实时推送
+        if self.broadcast_callback and event.id:
+            self._broadcast_event(event)
+
     def _log_event(self, event: MarketEvent):
         """
         记录事件到日志
@@ -344,6 +352,36 @@ class EventMonitor:
             log_error(f"保存事件到数据库失败: {e}")
         except Exception as e:
             log_error(f"保存事件时出现未知错误: {e}")
+
+    def _broadcast_event(self, event: MarketEvent):
+        """
+        通过WebSocket广播事件到前端
+
+        Args:
+            event: 市场事件
+        """
+        try:
+            # 构建WebSocket消息
+            message = {
+                'type': 'market_event',
+                'data': {
+                    'id': event.id,
+                    'timestamp': event.timestamp.isoformat(),
+                    'symbol': event.symbol,
+                    'event_type': event.event_type.value,
+                    'severity': event.severity.value,
+                    'description': event.description,
+                    'suggested_action': event.suggested_action,
+                    'metrics': event.metrics
+                }
+            }
+
+            # 在新的事件循环中调用异步broadcast
+            # 因为EventMonitor运行在独立线程中
+            asyncio.run(self.broadcast_callback(message))
+
+        except Exception as e:
+            log_error(f"广播事件失败: {e}")
 
     def get_statistics(self) -> Dict:
         """

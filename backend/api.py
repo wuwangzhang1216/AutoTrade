@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from sqlalchemy import desc
 
 # Import from main system
-from database import get_db_manager, get_session, Trade, AIDecision, AccountSnapshot
+from database import get_db_manager, get_session, Trade, AIDecision, AccountSnapshot, MarketEventRecord
 from data import MarketDataCollector
 from config import TradingPairsConfig
 from utils.logger import logger, log_error, log_success, log_info
@@ -59,6 +59,7 @@ market_data = MarketDataCollector()
 connected_websockets: List[WebSocket] = []
 ai_scheduler: Optional['AIDecisionScheduler'] = None
 _scheduler_started = False  # Track if scheduler has been initialized
+_event_monitor_instance = None  # Event Monitor instance
 
 # PERFORMANCE: Simple in-memory cache for trades (expires after 60 seconds)
 _trades_cache = {
@@ -165,6 +166,25 @@ class PaginatedTradesResponse(BaseModel):
 class PaginatedDecisionsResponse(BaseModel):
     data: List[AIDecisionSummary]
     meta: PaginationMeta
+
+
+class MarketEventInfo(BaseModel):
+    """Market event information"""
+    id: int
+    timestamp: datetime
+    symbol: str
+    event_type: str
+    severity: str
+    description: str
+    suggested_action: Optional[str]
+    metrics: dict
+
+
+class MarketEventsStatsResponse(BaseModel):
+    """Market events statistics"""
+    total_events: int
+    events_by_severity: dict
+    events_by_type: dict
 
 
 # WebSocket manager
@@ -799,6 +819,95 @@ async def get_trading_pairs():
     }
 
 
+@app.get("/api/market-events", response_model=List[MarketEventInfo])
+async def get_market_events(
+    limit: int = 10,
+    event_type: Optional[str] = None,
+    severity: Optional[str] = None,
+    symbol: Optional[str] = None
+):
+    """
+    Get recent market events
+
+    Args:
+        limit: Maximum number of events to return (default 10)
+        event_type: Filter by event type (e.g., 'flash_crash', 'volume_spike')
+        severity: Filter by severity (e.g., 'critical', 'high', 'medium', 'low')
+        symbol: Filter by trading symbol (e.g., 'BTC/USDT')
+
+    Returns:
+        List of market events
+    """
+    try:
+        session = get_session()
+
+        # Build query
+        query = session.query(MarketEventRecord)
+
+        # Apply filters
+        if event_type:
+            query = query.filter(MarketEventRecord.event_type == event_type)
+        if severity:
+            query = query.filter(MarketEventRecord.severity == severity)
+        if symbol:
+            query = query.filter(MarketEventRecord.symbol == symbol)
+
+        # Order by timestamp descending and limit
+        events = query.order_by(desc(MarketEventRecord.timestamp)).limit(limit).all()
+
+        session.close()
+
+        # Convert to response model
+        return [
+            MarketEventInfo(
+                id=event.id,
+                timestamp=event.timestamp,
+                symbol=event.symbol,
+                event_type=event.event_type,
+                severity=event.severity,
+                description=event.description,
+                suggested_action=event.suggested_action,
+                metrics=event.metrics or {}
+            )
+            for event in events
+        ]
+
+    except Exception as e:
+        log_error(f"Error fetching market events: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/market-events/stats", response_model=MarketEventsStatsResponse)
+async def get_market_events_stats():
+    """
+    Get market events statistics
+
+    Returns:
+        Statistics about detected market events
+    """
+    try:
+        global _event_monitor_instance
+
+        if _event_monitor_instance is None:
+            return MarketEventsStatsResponse(
+                total_events=0,
+                events_by_severity={},
+                events_by_type={}
+            )
+
+        stats = _event_monitor_instance.get_statistics()
+
+        return MarketEventsStatsResponse(
+            total_events=stats.get('total_events', 0),
+            events_by_severity=stats.get('events_by_severity', {}),
+            events_by_type=stats.get('events_by_type', {})
+        )
+
+    except Exception as e:
+        log_error(f"Error fetching market events stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # WebSocket endpoint for real-time updates
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -982,8 +1091,14 @@ async def startup_event():
 
     # Start Event Monitor immediately (independent monitoring system)
     try:
-        start_event_monitor()
-        log_success("Event Monitor started successfully")
+        from events.event_monitor import EventMonitor
+        # Initialize with WebSocket broadcast callback
+        monitor = EventMonitor(broadcast_callback=manager.broadcast)
+        monitor.start()
+        # Store in global for access from API endpoints
+        global _event_monitor_instance
+        _event_monitor_instance = monitor
+        log_success("Event Monitor started successfully with WebSocket support")
     except Exception as e:
         log_error(f"Failed to start Event Monitor: {e}")
 
@@ -995,7 +1110,7 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    global ai_scheduler
+    global ai_scheduler, _event_monitor_instance
 
     log_info("AutoTrade AI API shutting down...")
 
@@ -1005,8 +1120,9 @@ async def shutdown_event():
 
     # Stop Event Monitor
     try:
-        stop_event_monitor()
-        log_info("Event Monitor stopped")
+        if _event_monitor_instance:
+            _event_monitor_instance.stop()
+            log_info("Event Monitor stopped")
     except Exception as e:
         log_error(f"Error stopping Event Monitor: {e}")
 
