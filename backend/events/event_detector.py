@@ -4,9 +4,11 @@
 from typing import Optional, List, Dict
 from datetime import datetime, timedelta
 import numpy as np
+import pandas as pd
 from events.event_types import EventType, EventSeverity, MarketEvent
 from events.event_config import config
 from utils.logger import logger
+from analysis.technical_indicators import TechnicalAnalyzer
 
 
 class EventDetector:
@@ -19,6 +21,7 @@ class EventDetector:
     def __init__(self):
         """初始化检测器"""
         self.last_event_times: Dict[str, datetime] = {}  # 记录每个事件的最后触发时间
+        self.technical_analyzer = TechnicalAnalyzer()  # 复用现有的技术指标分析器
         logger.info("EventDetector 初始化完成")
 
     def detect_flash_move(
@@ -244,20 +247,36 @@ class EventDetector:
         Returns:
             MarketEvent 或 None
         """
-        if not klines_1h or len(klines_1h) < 28:  # 需要14根计算当前ATR + 14根计算历史ATR
+        if not klines_1h or len(klines_1h) < 28:  # 需要至少28根K线
             return None
 
         current_time = datetime.utcnow()
 
-        # 计算ATR
-        current_atr = self._calculate_atr(klines_1h[-14:], config.VOLATILITY_PERIOD)
-        historical_atr = self._calculate_atr(klines_1h[-28:-14], config.VOLATILITY_PERIOD)
+        # 转换为 DataFrame 并计算技术指标
+        df = self._klines_to_dataframe(klines_1h)
+        if df.empty or len(df) < 28:
+            return None
 
-        if not current_atr or not historical_atr or historical_atr == 0:
+        # 使用 TechnicalAnalyzer 计算所有指标（包括 ATR）
+        try:
+            df = self.technical_analyzer.calculate_all_indicators(df)
+        except Exception as e:
+            logger.warning(f"计算技术指标失败 ({symbol}): {e}")
+            return None
+
+        # 检查 ATR 列是否存在
+        if 'ATR' not in df.columns or df['ATR'].isna().all():
+            return None
+
+        # 获取当前和历史 ATR（比较最新的 ATR 和 14 根前的 ATR）
+        current_atr = df['ATR'].iloc[-1]
+        historical_atr = df['ATR'].iloc[-15] if len(df) >= 15 else df['ATR'].iloc[0]
+
+        if pd.isna(current_atr) or pd.isna(historical_atr) or historical_atr == 0:
             return None
 
         # 计算波动率变化倍数
-        volatility_ratio = current_atr / historical_atr
+        volatility_ratio = float(current_atr / historical_atr)
 
         # 检查是否触发阈值
         if volatility_ratio < config.VOLATILITY_SPIKE_THRESHOLD:
@@ -361,6 +380,34 @@ class EventDetector:
 
     # ==================== 辅助方法 ====================
 
+    def _klines_to_dataframe(self, klines: List[dict]) -> pd.DataFrame:
+        """
+        将K线列表转换为DataFrame格式（供TechnicalAnalyzer使用）
+
+        Args:
+            klines: K线数据列表，每个元素包含 timestamp, open, high, low, close, volume
+
+        Returns:
+            pandas DataFrame，包含 open, high, low, close, volume 列
+        """
+        if not klines:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(klines)
+
+        # 确保列名正确
+        required_columns = ['open', 'high', 'low', 'close', 'volume']
+        for col in required_columns:
+            if col not in df.columns:
+                logger.warning(f"K线数据缺少 {col} 列")
+                return pd.DataFrame()
+
+        # 转换为数值类型
+        for col in required_columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
+        return df
+
     def _calculate_price_change(self, klines: List[dict], periods: int = 1) -> float:
         """
         计算价格变化百分比
@@ -385,44 +432,6 @@ class EventDetector:
             return ((end_price - start_price) / start_price) * 100
         except (KeyError, ValueError, IndexError):
             return 0.0
-
-    def _calculate_atr(self, klines: List[dict], period: int) -> Optional[float]:
-        """
-        计算ATR（Average True Range）
-
-        Args:
-            klines: K线数据
-            period: 计算周期
-
-        Returns:
-            ATR值
-        """
-        if not klines or len(klines) < period:
-            return None
-
-        try:
-            true_ranges = []
-            for i in range(1, len(klines)):
-                high = float(klines[i]['high'])
-                low = float(klines[i]['low'])
-                prev_close = float(klines[i - 1]['close'])
-
-                tr = max(
-                    high - low,
-                    abs(high - prev_close),
-                    abs(low - prev_close)
-                )
-                true_ranges.append(tr)
-
-            if not true_ranges:
-                return None
-
-            # 计算ATR（简单移动平均）
-            atr = np.mean(true_ranges[-period:])
-            return float(atr)
-
-        except (KeyError, ValueError, IndexError):
-            return None
 
     def _check_cooldown(self, symbol: str, event_type: EventType, current_time: datetime) -> bool:
         """
