@@ -19,6 +19,7 @@ from data import MarketDataCollector
 from config import TradingPairsConfig
 from utils.logger import logger, log_error, log_success, log_info
 from ai import AIDecisionScheduler
+from events import start_event_monitor, stop_event_monitor, get_event_monitor
 
 # Create FastAPI app
 app = FastAPI(
@@ -979,6 +980,13 @@ async def startup_event():
     log_info("AutoTrade AI API starting...")
     log_info("AI Decision Scheduler will start after first API request to avoid boot timeout")
 
+    # Start Event Monitor immediately (independent monitoring system)
+    try:
+        start_event_monitor()
+        log_success("Event Monitor started successfully")
+    except Exception as e:
+        log_error(f"Failed to start Event Monitor: {e}")
+
     # Start background task for broadcasting
     asyncio.create_task(broadcast_updates())
 
@@ -994,6 +1002,13 @@ async def shutdown_event():
     # Stop AI scheduler
     if ai_scheduler:
         ai_scheduler.stop()
+
+    # Stop Event Monitor
+    try:
+        stop_event_monitor()
+        log_info("Event Monitor stopped")
+    except Exception as e:
+        log_error(f"Error stopping Event Monitor: {e}")
 
     log_info("AutoTrade AI API stopped")
 
