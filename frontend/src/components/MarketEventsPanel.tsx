@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { Tab } from '@headlessui/react'
+import { Tab, Disclosure } from '@headlessui/react'
 import clsx from 'clsx'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid'
+import { ChevronUpIcon } from '@heroicons/react/24/solid'
 import { fetchMarketEvents, fetchMarketEventsStats } from '../api/client'
 import { useWebSocket } from '../hooks/useWebSocket'
 import { getWebSocketURL } from '../config/api'
-import { motion, AnimatePresence } from 'framer-motion'
 
 interface MarketEvent {
   id: number
@@ -36,32 +35,24 @@ const eventTypeLabels: Record<string, string> = {
 }
 
 // 严重程度配置
-const severityConfig: Record<string, { bg: string; border: string; text: string; icon: string; badge: string }> = {
+const severityConfig: Record<string, { border: string; icon: string; badge: string }> = {
   critical: {
-    bg: 'bg-red-950/20',
-    border: 'border-l-4 border-red-500',
-    text: 'text-red-400',
+    border: 'border-2 border-red-500',
     icon: '🔴',
     badge: 'bg-red-500/20 text-red-400 border-red-500/50'
   },
   high: {
-    bg: 'bg-orange-950/20',
-    border: 'border-l-4 border-orange-500',
-    text: 'text-orange-400',
+    border: 'border border-orange-500/50',
     icon: '🚨',
     badge: 'bg-orange-500/20 text-orange-400 border-orange-500/50'
   },
   medium: {
-    bg: 'bg-yellow-950/20',
-    border: 'border-l-4 border-yellow-500',
-    text: 'text-yellow-400',
+    border: 'border border-yellow-500/50',
     icon: '⚠️',
     badge: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
   },
   low: {
-    bg: 'bg-blue-950/20',
-    border: 'border-l-4 border-blue-500',
-    text: 'text-blue-400',
+    border: 'border border-blue-500/50',
     icon: 'ℹ️',
     badge: 'bg-blue-500/20 text-blue-400 border-blue-500/50'
   }
@@ -72,13 +63,12 @@ export default function MarketEventsPanel() {
   const [stats, setStats] = useState<MarketEventsStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedFilter, setSelectedFilter] = useState(0)
-  const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [latestEventId, setLatestEventId] = useState<number | null>(null)
   const { lastMessage } = useWebSocket(getWebSocketURL())
 
   // 过滤器配置
   const filters = [
-    { name: 'All', value: null },
+    { name: 'All', types: undefined },
     { name: 'Flash Moves', types: ['flash_crash', 'flash_rally'] },
     { name: 'Volume', types: ['volume_spike', 'volume_dry'] },
     { name: 'Volatility', types: ['volatility_spike'] },
@@ -111,25 +101,15 @@ export default function MarketEventsPanel() {
       const newEvent = lastMessage.data as MarketEvent
 
       setEvents(prevEvents => {
-        // 检查是否已存在（避免重复）
         const exists = prevEvents.some(e => e.id === newEvent.id)
-        if (exists) {
-          return prevEvents
-        }
+        if (exists) return prevEvents
 
-        // 添加到顶部并高亮
         setLatestEventId(newEvent.id)
+        setTimeout(() => setLatestEventId(null), 5000)
 
-        // 5秒后移除高亮
-        setTimeout(() => {
-          setLatestEventId(null)
-        }, 5000)
-
-        // 保留最多50条
         return [newEvent, ...prevEvents].slice(0, 50)
       })
 
-      // 更新统计（简单计数）
       setStats(prev => {
         if (!prev) return null
         return {
@@ -151,19 +131,31 @@ export default function MarketEventsPanel() {
   // 过滤事件
   const filteredEvents = events.filter(event => {
     const filter = filters[selectedFilter]
-    if (!filter.types) return true // "All" filter
+    if (!filter.types) return true
     return filter.types.includes(event.event_type)
   })
 
   if (loading) {
     return (
       <div className="card">
-        <div className="flex items-center justify-center p-8">
-          <motion.div
-            className="h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
+        <div className="flex items-center justify-center p-12">
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full border-2 border-primary-900/20"></div>
+              <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-transparent border-t-primary-500 animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-3 h-3 rounded-full bg-primary-500 animate-pulse"></div>
+              </div>
+            </div>
+            <div className="text-sm text-primary-400 font-medium flex items-center gap-1">
+              <span>Loading events</span>
+              <span className="flex gap-0.5">
+                <span className="animate-bounce" style={{ animationDelay: '0ms' }}>.</span>
+                <span className="animate-bounce" style={{ animationDelay: '150ms' }}>.</span>
+                <span className="animate-bounce" style={{ animationDelay: '300ms' }}>.</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -224,142 +216,92 @@ export default function MarketEventsPanel() {
       </Tab.Group>
 
       {/* Events List */}
-      <div className="space-y-2 overflow-y-auto" style={{ maxHeight: '400px' }}>
-        <AnimatePresence>
-          {filteredEvents.length === 0 ? (
-            <div className="text-center py-8 text-silver-400">
-              <p className="text-sm">📊 No events detected</p>
-              <p className="text-xs mt-1">System is monitoring market...</p>
-            </div>
-          ) : (
-            filteredEvents.map((event) => (
-              <EventItem
-                key={event.id}
-                event={event}
-                isLatest={event.id === latestEventId}
-                isExpanded={expandedEvent === event.id}
-                onToggleExpand={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
-              />
-            ))
-          )}
-        </AnimatePresence>
-      </div>
+      {filteredEvents.length === 0 ? (
+        <div className="text-center py-12 text-silver-400 bg-elite-975 rounded-lg border border-primary-900/20">
+          <p className="text-sm">📊 No events detected</p>
+          <p className="text-xs mt-1">System is monitoring market...</p>
+        </div>
+      ) : (
+        <div className="space-y-1.5 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+          {filteredEvents.map((event) => (
+            <EventItem
+              key={event.id}
+              event={event}
+              isLatest={event.id === latestEventId}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 // 单个事件组件
-function EventItem({
-  event,
-  isLatest,
-  isExpanded,
-  onToggleExpand
-}: {
-  event: MarketEvent
-  isLatest: boolean
-  isExpanded: boolean
-  onToggleExpand: () => void
-}) {
+function EventItem({ event, isLatest }: { event: MarketEvent; isLatest: boolean }) {
   const config = severityConfig[event.severity] || severityConfig.low
   const timeAgo = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true })
 
   return (
-    <motion.div
-      initial={{ x: 100, opacity: 0 }}
-      animate={{
-        x: 0,
-        opacity: 1,
-        boxShadow: isLatest && event.severity === 'critical'
-          ? [
-              '0 0 0px rgba(239, 68, 68, 0)',
-              '0 0 20px rgba(239, 68, 68, 0.6)',
-              '0 0 0px rgba(239, 68, 68, 0)',
-            ]
-          : 'none'
-      }}
-      exit={{ x: -100, opacity: 0 }}
-      transition={{
-        duration: 0.3,
-        boxShadow: {
-          duration: 2,
-          repeat: event.severity === 'critical' ? Infinity : 0
-        }
-      }}
-      className={clsx(
-        'rounded-lg p-3',
-        config.bg,
-        config.border,
-        'hover:bg-opacity-40 transition-all duration-200 cursor-pointer'
-      )}
-      onClick={onToggleExpand}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-1">
-        <div className="flex items-center space-x-2">
-          <span className="text-base">{config.icon}</span>
-          <span className="text-xs text-silver-400">{timeAgo}</span>
-        </div>
-        <span className={clsx(
-          'px-2 py-0.5 rounded-full text-xs font-medium border',
-          config.badge
-        )}>
-          {event.severity.toUpperCase()}
-        </span>
-      </div>
-
-      {/* Event Info */}
-      <div className="flex items-center space-x-2 mb-1">
-        <span className="font-bold text-white text-sm">{event.symbol}</span>
-        <span className="text-silver-500 text-xs">•</span>
-        <span className="text-silver-300 text-xs">{eventTypeLabels[event.event_type] || event.event_type}</span>
-      </div>
-
-      {/* Description */}
-      <p className="text-sm text-silver-200 mb-2">{event.description}</p>
-
-      {/* Suggested Action */}
-      {event.suggested_action && (
-        <div className="flex items-start space-x-1 text-xs text-silver-400 mb-2">
-          <span>💡</span>
-          <span>{event.suggested_action}</span>
-        </div>
-      )}
-
-      {/* Expand/Collapse Metrics */}
-      {Object.keys(event.metrics || {}).length > 0 && (
-        <div className="mt-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleExpand()
-            }}
-            className="flex items-center space-x-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
-          >
-            <span>View Details</span>
-            {isExpanded ? (
-              <ChevronUpIcon className="w-3 h-3" />
-            ) : (
-              <ChevronDownIcon className="w-3 h-3" />
+    <Disclosure>
+      {({ open }) => (
+        <>
+          <Disclosure.Button
+            className={clsx(
+              'flex flex-col w-full rounded-lg px-2.5 py-2 text-left text-xs',
+              'hover:bg-elite-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-opacity-75',
+              'transition-all duration-300',
+              isLatest
+                ? 'bg-primary-900/30 border-2 border-primary-500 shadow-[0_0_20px_rgba(212,175,55,0.3)] animate-pulse-slow'
+                : clsx('bg-elite-975', config.border)
             )}
-          </button>
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between w-full mb-1">
+              <div className="flex items-center space-x-2">
+                <span className="text-base">{config.icon}</span>
+                <span className="text-silver-400 text-[10px]">{timeAgo}</span>
+                <span className="font-bold text-white text-xs">{event.symbol}</span>
+                <span className={clsx('px-1.5 py-0.5 rounded-full text-[10px] font-medium border', config.badge)}>
+                  {event.severity.toUpperCase()}
+                </span>
+              </div>
+              <ChevronUpIcon
+                className={`${open ? 'rotate-180 transform' : ''} h-3 w-3 text-primary-400 transition-transform flex-shrink-0`}
+              />
+            </div>
 
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="mt-2 p-2 rounded bg-black/40 overflow-hidden"
-              >
-                <pre className="text-xs text-silver-300 font-mono overflow-x-auto">
+            {/* Event Type */}
+            <div className="flex items-center space-x-2 mb-1">
+              <span className="text-silver-400 text-[10px]">Type:</span>
+              <span className="text-primary-400 font-semibold text-[10px]">
+                {eventTypeLabels[event.event_type] || event.event_type}
+              </span>
+            </div>
+
+            {/* Description */}
+            <p className="text-silver-200 text-xs leading-snug mb-1">{event.description}</p>
+
+            {/* Suggested Action */}
+            {event.suggested_action && (
+              <div className="flex items-start space-x-1 text-[10px] text-silver-400">
+                <span>💡</span>
+                <span>{event.suggested_action}</span>
+              </div>
+            )}
+          </Disclosure.Button>
+
+          {Object.keys(event.metrics || {}).length > 0 && (
+            <Disclosure.Panel className="px-2.5 pt-2 pb-2 text-xs text-silver-200 bg-elite-950/80 rounded-lg mt-1 border border-primary-900/10 backdrop-blur-sm">
+              <div className="bg-black/30 rounded-lg p-2 border border-primary-900/20">
+                <h4 className="font-bold text-primary-400 mb-2 text-xs">Event Metrics</h4>
+                <pre className="text-[10px] text-silver-300 font-mono overflow-x-auto leading-relaxed">
                   {JSON.stringify(event.metrics, null, 2)}
                 </pre>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div>
+            </Disclosure.Panel>
+          )}
+        </>
       )}
-    </motion.div>
+    </Disclosure>
   )
 }
