@@ -108,6 +108,16 @@ class TradingPairsConfig:
     # ONLY FOR EXPERT TRADERS WITH STRICT RISK MANAGEMENT
     POSITION_SIZE_PERCENT: float = 15.0  # 15% per position with 20x leverage
 
+    @classmethod
+    def get_all_symbols(cls) -> List[str]:
+        """
+        Get all trading symbols to monitor
+
+        Returns:
+            List of trading pair symbols
+        """
+        return cls.DEFAULT_PAIRS
+
 
 class TechnicalIndicatorsConfig:
     """Technical indicators configuration"""

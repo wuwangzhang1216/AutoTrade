@@ -66,15 +66,21 @@ OPENROUTER_API_KEY=your_key_here
 
 ### Step 3: Run the System
 
-Open **3 terminals**:
+Open **2 terminals**:
 
 #### Terminal 1 - Backend API (Port 8888)
 ```bash
 cd backend
-python run_api.py
+python api.py
 ```
 API runs on **http://localhost:8888**
 API docs: **http://localhost:8888/docs**
+
+**Note**: The backend API (`api.py`) now includes:
+- REST API endpoints
+- WebSocket real-time updates
+- AI Decision Scheduler (runs in background)
+- Event Monitor system (detects market anomalies)
 
 #### Terminal 2 - Frontend Dashboard (Port 5888)
 ```bash
@@ -83,12 +89,13 @@ npm run dev
 ```
 Dashboard opens at **http://localhost:5888**
 
-#### Terminal 3 - Trading System (Optional)
+#### Optional: Standalone Trading System
 ```bash
 cd backend
 python main.py
 ```
-This starts the actual AI trading engine!
+This starts a **standalone** AI trading engine without the web API.
+Use this if you only want command-line trading without the dashboard.
 
 ---
 
@@ -424,11 +431,10 @@ External APIs:
 ## 📁 Project Structure
 
 ```
-E:\AutoTrade/
+AutoTrade/
 ├── backend/                         # Backend - Independent deployment unit
-│   ├── main.py                     # Main trading system entry (15-min loop)
-│   ├── api.py                      # FastAPI application (REST + WebSocket)
-│   ├── run_api.py                  # API server launcher (port 8888)
+│   ├── api.py                      # **Main entry**: FastAPI app with REST API, WebSocket, AI Scheduler, Event Monitor (port 8888)
+│   ├── main.py                     # Standalone trading system entry (CLI-only, 15-min loop)
 │   ├── clear_database.py           # Database reset utility
 │   ├── diagnose_system.py          # System diagnostic tool
 │   ├── check_db.py                 # Database inspection utility
@@ -583,9 +589,9 @@ E:\AutoTrade/
 ### Key File Descriptions
 
 **Backend Entry Points:**
-- `backend/main.py` - Standalone trading system (runs 15-min loop independently)
-- `backend/run_api.py` - FastAPI server (REST API + WebSocket on port 8888)
-- Both can run simultaneously or separately
+- `backend/api.py` - **Main entry point**: FastAPI server with REST API, WebSocket, AI Decision Scheduler, and Event Monitor (port 8888)
+- `backend/main.py` - Standalone trading system for command-line only (runs 15-min loop without web interface)
+- Use `api.py` for full system with dashboard, or `main.py` for CLI-only trading
 
 **Frontend Entry Points:**
 - `frontend/src/main.tsx` - React app entry (dev: Vite on port 5888)
@@ -606,7 +612,7 @@ E:\AutoTrade/
 - Contains all Python code, dependencies, and configuration
 - Can be deployed independently to any server
 - Includes its own README with deployment instructions
-- Run: `cd backend && python main.py` or `python run_api.py`
+- Run: `cd backend && python api.py` (full system) or `python main.py` (CLI-only)
 
 **Frontend** (`frontend/`) is a standalone React app:
 - Can be deployed to static hosting (Vercel, Netlify)
@@ -836,18 +842,20 @@ COINGECKO_API_KEY=your_key
 For the **full experience** with web dashboard:
 
 ```bash
-# Terminal 1: Backend API
+# Terminal 1: Backend API (includes AI scheduler & event monitor)
 cd backend
-python run_api.py
+python api.py
 
 # Terminal 2: Frontend Dashboard
 cd frontend
 npm run dev
-
-# Terminal 3: Trading System
-cd backend
-python main.py
 ```
+
+**What's Running:**
+- **Backend API** (`api.py`): REST API, WebSocket, AI Decision Scheduler, Event Monitor
+- **Frontend Dashboard**: React web interface with real-time updates
+
+The backend API now includes all necessary components, so you only need 2 terminals!
 
 ### Command-Line Only
 
@@ -1596,13 +1604,18 @@ cd frontend && npm install && cd ..
 # 2. Configure (add your OpenRouter API key)
 cp .env.example backend/.env
 
-# 3. Run (open 3 terminals)
-# Terminal 1: cd backend && python run_api.py
+# 3. Run (open 2 terminals)
+# Terminal 1: cd backend && python api.py
 # Terminal 2: cd frontend && npm run dev
-# Terminal 3: cd backend && python main.py
 ```
 
 **Visit: http://localhost:5888**
+
+**What's included in `api.py`:**
+- REST API & WebSocket server
+- AI Decision Scheduler (1-min interval)
+- Event Monitor (market anomaly detection)
+- Real-time data broadcasting
 
 ---
 
