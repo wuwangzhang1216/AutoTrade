@@ -130,6 +130,29 @@ class SystemLog(Base):
         return f"<SystemLog {self.level} {self.category} @ {self.timestamp}>"
 
 
+class MarketEventRecord(Base):
+    """Market event detection records"""
+    __tablename__ = 'market_events'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False, index=True)
+    symbol = Column(String(20), nullable=False, index=True)
+    event_type = Column(String(50), nullable=False, index=True)  # flash_crash, flash_rally, etc.
+    severity = Column(String(20), nullable=False, index=True)  # low, medium, high, critical
+
+    description = Column(Text, nullable=False)
+    suggested_action = Column(Text)
+
+    # Event metrics stored as JSONB for flexibility
+    metrics = Column(JSON, nullable=False)
+
+    # Processing status
+    processed = Column(Boolean, default=False, index=True)
+
+    def __repr__(self):
+        return f"<MarketEvent {self.symbol} {self.event_type} ({self.severity}) @ {self.timestamp}>"
+
+
 # Global engine and session factory (singleton pattern)
 _engine = None
 _session_factory = None
@@ -190,6 +213,7 @@ __all__ = [
     "MarketDataCache",
     "AccountSnapshot",
     "SystemLog",
+    "MarketEventRecord",
     "get_engine",
     "init_database",
     "get_session",
