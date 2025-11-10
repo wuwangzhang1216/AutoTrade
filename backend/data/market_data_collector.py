@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from utils.logger import logger, log_error, log_success
 from utils.helpers import retry_on_failure, Timer
 from config import TradingPairsConfig
+from data.market_data_cache import get_market_data_cache
 
 
 class MarketDataCollector:
@@ -24,6 +25,9 @@ class MarketDataCollector:
             exchange_id: Exchange to use (default: kraken)
         """
         self.exchange_id = exchange_id
+
+        # 初始化共享缓存（全局单例）
+        self.cache = get_market_data_cache()
 
         try:
             # Initialize exchange (public API, no authentication needed)
@@ -45,7 +49,7 @@ class MarketDataCollector:
     @retry_on_failure(max_attempts=3)
     def get_ticker(self, symbol: str) -> Optional[Dict]:
         """
-        Get current ticker data for a symbol
+        Get current ticker data for a symbol (with caching)
 
         Args:
             symbol: Trading pair (e.g., "BTC/USDT")
@@ -53,9 +57,15 @@ class MarketDataCollector:
         Returns:
             Ticker data dict or None if failed
         """
+        # 尝试从缓存获取
+        cached = self.cache.get(symbol, 'ticker')
+        if cached is not None:
+            return cached
+
+        # 缓存未命中，从API获取
         try:
             ticker = self.exchange.fetch_ticker(symbol)
-            return {
+            result = {
                 'symbol': symbol,
                 'last': ticker['last'],
                 'bid': ticker['bid'],
@@ -67,6 +77,11 @@ class MarketDataCollector:
                 'change_24h': ticker.get('percentage', 0),
                 'timestamp': ticker['timestamp'],
             }
+
+            # 存入缓存（TTL: 3秒）
+            self.cache.set(symbol, 'ticker', result)
+
+            return result
         except Exception as e:
             log_error(f"Failed to fetch ticker for {symbol}: {e}")
             return None
@@ -138,7 +153,7 @@ class MarketDataCollector:
         since: Optional[int] = None
     ) -> Optional[pd.DataFrame]:
         """
-        Get OHLCV (candlestick) data
+        Get OHLCV (candlestick) data (with caching)
 
         Args:
             symbol: Trading pair
@@ -149,12 +164,32 @@ class MarketDataCollector:
         Returns:
             DataFrame with OHLCV data or None
         """
+        # 注意：since参数存在时不使用缓存，因为请求的是特定时间段的数据
+        if since is None:
+            # 尝试从缓存获取
+            cached = self.cache.get(symbol, timeframe, limit=limit)
+            if cached is not None:
+                # 缓存命中，转换为DataFrame返回
+                df = pd.DataFrame(
+                    cached,
+                    columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']
+                )
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+                df['symbol'] = symbol
+                df['timeframe'] = timeframe
+                return df
+
+        # 缓存未命中或since参数存在，从API获取
         try:
             ohlcv = self.exchange.fetch_ohlcv(symbol, timeframe, since=since, limit=limit)
 
             if not ohlcv:
                 logger.warning(f"No OHLCV data for {symbol}")
                 return None
+
+            # 如果since为None，存入缓存
+            if since is None:
+                self.cache.set(symbol, timeframe, ohlcv, limit=limit)
 
             # Convert to DataFrame
             df = pd.DataFrame(

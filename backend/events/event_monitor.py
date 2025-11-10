@@ -33,6 +33,7 @@ class EventMonitor:
         trading_symbols: Optional[List[str]] = None,
         check_interval: int = None,
         broadcast_callback: Optional[Callable[[dict], Awaitable[None]]] = None,
+        event_loop: Optional[asyncio.AbstractEventLoop] = None,
     ):
         """
         初始化事件监控器
@@ -41,10 +42,12 @@ class EventMonitor:
             trading_symbols: 要监控的交易对列表（默认使用配置中的交易对）
             check_interval: 检查间隔秒数（默认使用配置值）
             broadcast_callback: WebSocket广播回调函数（可选）
+            event_loop: 主事件循环（用于线程安全的异步调用）
         """
         self.symbols = trading_symbols or TradingPairsConfig.get_all_symbols()
         self.check_interval = check_interval or config.CHECK_INTERVAL_SECONDS
         self.broadcast_callback = broadcast_callback
+        self.event_loop = event_loop
 
         # 初始化组件
         self.detector = EventDetector()
@@ -197,15 +200,14 @@ class EventMonitor:
         try:
             data = {}
 
-            # 获取当前ticker（用于价格和成交量）
+            # 获取当前ticker（用于价格）
             ticker = self.market_data.get_ticker(symbol)
             if not ticker:
                 return None
 
             data['current_price'] = ticker['last']
-            data['current_volume'] = ticker.get('volume', 0)
 
-            # 获取K线数据（用于技术分析）
+            # 获取K线数据（用于技术分析和成交量计算）
             # 1分钟K线（最近60根）
             klines_1m = self.market_data.get_ohlcv(symbol, timeframe='1m', limit=60)
             if klines_1m:
@@ -221,18 +223,39 @@ class EventMonitor:
             if klines_15m:
                 data['klines_15m'] = self._format_klines(klines_15m)
 
-            # 1小时K线（最近30根，用于ATR计算）
+            # 1小时K线（最近30根，用于ATR和成交量计算）
             klines_1h = self.market_data.get_ohlcv(symbol, timeframe='1h', limit=30)
             if klines_1h:
                 data['klines_1h'] = self._format_klines(klines_1h)
 
-            # 计算24小时平均成交量（使用1小时K线）
-            if klines_1h and len(klines_1h) >= 24:
-                volumes = [k['volume'] for k in data['klines_1h'][-24:]]
-                data['avg_volume_24h'] = sum(volumes) / len(volumes) if volumes else 0
+                # ✅ 修复成交量计算：统一维度
+                # current_volume = 最近1小时的成交量
+                # avg_volume_24h = 过去24小时（或可用小时）的平均每小时成交量
+                if len(data['klines_1h']) >= 2:
+                    # 当前成交量 = 最新1小时K线的成交量
+                    data['current_volume'] = data['klines_1h'][-1]['volume']
+
+                    # 平均成交量 = 过去N小时的平均每小时成交量
+                    # 排除最新的1小时（因为可能还未完成），使用之前的数据
+                    available_hours = min(24, len(data['klines_1h']) - 1)
+                    if available_hours > 0:
+                        # 取倒数第2到第25个K线（排除最新的）
+                        volumes = [k['volume'] for k in data['klines_1h'][-available_hours-1:-1]]
+                        data['avg_volume_24h'] = sum(volumes) / len(volumes) if volumes else 0
+                    else:
+                        # 数据不足，使用当前成交量
+                        data['avg_volume_24h'] = data['current_volume']
+                else:
+                    # K线数据不足，使用ticker作为fallback
+                    # 粗略估算：24小时总成交量 / 24 = 平均每小时成交量
+                    estimated_hourly = ticker.get('volume', 0) / 24
+                    data['current_volume'] = estimated_hourly
+                    data['avg_volume_24h'] = estimated_hourly
             else:
-                # 备用：使用ticker的成交量
-                data['avg_volume_24h'] = data['current_volume']
+                # 无1小时K线数据时的fallback
+                estimated_hourly = ticker.get('volume', 0) / 24
+                data['current_volume'] = estimated_hourly
+                data['avg_volume_24h'] = estimated_hourly
 
             return data
 
@@ -355,11 +378,14 @@ class EventMonitor:
 
     def _broadcast_event(self, event: MarketEvent):
         """
-        通过WebSocket广播事件到前端
+        通过WebSocket广播事件到前端（线程安全）
 
         Args:
             event: 市场事件
         """
+        if not self.broadcast_callback:
+            return
+
         try:
             # 构建WebSocket消息
             message = {
@@ -376,9 +402,15 @@ class EventMonitor:
                 }
             }
 
-            # 在新的事件循环中调用异步broadcast
-            # 因为EventMonitor运行在独立线程中
-            asyncio.run(self.broadcast_callback(message))
+            # ✅ 修复：使用线程安全的方式调度协程到主事件循环
+            # 因为EventMonitor运行在独立线程中，不能直接使用asyncio.run()
+            if self.event_loop and not self.event_loop.is_closed():
+                asyncio.run_coroutine_threadsafe(
+                    self.broadcast_callback(message),
+                    self.event_loop
+                )
+            else:
+                log_warning("事件循环不可用，跳过事件广播")
 
         except Exception as e:
             log_error(f"广播事件失败: {e}")

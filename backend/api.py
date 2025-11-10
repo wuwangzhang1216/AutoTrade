@@ -908,6 +908,29 @@ async def get_market_events_stats():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/cache/stats")
+async def get_cache_stats():
+    """
+    获取市场数据缓存统计信息
+
+    Returns:
+        缓存命中率、缓存条目数等统计信息
+    """
+    try:
+        from data.market_data_cache import get_market_data_cache
+        cache = get_market_data_cache()
+        stats = cache.get_stats()
+
+        return {
+            'success': True,
+            'data': stats,
+            'message': f"缓存命中率: {stats['hit_rate']}%"
+        }
+    except Exception as e:
+        log_error(f"获取缓存统计失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # WebSocket endpoint for real-time updates
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -1082,6 +1105,28 @@ def start_ai_scheduler_if_needed():
     threading.Thread(target=_start_scheduler, daemon=True).start()
 
 
+# 后台任务：定期清理过期缓存
+async def cleanup_cache_periodically():
+    """
+    定期清理过期缓存（每5分钟）
+
+    这可以防止内存无限增长，同时5分钟的间隔足够合理
+    """
+    from data.market_data_cache import get_market_data_cache
+
+    cache = get_market_data_cache()
+    logger.info("缓存清理任务已启动，每5分钟执行一次")
+
+    while True:
+        await asyncio.sleep(300)  # 5分钟
+        try:
+            cache.cleanup_expired()
+            stats = cache.get_stats()
+            logger.debug(f"缓存统计: 条目数={stats['total_entries']}, 命中率={stats['hit_rate']}%")
+        except Exception as e:
+            log_error(f"清理缓存失败: {e}")
+
+
 # Startup event
 @app.on_event("startup")
 async def startup_event():
@@ -1092,9 +1137,17 @@ async def startup_event():
     # Start Event Monitor immediately (independent monitoring system)
     try:
         from events.event_monitor import EventMonitor
-        # Initialize with WebSocket broadcast callback
-        monitor = EventMonitor(broadcast_callback=manager.broadcast)
+
+        # ✅ 获取当前事件循环，传递给EventMonitor以实现线程安全的广播
+        current_loop = asyncio.get_running_loop()
+
+        # Initialize with WebSocket broadcast callback and event loop
+        monitor = EventMonitor(
+            broadcast_callback=manager.broadcast,
+            event_loop=current_loop
+        )
         monitor.start()
+
         # Store in global for access from API endpoints
         global _event_monitor_instance
         _event_monitor_instance = monitor
@@ -1104,6 +1157,10 @@ async def startup_event():
 
     # Start background task for broadcasting
     asyncio.create_task(broadcast_updates())
+
+    # 启动缓存清理后台任务
+    asyncio.create_task(cleanup_cache_periodically())
+    log_info("缓存清理后台任务已启动")
 
 
 # Shutdown event
