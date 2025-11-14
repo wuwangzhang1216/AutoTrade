@@ -14,7 +14,7 @@ from database.models import get_session, AccountSnapshot
 from sqlalchemy import func
 
 def cleanup_duplicate_snapshots():
-    """Remove duplicate snapshots, keeping only one per minute"""
+    """Remove duplicate snapshots, keeping only one per 5-minute interval"""
     session = get_session()
 
     try:
@@ -25,27 +25,31 @@ def cleanup_duplicate_snapshots():
 
         print(f"Total snapshots in database: {len(all_snapshots)}")
 
-        # Group snapshots by minute
-        snapshots_by_minute = defaultdict(list)
+        # Group snapshots by 5-minute interval
+        # AI decision cycle is 5 minutes, so keep one snapshot per 5-minute window
+        snapshots_by_interval = defaultdict(list)
 
         for snapshot in all_snapshots:
-            # Round timestamp to nearest minute
-            minute_key = snapshot.timestamp.replace(second=0, microsecond=0)
-            snapshots_by_minute[minute_key].append(snapshot)
+            # Round timestamp to nearest 5-minute interval
+            # Convert to timestamp, round down to 5-minute mark, convert back
+            ts = snapshot.timestamp
+            minute = (ts.minute // 5) * 5  # Round down to 0, 5, 10, 15, etc.
+            interval_key = ts.replace(minute=minute, second=0, microsecond=0)
+            snapshots_by_interval[interval_key].append(snapshot)
 
         # Find duplicates and mark for deletion
         to_delete = []
         duplicates_found = 0
 
-        for minute, snapshots in snapshots_by_minute.items():
+        for interval, snapshots in snapshots_by_interval.items():
             if len(snapshots) > 1:
                 duplicates_found += 1
-                # Keep the LAST snapshot in each minute (most recent data)
+                # Keep the LAST snapshot in each 5-minute interval (most recent data after trades)
                 # Delete all others
                 to_delete.extend(snapshots[:-1])
 
                 if duplicates_found <= 5:  # Show first 5 examples
-                    print(f"\nMinute {minute.strftime('%Y-%m-%d %H:%M')}:")
+                    print(f"\n5-min interval {interval.strftime('%Y-%m-%d %H:%M')}:")
                     print(f"  Found {len(snapshots)} snapshots, keeping latest, deleting {len(snapshots)-1}")
                     for s in snapshots:
                         action = "DELETE" if s in to_delete else "KEEP"
@@ -53,9 +57,10 @@ def cleanup_duplicate_snapshots():
 
         print(f"\n{'='*80}")
         print(f"Summary:")
-        print(f"  Total minutes with duplicates: {duplicates_found}")
+        print(f"  Total 5-minute intervals with duplicates: {duplicates_found}")
         print(f"  Total snapshots to delete: {len(to_delete)}")
         print(f"  Snapshots to keep: {len(all_snapshots) - len(to_delete)}")
+        print(f"  Reduction: {len(to_delete) / len(all_snapshots) * 100:.1f}%")
         print(f"{'='*80}")
 
         if len(to_delete) > 0:

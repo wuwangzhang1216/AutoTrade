@@ -188,17 +188,18 @@ class DatabaseManager:
 
         try:
             # BUG FIX: Prevent saving snapshots too frequently to avoid chart oscillations
-            # Check if a snapshot was saved in the last 60 seconds
+            # AI decision cycle runs every 5 minutes, so use 4-minute window to prevent
+            # multiple snapshots per AI cycle (before and after trade execution)
             from datetime import datetime, timedelta
 
-            one_minute_ago = datetime.now() - timedelta(seconds=60)
+            four_minutes_ago = datetime.now() - timedelta(seconds=240)
             recent_snapshot = session.query(AccountSnapshot)\
-                .filter(AccountSnapshot.timestamp >= one_minute_ago)\
+                .filter(AccountSnapshot.timestamp >= four_minutes_ago)\
                 .order_by(AccountSnapshot.timestamp.desc())\
                 .first()
 
             if recent_snapshot:
-                # Snapshot already exists within last minute, don't save duplicate
+                # Snapshot already exists within last 4 minutes, don't save duplicate
                 logger.debug(f"Skipping snapshot save - recent snapshot exists from {recent_snapshot.timestamp}")
                 return recent_snapshot
 
