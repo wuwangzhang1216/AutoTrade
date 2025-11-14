@@ -139,4 +139,22 @@ export async function fetchTradingPairs() {
   return response.data
 }
 
+// Market Events
+export async function fetchMarketEvents(
+  limit = 10,
+  event_type?: string,
+  severity?: string,
+  symbol?: string
+) {
+  const response = await api.get('/api/market-events', {
+    params: { limit, event_type, severity, symbol }
+  })
+  return response.data
+}
+
+export async function fetchMarketEventsStats() {
+  const response = await api.get('/api/market-events/stats')
+  return response.data
+}
+
 export default api
