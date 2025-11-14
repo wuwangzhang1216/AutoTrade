@@ -176,17 +176,32 @@ class DatabaseManager:
 
     def save_account_snapshot(self, account_data: Dict) -> AccountSnapshot:
         """
-        Save account snapshot
+        Save account snapshot with time-based deduplication
 
         Args:
             account_data: Account data dict (may contain positions JSON with numpy types)
 
         Returns:
-            AccountSnapshot object
+            AccountSnapshot object (may return existing snapshot if too recent)
         """
         session = get_session()
 
         try:
+            # BUG FIX: Prevent saving snapshots too frequently to avoid chart oscillations
+            # Check if a snapshot was saved in the last 60 seconds
+            from datetime import datetime, timedelta
+
+            one_minute_ago = datetime.now() - timedelta(seconds=60)
+            recent_snapshot = session.query(AccountSnapshot)\
+                .filter(AccountSnapshot.timestamp >= one_minute_ago)\
+                .order_by(AccountSnapshot.timestamp.desc())\
+                .first()
+
+            if recent_snapshot:
+                # Snapshot already exists within last minute, don't save duplicate
+                logger.debug(f"Skipping snapshot save - recent snapshot exists from {recent_snapshot.timestamp}")
+                return recent_snapshot
+
             # BUG FIX: Calculate actual trade statistics from database, not from memory
             # Memory statistics reset on program restart, but database persists
             # Only CLOSE trades count as completed trades (not OPEN trades)
