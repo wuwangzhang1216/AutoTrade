@@ -1,0 +1,293 @@
+UNCLOSED POSITIONS DETAILED REPORT
+====================================================================================================
+Generated: 2025-11-18 20:40:08.884789
+Total Unclosed: 251
+Total Trapped Margin: $64,429.40
+
+
+XRP/USDT (49 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 36 | Time: 2025-11-06 09:45:59 | Age: 12d 10h | Side: SHORT | Amount: 468.7290 | Price: $2.31 | Margin: $54.17 | Fee: $1.08
+  ID: 44 | Time: 2025-11-06 10:15:52 | Age: 12d 10h | Side: SHORT | Amount: 147.4536 | Price: $2.30 | Margin: $16.94 | Fee: $0.34
+  ID: 46 | Time: 2025-11-06 10:23:40 | Age: 12d 10h | Side: SHORT | Amount: 105.2806 | Price: $2.31 | Margin: $12.15 | Fee: $0.24
+  ID: 53 | Time: 2025-11-06 10:49:11 | Age: 12d 9h | Side: SHORT | Amount: 45.9471 | Price: $2.31 | Margin: $5.30 | Fee: $0.11
+  ID: 56 | Time: 2025-11-06 11:05:35 | Age: 12d 9h | Side: SHORT | Amount: 28.0709 | Price: $2.29 | Margin: $3.22 | Fee: $0.06
+  ID: 57 | Time: 2025-11-06 11:14:25 | Age: 12d 9h | Side: SHORT | Amount: 23.7760 | Price: $2.29 | Margin: $2.73 | Fee: $0.05
+  ID: 62 | Time: 2025-11-06 11:22:48 | Age: 12d 9h | Side: SHORT | Amount: 14.4413 | Price: $2.29 | Margin: $1.66 | Fee: $0.03
+  ID: 64 | Time: 2025-11-06 11:30:18 | Age: 12d 9h | Side: SHORT | Amount: 10.3603 | Price: $2.29 | Margin: $1.19 | Fee: $0.02
+  ID: 67 | Time: 2025-11-06 11:38:25 | Age: 12d 9h | Side: SHORT | Amount: 7.4264 | Price: $2.30 | Margin: $0.85 | Fee: $0.02
+  ID: 70 | Time: 2025-11-06 11:53:08 | Age: 12d 8h | Side: SHORT | Amount: 4.5106 | Price: $2.30 | Margin: $0.52 | Fee: $0.01
+  ID: 72 | Time: 2025-11-06 12:08:30 | Age: 12d 8h | Side: SHORT | Amount: 3.8227 | Price: $2.30 | Margin: $0.44 | Fee: $0.01
+  ID: 75 | Time: 2025-11-06 12:25:06 | Age: 12d 8h | Side: SHORT | Amount: 2.7410 | Price: $2.30 | Margin: $0.31 | Fee: $0.01
+  ID: 80 | Time: 2025-11-06 12:35:05 | Age: 12d 8h | Side: SHORT | Amount: 516.5274 | Price: $2.29 | Margin: $59.16 | Fee: $1.18
+  ID: 82 | Time: 2025-11-06 12:40:13 | Age: 12d 7h | Side: SHORT | Amount: 1.4143 | Price: $2.29 | Margin: $0.16 | Fee: $0.00
+  ID: 85 | Time: 2025-11-06 12:42:32 | Age: 12d 7h | Side: SHORT | Amount: 371.6451 | Price: $2.28 | Margin: $42.45 | Fee: $0.85
+  ID: 90 | Time: 2025-11-06 12:50:14 | Age: 12d 7h | Side: SHORT | Amount: 191.6921 | Price: $2.28 | Margin: $21.85 | Fee: $0.44
+  ID: 93 | Time: 2025-11-06 12:55:05 | Age: 12d 7h | Side: SHORT | Amount: 0.6199 | Price: $2.28 | Margin: $0.07 | Fee: $0.00
+  ID: 96 | Time: 2025-11-06 12:58:50 | Age: 12d 7h | Side: SHORT | Amount: 137.5180 | Price: $2.28 | Margin: $15.67 | Fee: $0.31
+  ID: 99 | Time: 2025-11-06 13:03:13 | Age: 12d 7h | Side: SHORT | Amount: 0.3191 | Price: $2.28 | Margin: $0.04 | Fee: $0.00
+  ID: 104 | Time: 2025-11-06 13:06:59 | Age: 12d 7h | Side: SHORT | Amount: 70.7772 | Price: $2.28 | Margin: $8.07 | Fee: $0.16
+  ID: 116 | Time: 2025-11-06 13:32:10 | Age: 12d 7h | Side: SHORT | Amount: 15.6815 | Price: $2.31 | Margin: $1.81 | Fee: $0.04
+  ID: 124 | Time: 2025-11-06 13:53:17 | Age: 12d 6h | Side: SHORT | Amount: 0.0707 | Price: $2.31 | Margin: $0.01 | Fee: $0.00
+  ID: 136 | Time: 2025-11-06 14:32:32 | Age: 12d 6h | Side: SHORT | Amount: 3.0196 | Price: $2.28 | Margin: $0.34 | Fee: $0.01
+  ID: 140 | Time: 2025-11-06 14:34:57 | Age: 12d 6h | Side: SHORT | Amount: 0.0190 | Price: $2.28 | Margin: $0.00 | Fee: $0.00
+  ID: 154 | Time: 2025-11-06 14:53:14 | Age: 12d 5h | Side: SHORT | Amount: 0.0043 | Price: $2.27 | Margin: $0.00 | Fee: $0.00
+  ID: 167 | Time: 2025-11-06 15:06:03 | Age: 12d 5h | Side: SHORT | Amount: 0.2975 | Price: $2.26 | Margin: $0.03 | Fee: $0.00
+  ID: 169 | Time: 2025-11-06 15:11:07 | Age: 12d 5h | Side: SHORT | Amount: 0.0013 | Price: $2.26 | Margin: $0.00 | Fee: $0.00
+  ID: 172 | Time: 2025-11-06 15:14:47 | Age: 12d 5h | Side: SHORT | Amount: 0.2135 | Price: $2.26 | Margin: $0.02 | Fee: $0.00
+  ID: 176 | Time: 2025-11-06 15:19:24 | Age: 12d 5h | Side: SHORT | Amount: 0.0006 | Price: $2.26 | Margin: $0.00 | Fee: $0.00
+  ID: 179 | Time: 2025-11-06 15:23:07 | Age: 12d 5h | Side: SHORT | Amount: 0.1528 | Price: $2.27 | Margin: $0.02 | Fee: $0.00
+  ID: 183 | Time: 2025-11-06 15:27:48 | Age: 12d 5h | Side: SHORT | Amount: 0.0004 | Price: $2.27 | Margin: $0.00 | Fee: $0.00
+  ID: 187 | Time: 2025-11-06 15:31:53 | Age: 12d 5h | Side: SHORT | Amount: 0.0786 | Price: $2.27 | Margin: $0.01 | Fee: $0.00
+  ID: 192 | Time: 2025-11-06 15:39:56 | Age: 12d 5h | Side: SHORT | Amount: 0.0571 | Price: $2.24 | Margin: $0.01 | Fee: $0.00
+  ID: 198 | Time: 2025-11-06 15:46:13 | Age: 12d 4h | Side: SHORT | Amount: 0.0001 | Price: $2.23 | Margin: $0.00 | Fee: $0.00
+  ID: 212 | Time: 2025-11-06 16:06:30 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $2.24 | Margin: $0.00 | Fee: $0.00
+  ID: 215 | Time: 2025-11-06 16:07:30 | Age: 12d 4h | Side: SHORT | Amount: 0.0092 | Price: $2.25 | Margin: $0.00 | Fee: $0.00
+  ID: 231 | Time: 2025-11-06 16:25:34 | Age: 12d 4h | Side: SHORT | Amount: 0.0024 | Price: $2.24 | Margin: $0.00 | Fee: $0.00
+  ID: 239 | Time: 2025-11-06 16:36:24 | Age: 12d 4h | Side: SHORT | Amount: 0.0015 | Price: $2.23 | Margin: $0.00 | Fee: $0.00
+  ID: 245 | Time: 2025-11-06 16:42:35 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $2.22 | Margin: $0.00 | Fee: $0.00
+  ID: 251 | Time: 2025-11-06 16:46:08 | Age: 12d 3h | Side: SHORT | Amount: 0.0005 | Price: $2.21 | Margin: $0.00 | Fee: $0.00
+  ID: 256 | Time: 2025-11-06 16:50:43 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $2.22 | Margin: $0.00 | Fee: $0.00
+  ID: 261 | Time: 2025-11-06 16:54:09 | Age: 12d 3h | Side: SHORT | Amount: 0.0001 | Price: $2.23 | Margin: $0.00 | Fee: $0.00
+  ID: 265 | Time: 2025-11-06 16:59:00 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $2.23 | Margin: $0.00 | Fee: $0.00
+  ID: 270 | Time: 2025-11-06 17:01:54 | Age: 12d 3h | Side: SHORT | Amount: 0.0001 | Price: $2.23 | Margin: $0.00 | Fee: $0.00
+  ID: 298 | Time: 2025-11-06 17:14:48 | Age: 12d 3h | Side: SHORT | Amount: 6762.8275 | Price: $2.23 | Margin: $753.75 | Fee: $15.07
+  ID: 302 | Time: 2025-11-06 17:15:14 | Age: 12d 3h | Side: SHORT | Amount: 5742.8946 | Price: $2.22 | Margin: $638.56 | Fee: $12.77
+  ID: 324 | Time: 2025-11-06 17:31:20 | Age: 12d 3h | Side: SHORT | Amount: 5632.1073 | Price: $2.23 | Margin: $627.59 | Fee: $12.55
+  ID: 343 | Time: 2025-11-06 17:46:27 | Age: 12d 2h | Side: SHORT | Amount: 4902.5717 | Price: $2.23 | Margin: $547.71 | Fee: $10.95
+  ID: 360 | Time: 2025-11-06 18:21:23 | Age: 12d 2h | Side: SHORT | Amount: 6895.2517 | Price: $2.21 | Margin: $762.96 | Fee: $15.26
+  Subtotal: $3,579.77
+
+ADA/USDT (48 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 61 | Time: 2025-11-06 11:22:03 | Age: 12d 9h | Side: SHORT | Amount: 5100.3594 | Price: $0.53 | Margin: $135.72 | Fee: $2.71
+  ID: 65 | Time: 2025-11-06 11:30:21 | Age: 12d 9h | Side: SHORT | Amount: 4320.0044 | Price: $0.53 | Margin: $114.96 | Fee: $2.30
+  ID: 68 | Time: 2025-11-06 11:38:42 | Age: 12d 9h | Side: SHORT | Amount: 27.1446 | Price: $0.53 | Margin: $0.72 | Fee: $0.01
+  ID: 69 | Time: 2025-11-06 11:45:54 | Age: 12d 8h | Side: SHORT | Amount: 22.9915 | Price: $0.53 | Margin: $0.61 | Fee: $0.01
+  ID: 76 | Time: 2025-11-06 12:25:18 | Age: 12d 8h | Side: SHORT | Amount: 10.0011 | Price: $0.53 | Margin: $0.27 | Fee: $0.01
+  ID: 78 | Time: 2025-11-06 12:33:16 | Age: 12d 8h | Side: SHORT | Amount: 8.4710 | Price: $0.53 | Margin: $0.23 | Fee: $0.00
+  ID: 83 | Time: 2025-11-06 12:40:26 | Age: 12d 7h | Side: SHORT | Amount: 5.1473 | Price: $0.53 | Margin: $0.14 | Fee: $0.00
+  ID: 86 | Time: 2025-11-06 12:42:53 | Age: 12d 7h | Side: SHORT | Amount: 1348.1340 | Price: $0.53 | Margin: $35.95 | Fee: $0.72
+  ID: 91 | Time: 2025-11-06 12:50:39 | Age: 12d 7h | Side: SHORT | Amount: 698.2322 | Price: $0.53 | Margin: $18.50 | Fee: $0.37
+  ID: 94 | Time: 2025-11-06 12:55:24 | Age: 12d 7h | Side: SHORT | Amount: 2.2535 | Price: $0.53 | Margin: $0.06 | Fee: $0.00
+  ID: 100 | Time: 2025-11-06 13:03:39 | Age: 12d 7h | Side: SHORT | Amount: 1.1620 | Price: $0.53 | Margin: $0.03 | Fee: $0.00
+  ID: 105 | Time: 2025-11-06 13:07:18 | Age: 12d 7h | Side: SHORT | Amount: 257.7685 | Price: $0.53 | Margin: $6.83 | Fee: $0.14
+  ID: 108 | Time: 2025-11-06 13:12:44 | Age: 12d 7h | Side: SHORT | Amount: 0.7026 | Price: $0.53 | Margin: $0.02 | Fee: $0.00
+  ID: 121 | Time: 2025-11-06 13:50:53 | Age: 12d 6h | Side: SHORT | Amount: 40.8521 | Price: $0.54 | Margin: $1.10 | Fee: $0.02
+  ID: 133 | Time: 2025-11-06 14:27:05 | Age: 12d 6h | Side: SHORT | Amount: 0.1334 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 137 | Time: 2025-11-06 14:32:55 | Age: 12d 6h | Side: SHORT | Amount: 10.9242 | Price: $0.53 | Margin: $0.29 | Fee: $0.01
+  ID: 141 | Time: 2025-11-06 14:35:12 | Age: 12d 6h | Side: SHORT | Amount: 0.0692 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 147 | Time: 2025-11-06 14:44:18 | Age: 12d 5h | Side: SHORT | Amount: 0.0356 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 149 | Time: 2025-11-06 14:49:47 | Age: 12d 5h | Side: SHORT | Amount: 5.6447 | Price: $0.53 | Margin: $0.15 | Fee: $0.00
+  ID: 155 | Time: 2025-11-06 14:53:32 | Age: 12d 5h | Side: SHORT | Amount: 0.0155 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 157 | Time: 2025-11-06 14:58:13 | Age: 12d 5h | Side: SHORT | Amount: 2.9107 | Price: $0.53 | Margin: $0.08 | Fee: $0.00
+  ID: 162 | Time: 2025-11-06 15:03:13 | Age: 12d 5h | Side: SHORT | Amount: 0.0080 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 168 | Time: 2025-11-06 15:06:19 | Age: 12d 5h | Side: SHORT | Amount: 1.0812 | Price: $0.53 | Margin: $0.03 | Fee: $0.00
+  ID: 170 | Time: 2025-11-06 15:11:37 | Age: 12d 5h | Side: SHORT | Amount: 0.0049 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 173 | Time: 2025-11-06 15:15:06 | Age: 12d 5h | Side: SHORT | Amount: 0.7727 | Price: $0.53 | Margin: $0.02 | Fee: $0.00
+  ID: 180 | Time: 2025-11-06 15:23:19 | Age: 12d 5h | Side: SHORT | Amount: 0.5516 | Price: $0.53 | Margin: $0.01 | Fee: $0.00
+  ID: 184 | Time: 2025-11-06 15:28:07 | Age: 12d 5h | Side: SHORT | Amount: 0.0013 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 188 | Time: 2025-11-06 15:32:13 | Age: 12d 5h | Side: SHORT | Amount: 0.2858 | Price: $0.53 | Margin: $0.01 | Fee: $0.00
+  ID: 190 | Time: 2025-11-06 15:36:40 | Age: 12d 5h | Side: SHORT | Amount: 0.0007 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 193 | Time: 2025-11-06 15:40:31 | Age: 12d 4h | Side: SHORT | Amount: 0.2066 | Price: $0.52 | Margin: $0.01 | Fee: $0.00
+  ID: 203 | Time: 2025-11-06 15:48:43 | Age: 12d 4h | Side: SHORT | Amount: 0.1066 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 207 | Time: 2025-11-06 15:58:09 | Age: 12d 4h | Side: SHORT | Amount: 0.0646 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 217 | Time: 2025-11-06 16:07:47 | Age: 12d 4h | Side: SHORT | Amount: 0.0331 | Price: $0.53 | Margin: $0.00 | Fee: $0.00
+  ID: 221 | Time: 2025-11-06 16:15:26 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 232 | Time: 2025-11-06 16:25:55 | Age: 12d 4h | Side: SHORT | Amount: 0.0088 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 237 | Time: 2025-11-06 16:33:44 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 240 | Time: 2025-11-06 16:36:50 | Age: 12d 4h | Side: SHORT | Amount: 0.0054 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 246 | Time: 2025-11-06 16:42:56 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 252 | Time: 2025-11-06 16:46:52 | Age: 12d 3h | Side: SHORT | Amount: 0.0017 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 262 | Time: 2025-11-06 16:54:35 | Age: 12d 3h | Side: SHORT | Amount: 0.0005 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 266 | Time: 2025-11-06 16:59:09 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 271 | Time: 2025-11-06 17:02:02 | Age: 12d 3h | Side: SHORT | Amount: 0.0002 | Price: $0.52 | Margin: $0.00 | Fee: $0.00
+  ID: 299 | Time: 2025-11-06 17:15:02 | Age: 12d 3h | Side: SHORT | Amount: 24335.6617 | Price: $0.52 | Margin: $638.42 | Fee: $12.77
+  ID: 304 | Time: 2025-11-06 17:15:22 | Age: 12d 3h | Side: SHORT | Amount: 20616.6321 | Price: $0.52 | Margin: $540.86 | Fee: $10.82
+  ID: 325 | Time: 2025-11-06 17:31:40 | Age: 12d 3h | Side: SHORT | Amount: 20921.3478 | Price: $0.52 | Margin: $548.85 | Fee: $10.98
+  ID: 326 | Time: 2025-11-06 17:31:42 | Age: 12d 3h | Side: SHORT | Amount: 20262.5929 | Price: $0.52 | Margin: $531.57 | Fee: $10.63
+  ID: 361 | Time: 2025-11-06 18:21:37 | Age: 12d 2h | Side: LONG | Amount: 24743.0567 | Price: $0.52 | Margin: $646.23 | Fee: $12.92
+  ID: 369 | Time: 2025-11-06 18:58:11 | Age: 12d 1h | Side: LONG | Amount: 63331.5508 | Price: $0.53 | Margin: $1,682.47 | Fee: $33.65
+  Subtotal: $4,904.14
+
+DOGE/USDT (47 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 27 | Time: 2025-11-06 09:03:05 | Age: 12d 11h | Side: SHORT | Amount: 87565.5976 | Price: $0.16 | Margin: $714.19 | Fee: $14.28
+  ID: 32 | Time: 2025-11-06 09:19:38 | Age: 12d 11h | Side: SHORT | Amount: 44899.9759 | Price: $0.16 | Margin: $367.57 | Fee: $7.35
+  ID: 37 | Time: 2025-11-06 09:46:48 | Age: 12d 10h | Side: SHORT | Amount: 5616.9501 | Price: $0.16 | Margin: $45.88 | Fee: $0.92
+  ID: 38 | Time: 2025-11-06 09:53:55 | Age: 12d 10h | Side: SHORT | Amount: 4770.4047 | Price: $0.16 | Margin: $38.86 | Fee: $0.78
+  ID: 41 | Time: 2025-11-06 10:08:55 | Age: 12d 10h | Side: SHORT | Amount: 2904.0618 | Price: $0.16 | Margin: $23.61 | Fee: $0.47
+  ID: 45 | Time: 2025-11-06 10:16:29 | Age: 12d 10h | Side: SHORT | Amount: 1763.8806 | Price: $0.16 | Margin: $14.35 | Fee: $0.29
+  ID: 47 | Time: 2025-11-06 10:32:06 | Age: 12d 10h | Side: SHORT | Amount: 1260.2342 | Price: $0.16 | Margin: $10.29 | Fee: $0.21
+  ID: 55 | Time: 2025-11-06 10:57:19 | Age: 12d 9h | Side: SHORT | Amount: 465.7476 | Price: $0.16 | Margin: $3.80 | Fee: $0.08
+  ID: 63 | Time: 2025-11-06 11:23:28 | Age: 12d 9h | Side: SHORT | Amount: 172.7420 | Price: $0.16 | Margin: $1.40 | Fee: $0.03
+  ID: 66 | Time: 2025-11-06 11:31:00 | Age: 12d 9h | Side: SHORT | Amount: 123.6603 | Price: $0.16 | Margin: $1.01 | Fee: $0.02
+  ID: 73 | Time: 2025-11-06 12:09:26 | Age: 12d 8h | Side: SHORT | Amount: 45.6538 | Price: $0.16 | Margin: $0.37 | Fee: $0.01
+  ID: 77 | Time: 2025-11-06 12:28:00 | Age: 12d 8h | Side: SHORT | Amount: 8609.8781 | Price: $0.16 | Margin: $69.85 | Fee: $1.40
+  ID: 79 | Time: 2025-11-06 12:33:29 | Age: 12d 8h | Side: SHORT | Amount: 23.5838 | Price: $0.16 | Margin: $0.19 | Fee: $0.00
+  ID: 81 | Time: 2025-11-06 12:35:41 | Age: 12d 8h | Side: SHORT | Amount: 6176.8040 | Price: $0.16 | Margin: $50.11 | Fee: $1.00
+  ID: 84 | Time: 2025-11-06 12:40:39 | Age: 12d 7h | Side: SHORT | Amount: 14.3651 | Price: $0.16 | Margin: $0.12 | Fee: $0.00
+  ID: 87 | Time: 2025-11-06 12:43:24 | Age: 12d 7h | Side: SHORT | Amount: 3766.3052 | Price: $0.16 | Margin: $30.45 | Fee: $0.61
+  ID: 97 | Time: 2025-11-06 12:59:27 | Age: 12d 7h | Side: SHORT | Amount: 1644.0834 | Price: $0.16 | Margin: $13.27 | Fee: $0.27
+  ID: 101 | Time: 2025-11-06 13:04:05 | Age: 12d 7h | Side: SHORT | Amount: 3.2350 | Price: $0.16 | Margin: $0.03 | Fee: $0.00
+  ID: 106 | Time: 2025-11-06 13:07:36 | Age: 12d 7h | Side: SHORT | Amount: 717.6390 | Price: $0.16 | Margin: $5.79 | Fee: $0.12
+  ID: 117 | Time: 2025-11-06 13:37:51 | Age: 12d 7h | Side: SHORT | Amount: 1.6475 | Price: $0.16 | Margin: $0.01 | Fee: $0.00
+  ID: 131 | Time: 2025-11-06 14:19:33 | Age: 12d 6h | Side: SHORT | Amount: 0.6118 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 134 | Time: 2025-11-06 14:27:50 | Age: 12d 6h | Side: SHORT | Amount: 0.3717 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 138 | Time: 2025-11-06 14:33:19 | Age: 12d 6h | Side: SHORT | Amount: 30.5278 | Price: $0.16 | Margin: $0.25 | Fee: $0.00
+  ID: 142 | Time: 2025-11-06 14:35:37 | Age: 12d 6h | Side: SHORT | Amount: 0.1918 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 144 | Time: 2025-11-06 14:41:34 | Age: 12d 5h | Side: SHORT | Amount: 25.9502 | Price: $0.16 | Margin: $0.21 | Fee: $0.00
+  ID: 150 | Time: 2025-11-06 14:50:05 | Age: 12d 5h | Side: SHORT | Amount: 15.7100 | Price: $0.16 | Margin: $0.13 | Fee: $0.00
+  ID: 163 | Time: 2025-11-06 15:03:30 | Age: 12d 5h | Side: SHORT | Amount: 0.0223 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 171 | Time: 2025-11-06 15:11:51 | Age: 12d 5h | Side: SHORT | Amount: 0.0135 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 177 | Time: 2025-11-06 15:19:55 | Age: 12d 5h | Side: SHORT | Amount: 0.0069 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 181 | Time: 2025-11-06 15:24:06 | Age: 12d 5h | Side: SHORT | Amount: 1.5323 | Price: $0.16 | Margin: $0.01 | Fee: $0.00
+  ID: 185 | Time: 2025-11-06 15:28:21 | Age: 12d 5h | Side: SHORT | Amount: 0.0036 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 191 | Time: 2025-11-06 15:36:58 | Age: 12d 5h | Side: SHORT | Amount: 0.0019 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 194 | Time: 2025-11-06 15:40:55 | Age: 12d 4h | Side: SHORT | Amount: 0.5750 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 199 | Time: 2025-11-06 15:46:57 | Age: 12d 4h | Side: SHORT | Amount: 0.0010 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 204 | Time: 2025-11-06 15:49:07 | Age: 12d 4h | Side: SHORT | Amount: 0.2967 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 213 | Time: 2025-11-06 16:06:57 | Age: 12d 4h | Side: SHORT | Amount: 0.0003 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 218 | Time: 2025-11-06 16:08:06 | Age: 12d 4h | Side: SHORT | Amount: 0.0924 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 222 | Time: 2025-11-06 16:15:35 | Age: 12d 4h | Side: SHORT | Amount: 0.0001 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 230 | Time: 2025-11-06 16:25:00 | Age: 12d 4h | Side: SHORT | Amount: 0.0001 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 241 | Time: 2025-11-06 16:37:08 | Age: 12d 4h | Side: SHORT | Amount: 0.0149 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 247 | Time: 2025-11-06 16:43:06 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 253 | Time: 2025-11-06 16:47:33 | Age: 12d 3h | Side: SHORT | Amount: 0.0047 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 257 | Time: 2025-11-06 16:51:17 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 263 | Time: 2025-11-06 16:55:00 | Age: 12d 3h | Side: SHORT | Amount: 0.0015 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 272 | Time: 2025-11-06 17:02:12 | Age: 12d 3h | Side: SHORT | Amount: 0.0005 | Price: $0.16 | Margin: $0.00 | Fee: $0.00
+  ID: 301 | Time: 2025-11-06 17:15:13 | Age: 12d 3h | Side: SHORT | Amount: 68125.3899 | Price: $0.16 | Margin: $540.75 | Fee: $10.81
+  ID: 313 | Time: 2025-11-06 17:23:05 | Age: 12d 3h | Side: SHORT | Amount: 52787.2957 | Price: $0.16 | Margin: $419.92 | Fee: $8.40
+  Subtotal: $2,352.45
+
+BNB/USDT (26 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 110 | Time: 2025-11-06 13:15:59 | Age: 12d 7h | Side: SHORT | Amount: 0.1038 | Price: $944.33 | Margin: $4.90 | Fee: $0.10
+  ID: 112 | Time: 2025-11-06 13:23:57 | Age: 12d 7h | Side: SHORT | Amount: 0.0745 | Price: $944.33 | Margin: $3.52 | Fee: $0.07
+  ID: 115 | Time: 2025-11-06 13:31:52 | Age: 12d 7h | Side: SHORT | Amount: 0.0453 | Price: $944.33 | Margin: $2.14 | Fee: $0.04
+  ID: 118 | Time: 2025-11-06 13:40:32 | Age: 12d 6h | Side: SHORT | Amount: 0.0324 | Price: $947.15 | Margin: $1.53 | Fee: $0.03
+  ID: 119 | Time: 2025-11-06 13:44:58 | Age: 12d 6h | Side: SHORT | Amount: 0.0002 | Price: $947.15 | Margin: $0.01 | Fee: $0.00
+  ID: 123 | Time: 2025-11-06 13:52:58 | Age: 12d 6h | Side: SHORT | Amount: 0.0002 | Price: $947.15 | Margin: $0.01 | Fee: $0.00
+  ID: 127 | Time: 2025-11-06 13:58:42 | Age: 12d 6h | Side: SHORT | Amount: 0.0141 | Price: $947.15 | Margin: $0.67 | Fee: $0.01
+  ID: 130 | Time: 2025-11-06 14:15:06 | Age: 12d 6h | Side: SHORT | Amount: 0.0102 | Price: $938.07 | Margin: $0.48 | Fee: $0.01
+  ID: 132 | Time: 2025-11-06 14:26:24 | Age: 12d 6h | Side: SHORT | Amount: 0.0001 | Price: $938.07 | Margin: $0.00 | Fee: $0.00
+  ID: 135 | Time: 2025-11-06 14:32:16 | Age: 12d 6h | Side: SHORT | Amount: 0.0086 | Price: $940.49 | Margin: $0.41 | Fee: $0.01
+  ID: 139 | Time: 2025-11-06 14:34:43 | Age: 12d 6h | Side: SHORT | Amount: 0.0001 | Price: $940.49 | Margin: $0.00 | Fee: $0.00
+  ID: 146 | Time: 2025-11-06 14:42:47 | Age: 12d 5h | Side: SHORT | Amount: 0.0000 | Price: $935.13 | Margin: $0.00 | Fee: $0.00
+  ID: 153 | Time: 2025-11-06 14:52:48 | Age: 12d 5h | Side: SHORT | Amount: 0.0000 | Price: $940.03 | Margin: $0.00 | Fee: $0.00
+  ID: 156 | Time: 2025-11-06 14:57:29 | Age: 12d 5h | Side: SHORT | Amount: 0.0019 | Price: $940.03 | Margin: $0.09 | Fee: $0.00
+  ID: 161 | Time: 2025-11-06 15:01:41 | Age: 12d 5h | Side: SHORT | Amount: 0.0000 | Price: $936.26 | Margin: $0.00 | Fee: $0.00
+  ID: 166 | Time: 2025-11-06 15:05:50 | Age: 12d 5h | Side: SHORT | Amount: 0.0008 | Price: $936.26 | Margin: $0.04 | Fee: $0.00
+  ID: 175 | Time: 2025-11-06 15:19:04 | Age: 12d 5h | Side: SHORT | Amount: 0.0000 | Price: $940.74 | Margin: $0.00 | Fee: $0.00
+  ID: 197 | Time: 2025-11-06 15:45:51 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $935.00 | Margin: $0.00 | Fee: $0.00
+  ID: 211 | Time: 2025-11-06 16:06:22 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $934.84 | Margin: $0.00 | Fee: $0.00
+  ID: 223 | Time: 2025-11-06 16:15:43 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $935.86 | Margin: $0.00 | Fee: $0.00
+  ID: 229 | Time: 2025-11-06 16:23:58 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $935.86 | Margin: $0.00 | Fee: $0.00
+  ID: 236 | Time: 2025-11-06 16:32:59 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $935.86 | Margin: $0.00 | Fee: $0.00
+  ID: 264 | Time: 2025-11-06 16:58:28 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $928.03 | Margin: $0.00 | Fee: $0.00
+  ID: 297 | Time: 2025-11-06 17:14:29 | Age: 12d 3h | Side: LONG | Amount: 19.1783 | Price: $928.03 | Margin: $889.90 | Fee: $17.80
+  ID: 300 | Time: 2025-11-06 17:15:05 | Age: 12d 3h | Side: LONG | Amount: 16.2474 | Price: $928.03 | Margin: $753.91 | Fee: $15.08
+  ID: 342 | Time: 2025-11-06 17:45:40 | Age: 12d 2h | Side: LONG | Amount: 13.7574 | Price: $940.07 | Margin: $646.65 | Fee: $12.93
+  Subtotal: $2,304.26
+
+AVAX/USDT (22 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 95 | Time: 2025-11-06 12:56:02 | Age: 12d 7h | Side: SHORT | Amount: 0.0630 | Price: $16.10 | Margin: $0.05 | Fee: $0.00
+  ID: 109 | Time: 2025-11-06 13:13:47 | Age: 12d 7h | Side: SHORT | Amount: 0.0197 | Price: $16.10 | Margin: $0.02 | Fee: $0.00
+  ID: 129 | Time: 2025-11-06 14:10:51 | Age: 12d 6h | Side: SHORT | Amount: 0.0071 | Price: $16.40 | Margin: $0.01 | Fee: $0.00
+  ID: 143 | Time: 2025-11-06 14:35:54 | Age: 12d 6h | Side: SHORT | Amount: 0.0016 | Price: $16.08 | Margin: $0.00 | Fee: $0.00
+  ID: 145 | Time: 2025-11-06 14:42:05 | Age: 12d 5h | Side: SHORT | Amount: 0.2197 | Price: $16.11 | Margin: $0.18 | Fee: $0.00
+  ID: 178 | Time: 2025-11-06 15:20:13 | Age: 12d 5h | Side: SHORT | Amount: 0.0001 | Price: $16.10 | Margin: $0.00 | Fee: $0.00
+  ID: 186 | Time: 2025-11-06 15:28:39 | Age: 12d 5h | Side: SHORT | Amount: 0.0000 | Price: $16.19 | Margin: $0.00 | Fee: $0.00
+  ID: 195 | Time: 2025-11-06 15:41:15 | Age: 12d 4h | Side: SHORT | Amount: 0.0049 | Price: $15.92 | Margin: $0.00 | Fee: $0.00
+  ID: 201 | Time: 2025-11-06 15:47:28 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $15.88 | Margin: $0.00 | Fee: $0.00
+  ID: 208 | Time: 2025-11-06 15:59:11 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $15.82 | Margin: $0.00 | Fee: $0.00
+  ID: 214 | Time: 2025-11-06 16:07:21 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $15.92 | Margin: $0.00 | Fee: $0.00
+  ID: 224 | Time: 2025-11-06 16:17:38 | Age: 12d 4h | Side: SHORT | Amount: 0.0006 | Price: $15.80 | Margin: $0.00 | Fee: $0.00
+  ID: 238 | Time: 2025-11-06 16:34:32 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $15.79 | Margin: $0.00 | Fee: $0.00
+  ID: 242 | Time: 2025-11-06 16:37:28 | Age: 12d 4h | Side: SHORT | Amount: 0.0001 | Price: $15.80 | Margin: $0.00 | Fee: $0.00
+  ID: 248 | Time: 2025-11-06 16:43:25 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $15.66 | Margin: $0.00 | Fee: $0.00
+  ID: 254 | Time: 2025-11-06 16:47:42 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $15.74 | Margin: $0.00 | Fee: $0.00
+  ID: 273 | Time: 2025-11-06 17:02:21 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $15.84 | Margin: $0.00 | Fee: $0.00
+  ID: 303 | Time: 2025-11-06 17:15:22 | Age: 12d 3h | Side: SHORT | Amount: 575.7527 | Price: $15.91 | Margin: $458.01 | Fee: $9.16
+  ID: 306 | Time: 2025-11-06 17:15:58 | Age: 12d 3h | Side: SHORT | Amount: 575.8735 | Price: $15.91 | Margin: $458.11 | Fee: $9.16
+  ID: 329 | Time: 2025-11-06 17:32:34 | Age: 12d 3h | Side: SHORT | Amount: 661.9748 | Price: $15.80 | Margin: $522.96 | Fee: $10.46
+  ID: 330 | Time: 2025-11-06 17:32:54 | Age: 12d 3h | Side: SHORT | Amount: 660.0554 | Price: $15.80 | Margin: $521.44 | Fee: $10.43
+  ID: 344 | Time: 2025-11-06 17:48:17 | Age: 12d 2h | Side: SHORT | Amount: 582.8024 | Price: $15.92 | Margin: $463.91 | Fee: $9.28
+  Subtotal: $2,424.69
+
+ETH/USDT (21 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 1415 | Time: 2025-11-17 20:15:18 | Age: 1d 0h | Side: LONG | Amount: 8.2886 | Price: $2,966.63 | Margin: $1,229.46 | Fee: $24.59
+  ID: 1419 | Time: 2025-11-17 20:50:48 | Age: 0d 23h | Side: SHORT | Amount: 8.4371 | Price: $3,001.96 | Margin: $1,266.40 | Fee: $25.33
+  ID: 1429 | Time: 2025-11-18 00:23:18 | Age: 0d 20h | Side: SHORT | Amount: 8.2218 | Price: $3,022.68 | Margin: $1,242.59 | Fee: $24.85
+  ID: 1431 | Time: 2025-11-18 01:10:19 | Age: 0d 19h | Side: LONG | Amount: 8.0130 | Price: $3,047.61 | Margin: $1,221.03 | Fee: $24.42
+  ID: 1438 | Time: 2025-11-18 02:59:44 | Age: 0d 17h | Side: SHORT | Amount: 8.2214 | Price: $2,980.00 | Margin: $1,224.99 | Fee: $24.50
+  ID: 1440 | Time: 2025-11-18 03:00:59 | Age: 0d 17h | Side: SHORT | Amount: 8.1583 | Price: $2,973.50 | Margin: $1,212.93 | Fee: $24.26
+  ID: 1442 | Time: 2025-11-18 03:40:34 | Age: 0d 16h | Side: SHORT | Amount: 8.0886 | Price: $3,005.09 | Margin: $1,215.34 | Fee: $24.31
+  ID: 1445 | Time: 2025-11-18 03:49:01 | Age: 0d 16h | Side: LONG | Amount: 7.5856 | Price: $3,023.85 | Margin: $1,146.89 | Fee: $22.94
+  ID: 1455 | Time: 2025-11-18 05:06:42 | Age: 0d 15h | Side: SHORT | Amount: 7.6267 | Price: $2,997.65 | Margin: $1,143.11 | Fee: $22.86
+  ID: 1462 | Time: 2025-11-18 05:48:47 | Age: 0d 14h | Side: LONG | Amount: 5.3984 | Price: $3,008.65 | Margin: $812.09 | Fee: $16.24
+  ID: 1470 | Time: 2025-11-18 06:55:00 | Age: 0d 13h | Side: SHORT | Amount: 7.7414 | Price: $2,979.02 | Margin: $1,153.09 | Fee: $23.06
+  ID: 1473 | Time: 2025-11-18 07:05:01 | Age: 0d 13h | Side: SHORT | Amount: 6.2148 | Price: $2,980.67 | Margin: $926.21 | Fee: $18.52
+  ID: 1492 | Time: 2025-11-18 22:49:08 | Age: -1d 21h | Side: SHORT | Amount: 6.5507 | Price: $3,123.21 | Margin: $1,022.96 | Fee: $20.46
+  ID: 1495 | Time: 2025-11-18 23:10:22 | Age: -1d 21h | Side: SHORT | Amount: 5.6489 | Price: $3,113.69 | Margin: $879.44 | Fee: $17.59
+  ID: 1496 | Time: 2025-11-18 23:12:47 | Age: -1d 21h | Side: SHORT | Amount: 6.5216 | Price: $3,112.56 | Margin: $1,014.95 | Fee: $20.30
+  ID: 1501 | Time: 2025-11-18 23:28:06 | Age: -1d 21h | Side: SHORT | Amount: 5.5642 | Price: $3,117.43 | Margin: $867.30 | Fee: $17.35
+  ID: 1505 | Time: 2025-11-19 00:18:25 | Age: -1d 20h | Side: SHORT | Amount: 6.5069 | Price: $3,090.00 | Margin: $1,005.32 | Fee: $20.11
+  ID: 1507 | Time: 2025-11-19 00:28:03 | Age: -1d 20h | Side: SHORT | Amount: 6.6238 | Price: $3,097.43 | Margin: $1,025.84 | Fee: $20.52
+  ID: 1514 | Time: 2025-11-19 00:57:26 | Age: -1d 19h | Side: SHORT | Amount: 6.3165 | Price: $3,108.15 | Margin: $981.63 | Fee: $19.63
+  ID: 1516 | Time: 2025-11-19 01:21:46 | Age: -1d 19h | Side: SHORT | Amount: 6.4177 | Price: $3,096.39 | Margin: $993.59 | Fee: $19.87
+  ID: 1517 | Time: 2025-11-19 01:23:39 | Age: -1d 19h | Side: SHORT | Amount: 6.3952 | Price: $3,111.04 | Margin: $994.79 | Fee: $19.90
+  Subtotal: $22,579.95
+
+DOT/USDT (15 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 148 | Time: 2025-11-06 14:46:04 | Age: 12d 5h | Side: SHORT | Amount: 0.0061 | Price: $2.62 | Margin: $0.00 | Fee: $0.00
+  ID: 151 | Time: 2025-11-06 14:51:01 | Age: 12d 5h | Side: SHORT | Amount: 0.8162 | Price: $2.64 | Margin: $0.11 | Fee: $0.00
+  ID: 158 | Time: 2025-11-06 14:59:11 | Age: 12d 5h | Side: SHORT | Amount: 0.4974 | Price: $2.63 | Margin: $0.07 | Fee: $0.00
+  ID: 182 | Time: 2025-11-06 15:24:49 | Age: 12d 5h | Side: SHORT | Amount: 0.0798 | Price: $2.64 | Margin: $0.01 | Fee: $0.00
+  ID: 202 | Time: 2025-11-06 15:48:23 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $2.57 | Margin: $0.00 | Fee: $0.00
+  ID: 205 | Time: 2025-11-06 15:50:09 | Age: 12d 4h | Side: SHORT | Amount: 0.0155 | Price: $2.57 | Margin: $0.00 | Fee: $0.00
+  ID: 209 | Time: 2025-11-06 15:59:38 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $2.57 | Margin: $0.00 | Fee: $0.00
+  ID: 216 | Time: 2025-11-06 16:07:39 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $2.59 | Margin: $0.00 | Fee: $0.00
+  ID: 233 | Time: 2025-11-06 16:25:58 | Age: 12d 4h | Side: SHORT | Amount: 0.0000 | Price: $2.57 | Margin: $0.00 | Fee: $0.00
+  ID: 243 | Time: 2025-11-06 16:37:47 | Age: 12d 4h | Side: SHORT | Amount: 0.0007 | Price: $2.56 | Margin: $0.00 | Fee: $0.00
+  ID: 255 | Time: 2025-11-06 16:47:52 | Age: 12d 3h | Side: SHORT | Amount: 0.0002 | Price: $2.56 | Margin: $0.00 | Fee: $0.00
+  ID: 258 | Time: 2025-11-06 16:52:10 | Age: 12d 3h | Side: SHORT | Amount: 0.0000 | Price: $2.56 | Margin: $0.00 | Fee: $0.00
+  ID: 305 | Time: 2025-11-06 17:15:48 | Age: 12d 3h | Side: SHORT | Amount: 3000.6229 | Price: $2.59 | Margin: $387.94 | Fee: $7.76
+  ID: 316 | Time: 2025-11-06 17:23:48 | Age: 12d 3h | Side: SHORT | Amount: 3365.6028 | Price: $2.59 | Margin: $435.12 | Fee: $8.70
+  ID: 362 | Time: 2025-11-06 18:22:49 | Age: 12d 2h | Side: LONG | Amount: 5980.8782 | Price: $2.60 | Margin: $776.20 | Fee: $15.52
+  Subtotal: $1,599.44
+
+BTC/USDT (14 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 1437 | Time: 2025-11-18 02:48:55 | Age: 0d 17h | Side: SHORT | Amount: 0.2614 | Price: $91,466.20 | Margin: $1,195.33 | Fee: $23.91
+  ID: 1446 | Time: 2025-11-18 04:06:10 | Age: 0d 16h | Side: SHORT | Amount: 0.2147 | Price: $90,491.00 | Margin: $971.42 | Fee: $19.43
+  ID: 1452 | Time: 2025-11-18 04:55:20 | Age: 0d 15h | Side: SHORT | Amount: 0.2607 | Price: $89,623.30 | Margin: $1,168.25 | Fee: $23.36
+  ID: 1457 | Time: 2025-11-18 05:15:15 | Age: 0d 15h | Side: SHORT | Amount: 0.2586 | Price: $90,252.50 | Margin: $1,167.04 | Fee: $23.34
+  ID: 1459 | Time: 2025-11-18 05:24:05 | Age: 0d 15h | Side: SHORT | Amount: 0.2110 | Price: $90,382.90 | Margin: $953.70 | Fee: $19.07
+  ID: 1461 | Time: 2025-11-18 05:48:14 | Age: 0d 14h | Side: SHORT | Amount: 0.2127 | Price: $90,160.30 | Margin: $958.79 | Fee: $19.18
+  ID: 1467 | Time: 2025-11-18 06:20:15 | Age: 0d 14h | Side: LONG | Amount: 0.2600 | Price: $90,091.70 | Margin: $1,171.41 | Fee: $23.43
+  ID: 1469 | Time: 2025-11-18 06:46:54 | Age: 0d 13h | Side: SHORT | Amount: 0.2441 | Price: $89,601.30 | Margin: $1,093.52 | Fee: $21.87
+  ID: 1486 | Time: 2025-11-18 21:36:43 | Age: -1d 23h | Side: SHORT | Amount: 0.2270 | Price: $92,671.80 | Margin: $1,052.03 | Fee: $21.04
+  ID: 1488 | Time: 2025-11-18 21:47:06 | Age: -1d 22h | Side: SHORT | Amount: 0.2273 | Price: $92,584.70 | Margin: $1,052.03 | Fee: $21.04
+  ID: 1494 | Time: 2025-11-18 23:10:11 | Age: -1d 21h | Side: SHORT | Amount: 0.2237 | Price: $92,848.40 | Margin: $1,038.30 | Fee: $20.77
+  ID: 1500 | Time: 2025-11-18 23:27:47 | Age: -1d 21h | Side: SHORT | Amount: 0.2207 | Price: $92,791.10 | Margin: $1,023.96 | Fee: $20.48
+  ID: 1504 | Time: 2025-11-19 00:03:03 | Age: -1d 20h | Side: SHORT | Amount: 0.2174 | Price: $92,731.70 | Margin: $1,008.01 | Fee: $20.16
+  ID: 1511 | Time: 2025-11-19 00:50:42 | Age: -1d 19h | Side: SHORT | Amount: 0.1825 | Price: $92,539.50 | Margin: $844.49 | Fee: $16.89
+  Subtotal: $14,698.27
+
+SOL/USDT (9 positions)
+----------------------------------------------------------------------------------------------------
+  ID: 1424 | Time: 2025-11-17 22:48:22 | Age: 0d 21h | Side: LONG | Amount: 185.9149 | Price: $131.64 | Margin: $1,223.69 | Fee: $24.47
+  ID: 1433 | Time: 2025-11-18 02:08:07 | Age: 0d 18h | Side: SHORT | Amount: 183.4998 | Price: $131.34 | Margin: $1,205.04 | Fee: $24.10
+  ID: 1435 | Time: 2025-11-18 02:30:56 | Age: 0d 18h | Side: LONG | Amount: 181.7104 | Price: $133.11 | Margin: $1,209.37 | Fee: $24.19
+  ID: 1448 | Time: 2025-11-18 04:09:48 | Age: 0d 16h | Side: LONG | Amount: 177.7350 | Price: $133.70 | Margin: $1,188.16 | Fee: $23.76
+  ID: 1451 | Time: 2025-11-18 04:52:56 | Age: 0d 15h | Side: LONG | Amount: 169.4301 | Price: $134.19 | Margin: $1,136.79 | Fee: $22.74
+  ID: 1458 | Time: 2025-11-18 05:18:46 | Age: 0d 15h | Side: LONG | Amount: 165.4743 | Price: $136.09 | Margin: $1,125.97 | Fee: $22.52
+  ID: 1472 | Time: 2025-11-18 07:00:57 | Age: 0d 13h | Side: LONG | Amount: 167.6411 | Price: $135.70 | Margin: $1,137.44 | Fee: $22.75
+  ID: 1487 | Time: 2025-11-18 21:43:07 | Age: -1d 22h | Side: SHORT | Amount: 126.9877 | Price: $140.34 | Margin: $891.07 | Fee: $17.82
+  ID: 1509 | Time: 2025-11-19 00:39:54 | Age: -1d 20h | Side: SHORT | Amount: 124.0379 | Price: $140.10 | Margin: $868.89 | Fee: $17.38
+  Subtotal: $9,986.43

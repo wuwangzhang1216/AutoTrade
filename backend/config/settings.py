@@ -29,12 +29,16 @@ class Settings(BaseSettings):
     coingecko_api_key: Optional[str] = Field(default=None, env="COINGECKO_API_KEY")
 
     # Trading Configuration
-    initial_capital: float = Field(default=10000.0, env="INITIAL_CAPITAL")
+    # UPGRADED: $100K starting capital (10x increase from $10K)
+    # Lower capital utilization per trade allows better risk management
+    initial_capital: float = Field(default=100000.0, env="INITIAL_CAPITAL")
     # SUPER AGGRESSIVE: 20x Leverage - EXTREME RISK!
     # WARNING: Price movement of ~4.5% can trigger liquidation (vs 9% at 10x)
     # MONITOR POSITIONS CLOSELY - This doubles liquidation risk
     leverage: int = Field(default=20, env="LEVERAGE")
-    commission_rate: float = Field(default=0.001, env="COMMISSION_RATE")
+    # REDUCED FEE: 0.05% (50% reduction from 0.1%)
+    # This cuts trading costs in half - critical for high-frequency strategy
+    commission_rate: float = Field(default=0.0005, env="COMMISSION_RATE")
     trading_interval_minutes: int = Field(default=15, env="TRADING_INTERVAL_MINUTES")
 
     # Database (absolute path to ensure consistency)
