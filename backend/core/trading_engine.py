@@ -329,14 +329,13 @@ class TradingEngine:
                     self.winning_trades = restored_winning_trades
                     self.losing_trades = restored_losing_trades
 
-                    # CRITICAL FIX: Update initial_capital to match the snapshot's total_equity
-                    # This ensures PnL calculation starts from the correct baseline
-                    # Instead of comparing to config value, we compare to the equity when this session started
-                    self.initial_capital = latest_snapshot.total_equity
+                    # IMPORTANT: initial_capital should remain from config, NOT from snapshot
+                    # This represents the true starting capital of the account, not session start
+                    # PnL is calculated relative to this fixed baseline
 
                     logger.info(
                         f"✓ Restored capital from database: {format_currency(self.capital)} "
-                        f"(Session start equity: {format_currency(self.initial_capital)}, "
+                        f"(Account baseline: {format_currency(self.initial_capital)}, "
                         f"Total trades: {self.total_trades}, W/L: {self.winning_trades}/{self.losing_trades})"
                     )
 
