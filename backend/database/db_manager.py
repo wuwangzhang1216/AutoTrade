@@ -384,6 +384,28 @@ class DatabaseManager:
             # BUG FIX: Ensure session is always closed
             session.close()
 
+    def get_total_fees(self) -> float:
+        """
+        Calculate total fees from all trades in database.
+
+        This is the source of truth for total fees, as it sums all fees
+        from the trades table directly, avoiding the in-memory counter bug.
+
+        Returns:
+            Total fees from all trades, or 0.0 if no trades
+        """
+        session = get_session()
+
+        try:
+            from sqlalchemy import func
+            total = session.query(func.sum(Trade.fee)).scalar()
+            return float(total) if total is not None else 0.0
+        except Exception as e:
+            logger.error(f"Failed to calculate total fees from database: {e}")
+            return 0.0
+        finally:
+            session.close()
+
     def get_performance_stats(self) -> Dict:
         """Get overall performance statistics"""
         session = get_session()
@@ -431,6 +453,10 @@ class DatabaseManager:
             else:
                 profit_factor = 0.0
 
+            # BUG FIX: Get accurate total fees from database instead of snapshot
+            # The snapshot's total_fees can be stale due to the in-memory counter bug
+            actual_total_fees = self.get_total_fees()
+
             return {
                 'total_return': total_return,
                 'total_return_pct': total_return_pct,
@@ -441,7 +467,7 @@ class DatabaseManager:
                 'avg_win': avg_win,
                 'avg_loss': avg_loss,
                 'profit_factor': profit_factor,
-                'total_fees': latest_snapshot.total_fees,
+                'total_fees': actual_total_fees,
                 'current_equity': latest_snapshot.total_equity,
             }
 

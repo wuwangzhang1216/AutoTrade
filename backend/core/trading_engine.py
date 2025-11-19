@@ -875,6 +875,26 @@ class TradingEngine:
 
         return self.capital + total_margin + total_unrealized_pnl
 
+    def get_actual_total_fees_from_db(self) -> float:
+        """
+        Calculate actual total fees from database instead of in-memory counter.
+
+        This fixes the fee tracking bug where total_fees resets on restart.
+        The database is the source of truth for all fees paid.
+
+        Returns:
+            Total fees from all trades in database
+        """
+        try:
+            from database.db_manager import DatabaseManager
+            db = DatabaseManager()
+            total_fees = db.get_total_fees()
+            return total_fees if total_fees is not None else 0.0
+        except Exception as e:
+            logger.error(f"Failed to get total fees from database: {e}")
+            # Fallback to in-memory counter if database query fails
+            return self.total_fees
+
     def get_account_summary(self, current_prices: Dict[str, float]) -> Dict:
         """
         Get comprehensive account summary
@@ -897,6 +917,9 @@ class TradingEngine:
 
         win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
 
+        # BUG FIX: Get actual total fees from database instead of unreliable in-memory counter
+        actual_total_fees = self.get_actual_total_fees_from_db()
+
         return {
             "capital": self.capital,
             "total_equity": total_equity,
@@ -909,7 +932,7 @@ class TradingEngine:
             "winning_trades": self.winning_trades,
             "losing_trades": self.losing_trades,
             "win_rate": win_rate,
-            "total_fees": self.total_fees,
+            "total_fees": actual_total_fees,
         }
 
     def print_account_summary(self, current_prices: Dict[str, float]):
