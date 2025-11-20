@@ -46,9 +46,9 @@ class Position:
         """
         Calculate liquidation price with improved accuracy
 
-        BUG FIX: Now considers:
-        1. Opening fee (already paid)
-        2. Closing fee (will be paid at liquidation)
+        With FIXED $2.99 fee structure:
+        1. Opening fee (already paid): $2.99
+        2. Closing fee (will be paid at liquidation): $2.99
         3. Maintenance margin (using conservative 90% loss threshold)
 
         Real exchanges typically liquidate before 100% loss to cover fees and ensure
@@ -58,13 +58,15 @@ class Position:
         # This accounts for closing fees and maintenance margin requirements
         MAINTENANCE_MARGIN_RATIO = 0.90  # Liquidate at 90% loss instead of 100%
 
-        # Calculate available margin after accounting for fees
-        # Opening fee already deducted, but we need to reserve for closing fee
-        total_fee_buffer = 2 * self.commission_rate  # Open + close fees
+        # Fixed fee structure: $2.99 per trade (open + close = $5.98 total)
+        # Calculate fee buffer as percentage of margin
+        FIXED_FEE_PER_TRADE = 2.99
+        total_fees = 2 * FIXED_FEE_PER_TRADE  # Open + close fees = $5.98
+        fee_buffer_percent = total_fees / self.margin if self.margin > 0 else 0
 
         # Effective loss percentage before liquidation
         # Formula: (1 / leverage) * maintenance_ratio - fee_buffer
-        effective_loss_percent = (1.0 / self.leverage) * MAINTENANCE_MARGIN_RATIO - total_fee_buffer
+        effective_loss_percent = (1.0 / self.leverage) * MAINTENANCE_MARGIN_RATIO - fee_buffer_percent
 
         if self.side == PositionSide.LONG:
             # Long: liquidation when price drops by effective_loss_percent
@@ -496,8 +498,13 @@ class TradingEngine:
         return margin_required
 
     def calculate_fee(self, price: float, amount: float) -> float:
-        """Calculate trading fee"""
-        return price * amount * self.commission_rate
+        """
+        Calculate trading fee - FIXED $2.99 per trade
+
+        This is a flat fee structure instead of percentage-based,
+        making trading costs predictable and affordable for all position sizes.
+        """
+        return 2.99  # Fixed fee per trade
 
     def can_open_position(self, symbol: str, price: float, amount: float, side: Optional[PositionSide] = None) -> Tuple[bool, str]:
         """

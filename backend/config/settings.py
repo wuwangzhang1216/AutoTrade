@@ -36,8 +36,9 @@ class Settings(BaseSettings):
     # WARNING: Price movement of ~4.5% can trigger liquidation (vs 9% at 10x)
     # MONITOR POSITIONS CLOSELY - This doubles liquidation risk
     leverage: int = Field(default=20, env="LEVERAGE")
-    # REDUCED FEE: 0.05% (50% reduction from 0.1%)
-    # This cuts trading costs in half - critical for high-frequency strategy
+    # FIXED FEE: $2.99 per trade (hardcoded in trading_engine.py)
+    # This parameter is kept for compatibility but not used for fee calculation
+    # Actual fee is always $2.99 regardless of position size
     commission_rate: float = Field(default=0.0005, env="COMMISSION_RATE")
     trading_interval_minutes: int = Field(default=15, env="TRADING_INTERVAL_MINUTES")
 
