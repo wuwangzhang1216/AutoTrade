@@ -97,21 +97,15 @@ class TradingPairsConfig:
     MAX_POSITIONS: int = 100  # Unlimited positions - HIGH RISK
 
     # Position size (percentage of available capital per trade)
-    # ULTRA AGGRESSIVE CONFIGURATION - EXTREME RISK WARNING:
-    # With unlimited positions and 15% position size:
-    # - Each position controls 20x the margin (e.g., $1500 margin → $30,000 exposure)
-    # - Liquidation at ~4.5% adverse price movement (half the buffer of 10x leverage)
-    # - Can stack multiple positions in same direction on same symbol
+    # FULL POSITION STRATEGY - MAXIMUM AGGRESSION
+    # Each trade uses 100% of available capital as margin
+    # With 20x leverage: $100K margin = $2,000,000 position value
     #
-    # EXTREME Risk factors:
-    # 1. Unlimited positions = unlimited exposure
-    # 2. Position stacking amplifies both gains and losses
-    # 3. Cascading liquidations can wipe out entire account
-    # 4. Requires CONSTANT monitoring 24/7
-    #
-    # WARNING: This configuration can lead to 100%+ capital utilization
-    # ONLY FOR EXPERT TRADERS WITH STRICT RISK MANAGEMENT
-    POSITION_SIZE_PERCENT: float = 15.0  # 15% per position with 20x leverage
+    # EXTREME RISK WARNING:
+    # - ~4.5% adverse price movement triggers liquidation (total loss)
+    # - No capital buffer for additional positions
+    # - Single trade determines account outcome
+    POSITION_SIZE_PERCENT: float = 100.0  # 100% - full position trading
 
     @classmethod
     def get_all_symbols(cls) -> List[str]:
