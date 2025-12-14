@@ -393,7 +393,14 @@ class AutoTradeSystem:
         #          position_value = margin * leverage (leverage amplifies position)
         #          amount = position_value / current_price
         position_size_pct = TradingPairsConfig.POSITION_SIZE_PERCENT / 100
-        margin = self.trading_engine.capital * position_size_pct
+
+        # BUG FIX: When position size is 100%, we need to reserve capital for fees
+        # Otherwise margin + fee > capital and trade will always fail
+        # Fixed fee is $2.99 per trade
+        FIXED_FEE = 2.99
+        available_for_margin = max(0, self.trading_engine.capital - FIXED_FEE)
+
+        margin = available_for_margin * position_size_pct
         position_value = margin * self.trading_engine.leverage  # Apply leverage correctly
         amount = position_value / current_price
 

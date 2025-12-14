@@ -271,8 +271,16 @@ class AIDecisionScheduler:
             return False
 
         # Calculate position size
+        # BUG FIX: When position size is 100%, we need to reserve capital for fees
+        # Otherwise margin + fee > capital and trade will always fail
         position_size_pct = TradingPairsConfig.POSITION_SIZE_PERCENT / 100
-        margin = self.trading_engine.capital * position_size_pct
+
+        # Reserve fee amount from available capital
+        # Fixed fee is $2.99 per trade
+        FIXED_FEE = 2.99
+        available_for_margin = max(0, self.trading_engine.capital - FIXED_FEE)
+
+        margin = available_for_margin * position_size_pct
         position_value = margin * self.trading_engine.leverage
         amount = position_value / current_price
 
