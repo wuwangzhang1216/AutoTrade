@@ -535,7 +535,10 @@ class TradingEngine:
         fee = self.calculate_fee(price, amount)
         total_required = margin + fee
 
-        if total_required > self.capital:
+        # Use small tolerance (0.01%) to handle floating point rounding errors
+        # This prevents rejection when margin + fee is nearly equal to capital
+        tolerance = self.capital * 0.0001  # 0.01% tolerance
+        if total_required > self.capital + tolerance:
             return False, f"Insufficient capital. Required: {format_currency(total_required)}, Available: {format_currency(self.capital)}"
 
         return True, "OK"
