@@ -287,12 +287,11 @@ async def health_check():
 @app.get("/api/account", response_model=AccountStatus)
 async def get_account_status():
     """
-    Get current account status - OPTIMIZED
+    Get current account status with REAL-TIME unrealized PnL
 
-    Performance improvements:
-    - Reuses session connection
-    - Caches initial_capital
-    - Fast query with indexed timestamp
+    Improvements:
+    - Calculates unrealized PnL using current market prices
+    - Returns accurate total_equity reflecting live position values
     """
     # Start AI scheduler on first request (lazy initialization to avoid boot timeout)
     start_ai_scheduler_if_needed()
@@ -312,8 +311,8 @@ async def get_account_status():
                 initial_capital = settings.initial_capital
             else:
                 # Fallback: use default
-                initial_capital = 10000.0
-                logger.warning("Using default initial capital 10000.0")
+                initial_capital = 100000.0
+                logger.warning("Using default initial capital 100000.0")
         finally:
             session.close()
 
@@ -332,22 +331,52 @@ async def get_account_status():
                 losing_trades=0
             )
 
+        # Calculate REAL-TIME unrealized PnL from current positions
+        real_time_unrealized_pnl = 0.0
+        if latest.positions and len(latest.positions) > 0:
+            # Get current prices for all position symbols
+            symbols = list(latest.positions.keys())
+            current_prices = market_data.get_multiple_prices(symbols)
+
+            for symbol, pos_data in latest.positions.items():
+                current_price = current_prices.get(symbol)
+                if current_price:
+                    entry_price = pos_data['entry_price']
+                    margin = pos_data.get('margin', 0)
+                    leverage = pos_data.get('leverage', 20)
+                    side = pos_data['side']
+
+                    if side == 'LONG':
+                        price_change_percent = (current_price - entry_price) / entry_price
+                    else:  # SHORT
+                        price_change_percent = (entry_price - current_price) / entry_price
+
+                    real_time_unrealized_pnl += margin * price_change_percent * leverage
+
+        # Calculate real-time total equity
+        # total_equity = capital + total_margin + unrealized_pnl
+        # But capital is 0 when fully invested, so:
+        # total_equity = capital + margin_locked + unrealized_pnl
+        total_margin = sum(
+            pos_data.get('margin', 0)
+            for pos_data in (latest.positions or {}).values()
+        )
+        real_time_equity = latest.capital + total_margin + real_time_unrealized_pnl
+
         # Calculate PnL based on actual initial capital
-        total_pnl = latest.total_equity - initial_capital
+        total_pnl = real_time_equity - initial_capital
         total_pnl_percent = (total_pnl / initial_capital) * 100 if initial_capital > 0 else 0.0
 
         # BUG FIX: Win rate should only consider closed trades, not all trades
-        # winning_trades and losing_trades only count CLOSE_LONG/CLOSE_SHORT trades
-        # OPEN trades shouldn't be in the denominator
         closed_trades = latest.winning_trades + latest.losing_trades
         win_rate = (latest.winning_trades / closed_trades * 100) if closed_trades > 0 else 0
 
         return AccountStatus(
             capital=latest.capital,
-            total_equity=latest.total_equity,
+            total_equity=real_time_equity,
             total_pnl=total_pnl,
             total_pnl_percent=total_pnl_percent,
-            unrealized_pnl=latest.unrealized_pnl,
+            unrealized_pnl=real_time_unrealized_pnl,
             open_positions=latest.open_positions,
             total_trades=latest.total_trades,
             win_rate=win_rate,
