@@ -196,7 +196,7 @@ ACCOUNT STATUS:
 - Available Capital: ${available_capital:,.2f} ({capital_utilization:.1f}% free)
 - Total P&L: ${total_pnl:,.2f} ({total_pnl_percent:+.2f}%)
 - Open Positions: {open_positions}/{max_positions} slots used
-{"  ⚠️  LIMITED CAPITAL - Be selective with new positions" if capital_utilization < 30 else ""}
+{"  🚫 NO CAPITAL AVAILABLE - You MUST choose HOLD for this symbol (cannot open new positions)" if available_capital < 100 else ("  ⚠️  LIMITED CAPITAL - Be selective with new positions" if capital_utilization < 30 else "")}
 
 POSITION STATUS FOR THIS SYMBOL:
 {position_text}

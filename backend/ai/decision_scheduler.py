@@ -201,6 +201,7 @@ class AIDecisionScheduler:
 
                 # Check if should execute the decision
                 executed = False
+                execution_reason = None
                 if self.enable_trading:
                     should_execute = self.ai_engine.should_execute_decision(
                         final_decision,
@@ -209,9 +210,29 @@ class AIDecisionScheduler:
                     )
 
                     if should_execute:
-                        executed = self.execute_trade(symbol, final_decision, current_price, model_1_decision, model_2_decision, ai_decision.id)
+                        # Check if we have enough capital BEFORE attempting trade
+                        available_capital = self.trading_engine.capital if self.trading_engine else 0
+                        if available_capital < 10:  # Minimum $10 to trade
+                            executed = False
+                            execution_reason = f"Insufficient capital: ${available_capital:.2f} available"
+                            log_info(f"Decision {final_decision} not executed - {execution_reason}")
+                            self.db.update_ai_decision_execution(
+                                decision_id=ai_decision.id,
+                                executed=False,
+                                execution_reason=execution_reason
+                            )
+                        else:
+                            executed = self.execute_trade(symbol, final_decision, current_price, model_1_decision, model_2_decision, ai_decision.id)
+                            if not executed:
+                                execution_reason = f"Trade execution failed (capital: ${available_capital:.2f})"
+                                self.db.update_ai_decision_execution(
+                                    decision_id=ai_decision.id,
+                                    executed=False,
+                                    execution_reason=execution_reason
+                                )
                     else:
-                        log_info(f"Decision {final_decision} not executed (confidence too low or HOLD)")
+                        execution_reason = "Confidence too low or HOLD decision"
+                        log_info(f"Decision {final_decision} not executed ({execution_reason})")
 
                 # Prepare decision data for broadcast
                 decision_data = {
