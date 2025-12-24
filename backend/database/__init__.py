@@ -5,7 +5,6 @@ from .models import (
     MarketDataCache,
     AccountSnapshot,
     SystemLog,
-    MarketEventRecord,
     init_database,
     get_session,
 )
@@ -17,7 +16,6 @@ __all__ = [
     "MarketDataCache",
     "AccountSnapshot",
     "SystemLog",
-    "MarketEventRecord",
     "init_database",
     "get_session",
     "DatabaseManager",

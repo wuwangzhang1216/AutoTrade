@@ -9,7 +9,6 @@ import AIDecisionsList from './AIDecisionsList'
 import TradingChartContainer from './TradingChartContainer'
 import EquityChart from './EquityChart'
 import ChartErrorBoundary from './ChartErrorBoundary'
-import MarketEventsPanel from './MarketEventsPanel'
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState(0)
@@ -80,9 +79,6 @@ export default function Dashboard() {
       <ChartErrorBoundary>
         <TradingChartContainer />
       </ChartErrorBoundary>
-
-      {/* Market Events Panel */}
-      <MarketEventsPanel />
     </div>
   )
 }
