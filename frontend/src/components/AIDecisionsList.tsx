@@ -220,7 +220,7 @@ export default function AIDecisionsList() {
                     <div className="bg-black/30 rounded-lg p-2.5 border border-primary-900/20">
                       <h4 className="font-bold text-primary-400 mb-1.5 text-xs flex items-center">
                         <CpuChipIcon className="w-4 h-4 mr-1.5" />
-                        Model 1 (DeepSeek)
+                        Model 1 (DeepSeek V3.2)
                       </h4>
                       <div className="space-y-1.5">
                         <div className="flex items-center space-x-2">
@@ -250,7 +250,7 @@ export default function AIDecisionsList() {
                     <div className="bg-black/30 rounded-lg p-2.5 border border-primary-900/20">
                       <h4 className="font-bold text-primary-400 mb-1.5 text-xs flex items-center">
                         <CpuChipIcon className="w-4 h-4 mr-1.5" />
-                        Model 2 (Qwen)
+                        Model 2 (Gemini 3 Flash)
                       </h4>
                       <div className="space-y-1.5">
                         <div className="flex items-center space-x-2">
