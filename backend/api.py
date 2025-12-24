@@ -333,6 +333,8 @@ async def get_account_status():
 
         # Calculate REAL-TIME unrealized PnL from current positions
         real_time_unrealized_pnl = 0.0
+        snapshot_unrealized_pnl = latest.unrealized_pnl or 0.0
+
         if latest.positions and len(latest.positions) > 0:
             # Get current prices for all position symbols
             symbols = list(latest.positions.keys())
@@ -354,14 +356,10 @@ async def get_account_status():
                     real_time_unrealized_pnl += margin * price_change_percent * leverage
 
         # Calculate real-time total equity
-        # total_equity = capital + total_margin + unrealized_pnl
-        # But capital is 0 when fully invested, so:
-        # total_equity = capital + margin_locked + unrealized_pnl
-        total_margin = sum(
-            pos_data.get('margin', 0)
-            for pos_data in (latest.positions or {}).values()
-        )
-        real_time_equity = latest.capital + total_margin + real_time_unrealized_pnl
+        # snapshot.total_equity already includes: capital + margin + unrealized_pnl (at snapshot time)
+        # We need to adjust for the difference in unrealized PnL since snapshot
+        unrealized_pnl_diff = real_time_unrealized_pnl - snapshot_unrealized_pnl
+        real_time_equity = latest.total_equity + unrealized_pnl_diff
 
         # Calculate PnL based on actual initial capital
         total_pnl = real_time_equity - initial_capital
