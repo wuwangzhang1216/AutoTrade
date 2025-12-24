@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     openrouter_site_name: str = Field(default="AutoTrade AI", env="OPENROUTER_SITE_NAME")
 
     # AI Models
-    ai_model_primary: str = Field(default="deepseek/deepseek-chat-v3.1", env="AI_MODEL_PRIMARY")
-    ai_model_secondary: str = Field(default="qwen/qwen3-vl-235b-a22b-instruct", env="AI_MODEL_SECONDARY")
+    ai_model_primary: str = Field(default="deepseek/deepseek-v3.2", env="AI_MODEL_PRIMARY")
+    ai_model_secondary: str = Field(default="google/gemini-3-flash-preview", env="AI_MODEL_SECONDARY")
 
     # Fundamental Data API Keys (optional)
     # Get free API key from: https://www.coingecko.com/en/api
@@ -176,8 +176,8 @@ class AIDecisionConfig:
 
     # Model weights (if using weighted strategy)
     MODEL_WEIGHTS: dict = {
-        "deepseek/deepseek-chat-v3.1": 0.5,
-        "qwen/qwen3-vl-235b-a22b-instruct": 0.5,
+        "deepseek/deepseek-v3.2": 0.5,
+        "google/gemini-3-flash-preview": 0.5,
     }
 
     # Minimum confidence threshold to execute trade
