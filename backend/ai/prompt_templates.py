@@ -109,7 +109,8 @@ def build_context_section(
 
     # Account context
     total_equity = account_summary.get('total_equity', 0)
-    available_capital = account_summary.get('capital', 0)
+    # BUG FIX: Check both 'available_capital' (from decision_scheduler) and 'capital' (from trading_engine)
+    available_capital = account_summary.get('available_capital', account_summary.get('capital', 0))
     total_pnl = account_summary.get('total_pnl', 0)
     total_pnl_percent = account_summary.get('total_pnl_percent', 0)
     open_positions = account_summary.get('open_positions', 0)
