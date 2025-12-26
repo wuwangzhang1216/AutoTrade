@@ -211,8 +211,19 @@ class AIDecisionScheduler:
 
                     if should_execute:
                         # Check if we have enough capital BEFORE attempting trade
+                        # BUT: Allow closing positions even with no capital
                         available_capital = self.trading_engine.capital if self.trading_engine else 0
-                        if available_capital < 10:  # Minimum $10 to trade
+
+                        # Check if this decision would close an existing position
+                        is_closing_position = False
+                        if symbol in self.trading_engine.positions:
+                            position = self.trading_engine.positions[symbol]
+                            # BUY closes SHORT, SELL closes LONG
+                            if (final_decision == "BUY" and position.side.value == "SHORT") or \
+                               (final_decision == "SELL" and position.side.value == "LONG"):
+                                is_closing_position = True
+
+                        if available_capital < 10 and not is_closing_position:  # Minimum $10 to open new positions
                             executed = False
                             execution_reason = f"Insufficient capital: ${available_capital:.2f} available"
                             log_info(f"Decision {final_decision} not executed - {execution_reason}")
