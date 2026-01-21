@@ -6,7 +6,7 @@ import sys
 import time
 import signal
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 from rich.panel import Panel
 from rich.table import Table
@@ -15,6 +15,7 @@ from rich.table import Table
 from config import (
     settings,
     TradingPairsConfig,
+    TradingFeesConfig,
     DirectoryConfig,
 )
 
@@ -98,7 +99,7 @@ class AutoTradeSystem:
         log_success("All connections successful!")
         return True
 
-    def analyze_symbol(self, symbol: str) -> Optional[Dict]:
+    def analyze_symbol(self, symbol: str) -> Optional[Dict[str, Any]]:
         """
         Perform complete analysis for a symbol
 
@@ -106,7 +107,13 @@ class AutoTradeSystem:
             symbol: Trading pair
 
         Returns:
-            Analysis dict or None if failed
+            Analysis dict containing:
+                - symbol: str
+                - current_price: float
+                - technical_summary: dict
+                - fundamental_analysis: dict
+                - market_sentiment: dict
+            Returns None if analysis failed
         """
         log_info(f"Analyzing {symbol}...")
 
@@ -396,9 +403,7 @@ class AutoTradeSystem:
 
         # BUG FIX: When position size is 100%, we need to reserve capital for fees
         # Otherwise margin + fee > capital and trade will always fail
-        # Fixed fee is $2.99 per trade
-        FIXED_FEE = 2.99
-        available_for_margin = max(0, self.trading_engine.capital - FIXED_FEE)
+        available_for_margin = max(0, self.trading_engine.capital - TradingFeesConfig.FIXED_FEE_PER_TRADE)
 
         margin = available_for_margin * position_size_pct
         position_value = margin * self.trading_engine.leverage  # Apply leverage correctly

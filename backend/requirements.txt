@@ -38,10 +38,11 @@ tenacity>=8.2.3                # Retry logic
 # Caching
 diskcache>=5.6.3               # Disk-based caching
 
-# Optional - for future web interface
-fastapi>=0.109.0               # Web framework (Phase 3)
-uvicorn>=0.27.0                # ASGI server (Phase 3)
-websockets>=12.0               # WebSocket support (Phase 3)
+# Web framework
+fastapi>=0.109.0               # Web framework
+uvicorn>=0.27.0                # ASGI server
+websockets>=12.0               # WebSocket support
+slowapi>=0.1.9                 # Rate limiting for FastAPI
 
 # Development tools
 pytest>=7.4.0                  # Testing

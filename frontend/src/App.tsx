@@ -39,7 +39,7 @@ function App() {
                     AutoTrade
                   </h1>
                   <span className="text-xs text-silver-400 font-light tracking-wider -mt-1">
-                    Powered by W Axis Inc
+                    AI-Powered Trading
                   </span>
                 </div>
               </motion.div>
@@ -92,16 +92,7 @@ function App() {
           <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4">
             <div className="flex flex-col items-center justify-center space-y-2">
               <p className="text-sm text-silver-400">
-                © 2025{' '}
-                <a
-                  href="https://www.waxis.org/en"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gold-400 hover:text-gold-300 transition-colors duration-200 font-medium"
-                >
-                  W Axis Inc
-                </a>
-                . All rights reserved.
+                AutoTrade AI - Open Source Project
               </p>
               <p className="text-xs text-silver-500">
                 Educational software for paper trading only - Not financial advice

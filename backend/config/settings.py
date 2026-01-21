@@ -62,6 +62,22 @@ class Settings(BaseSettings):
         case_sensitive = False
 
 
+class TradingFeesConfig:
+    """Trading fees configuration - extracted from hardcoded values"""
+
+    # Fixed fee per trade in USDT
+    # Previously hardcoded as $2.99 in trading_engine.py
+    FIXED_FEE_PER_TRADE: float = float(os.getenv("FIXED_FEE_PER_TRADE", "2.99"))
+
+    # Maintenance margin ratio for liquidation calculation
+    # Liquidate at this percentage of margin loss (0.90 = 90% loss)
+    MAINTENANCE_MARGIN_RATIO: float = float(os.getenv("MAINTENANCE_MARGIN_RATIO", "0.90"))
+
+    # Fee buffer percentage for position calculations
+    # Accounts for potential slippage and rounding
+    FEE_BUFFER_PERCENT: float = float(os.getenv("FEE_BUFFER_PERCENT", "0.0001"))
+
+
 class TradingPairsConfig:
     """Trading pairs configuration"""
 
@@ -94,7 +110,7 @@ class TradingPairsConfig:
     PRIMARY_TIMEFRAME: str = "15m"
 
     # Maximum number of concurrent positions
-    MAX_POSITIONS: int = 100  # Unlimited positions - HIGH RISK
+    MAX_POSITIONS: int = int(os.getenv("MAX_POSITIONS", "100"))
 
     # Position size (percentage of available capital per trade)
     # FULL POSITION STRATEGY - MAXIMUM AGGRESSION
@@ -105,7 +121,7 @@ class TradingPairsConfig:
     # - ~4.5% adverse price movement triggers liquidation (total loss)
     # - No capital buffer for additional positions
     # - Single trade determines account outcome
-    POSITION_SIZE_PERCENT: float = 100.0  # 100% - full position trading
+    POSITION_SIZE_PERCENT: float = float(os.getenv("POSITION_SIZE_PERCENT", "100.0"))
 
     @classmethod
     def get_all_symbols(cls) -> List[str]:
@@ -213,6 +229,7 @@ except Exception as e:
 __all__ = [
     "settings",
     "Settings",
+    "TradingFeesConfig",
     "TradingPairsConfig",
     "TechnicalIndicatorsConfig",
     "FundamentalDataConfig",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { Disclosure } from '@headlessui/react'
 import { ChevronUpIcon, SparklesIcon, CpuChipIcon } from '@heroicons/react/24/solid'
@@ -30,6 +30,8 @@ export default function AIDecisionsList() {
   const [loading, setLoading] = useState(true)
   const [latestDecisionId, setLatestDecisionId] = useState<number | null>(null)
   const { lastMessage } = useWebSocket(getWebSocketURL())
+  // FIX: Track highlight timeout to prevent memory leak on unmount
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // PERFORMANCE: Lazy load decision details (with reasoning) only when expanded
   const loadDecisionDetail = async (decisionId: number) => {
@@ -70,8 +72,13 @@ export default function AIDecisionsList() {
         // Add to top and highlight
         setLatestDecisionId(newDecision.id)
 
+        // FIX: Clear previous timeout before setting new one to prevent memory leak
+        if (highlightTimeoutRef.current) {
+          clearTimeout(highlightTimeoutRef.current)
+        }
+
         // Remove highlight after 5 seconds
-        setTimeout(() => {
+        highlightTimeoutRef.current = setTimeout(() => {
           setLatestDecisionId(null)
         }, 5000)
 
@@ -79,6 +86,15 @@ export default function AIDecisionsList() {
       })
     }
   }, [lastMessage])
+
+  // FIX: Cleanup highlight timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const loadDecisions = async () => {

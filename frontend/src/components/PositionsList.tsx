@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, memo } from 'react'
 import { fetchPositions } from '../api/client'
 
 interface Position {
@@ -12,6 +12,42 @@ interface Position {
   margin: number
   leverage: number
 }
+
+// PERFORMANCE: Memoized row component to prevent unnecessary re-renders
+const PositionRow = memo(function PositionRow({ position }: { position: Position }) {
+  return (
+    <tr className="hover:bg-elite-950/30 transition-colors">
+      <td className="px-1 py-1.5 text-[10px] font-bold text-white truncate">
+        {position.symbol}
+      </td>
+      <td className="px-1 py-1.5 text-[10px]">
+        <span className={`badge ${position.side === 'LONG' ? 'badge-success' : 'badge-danger'}`}>
+          {position.side}
+        </span>
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
+        {position.amount.toFixed(4)}
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
+        ${position.entry_price.toLocaleString()}
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
+        ${position.current_price.toLocaleString()}
+      </td>
+      <td className="px-1 py-1.5 text-[10px]">
+        <div className={position.unrealized_pnl >= 0 ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold'}>
+          <div>{position.unrealized_pnl >= 0 ? '+' : ''}${position.unrealized_pnl.toFixed(2)}</div>
+          <div className="text-[9px] opacity-80">
+            ({position.unrealized_pnl_percent.toFixed(2)}%)
+          </div>
+        </div>
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-primary-400 font-semibold truncate">
+        {position.leverage}x
+      </td>
+    </tr>
+  )
+})
 
 export default function PositionsList() {
   const [positions, setPositions] = useState<Position[]>([])
@@ -173,36 +209,7 @@ export default function PositionsList() {
         </thead>
         <tbody className="divide-y divide-primary-900/10">
           {positions.map((position) => (
-            <tr key={position.symbol} className="hover:bg-elite-950/30 transition-colors">
-              <td className="px-1 py-1.5 text-[10px] font-bold text-white truncate">
-                {position.symbol}
-              </td>
-              <td className="px-1 py-1.5 text-[10px]">
-                <span className={`badge ${position.side === 'LONG' ? 'badge-success' : 'badge-danger'}`}>
-                  {position.side}
-                </span>
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
-                {position.amount.toFixed(4)}
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
-                ${position.entry_price.toLocaleString()}
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
-                ${position.current_price.toLocaleString()}
-              </td>
-              <td className="px-1 py-1.5 text-[10px]">
-                <div className={position.unrealized_pnl >= 0 ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold'}>
-                  <div>{position.unrealized_pnl >= 0 ? '+' : ''}${position.unrealized_pnl.toFixed(2)}</div>
-                  <div className="text-[9px] opacity-80">
-                    ({position.unrealized_pnl_percent.toFixed(2)}%)
-                  </div>
-                </div>
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-primary-400 font-semibold truncate">
-                {position.leverage}x
-              </td>
-            </tr>
+            <PositionRow key={position.symbol} position={position} />
           ))}
         </tbody>
       </table>

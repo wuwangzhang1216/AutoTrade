@@ -441,7 +441,7 @@ market_data_cache (
 
 ---
 
-## 7. Deployment Architecture
+## 7. Development Setup
 
 ### Local Development
 
@@ -459,28 +459,11 @@ market_data_cache (
                     └──────────────┘
 ```
 
-### Production (Heroku)
-
-```
-┌────────────────┐          ┌────────────────┐
-│  Frontend App  │─────────>│  Backend App   │
-│  (Static Site) │          │   (FastAPI)    │
-│  Express Server│          │  Gunicorn/Uvi  │
-└────────────────┘          └────────────────┘
-                                    │
-                                    ▼
-                            ┌───────────────┐
-                            │  PostgreSQL   │
-                            │ (Heroku DB)   │
-                            └───────────────┘
-```
-
 ### Environment Variables
 
 ```bash
 # Required
 OPENROUTER_API_KEY=sk-or-...
-DATABASE_URL=postgresql://...
 
 # Trading Config
 INITIAL_CAPITAL=100000
@@ -531,4 +514,3 @@ AI_VOTING_STRATEGY=majority
 ## License
 
 Mozilla Public License 2.0 (MPL-2.0)
-Copyright (C) 2025 W Axis Inc.

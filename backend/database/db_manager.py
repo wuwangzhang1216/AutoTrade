@@ -14,6 +14,7 @@ from .models import (
     AccountSnapshot,
     SystemLog,
     get_session,
+    session_scope,
     init_database
 )
 
@@ -82,32 +83,42 @@ class DatabaseManager:
         Returns:
             Trade object
         """
-        session = get_session()
-
         try:
-            trade = Trade(
-                symbol=symbol,
-                order_type=order_type,
-                amount=amount,
-                price=price,
-                **kwargs
-            )
+            with session_scope() as session:
+                trade = Trade(
+                    symbol=symbol,
+                    order_type=order_type,
+                    amount=amount,
+                    price=price,
+                    **kwargs
+                )
 
-            session.add(trade)
-            session.commit()
-            session.refresh(trade)
+                session.add(trade)
+                session.flush()  # Flush to get ID before commit
+                session.refresh(trade)
 
-            logger.debug(f"Trade logged: {trade}")
+                logger.debug(f"Trade logged: {trade}")
 
-            return trade
+                # Create a copy of the trade data before session closes
+                trade_copy = Trade(
+                    id=trade.id,
+                    timestamp=trade.timestamp,
+                    symbol=trade.symbol,
+                    order_type=trade.order_type,
+                    side=trade.side,
+                    amount=trade.amount,
+                    price=trade.price,
+                    fee=trade.fee,
+                    pnl=trade.pnl,
+                    margin=trade.margin,
+                    leverage=trade.leverage,
+                    reason=trade.reason
+                )
+                return trade_copy
 
         except Exception as e:
-            session.rollback()
             log_error(f"Failed to log trade: {e}")
             raise
-        finally:
-            # BUG FIX: Ensure session is always closed, even on exception
-            session.close()
 
     def log_ai_decision(
         self,
@@ -288,9 +299,7 @@ class DatabaseManager:
 
     def get_recent_trades(self, limit: int = 50, symbol: Optional[str] = None) -> List[Trade]:
         """Get recent trades"""
-        session = get_session()
-
-        try:
+        with session_scope() as session:
             query = session.query(Trade).order_by(Trade.timestamp.desc())
 
             if symbol:
@@ -298,17 +307,14 @@ class DatabaseManager:
 
             trades = query.limit(limit).all()
 
-            return trades
+            # Detach objects from session before returning
+            session.expunge_all()
 
-        finally:
-            # BUG FIX: Ensure session is always closed
-            session.close()
+            return trades
 
     def get_recent_ai_decisions(self, limit: int = 50, symbol: Optional[str] = None) -> List[AIDecision]:
         """Get recent AI decisions"""
-        session = get_session()
-
-        try:
+        with session_scope() as session:
             query = session.query(AIDecision).order_by(AIDecision.timestamp.desc())
 
             if symbol:
@@ -316,11 +322,10 @@ class DatabaseManager:
 
             decisions = query.limit(limit).all()
 
-            return decisions
+            # Detach objects from session before returning
+            session.expunge_all()
 
-        finally:
-            # BUG FIX: Ensure session is always closed
-            session.close()
+            return decisions
 
     def update_ai_decision_execution(
         self,
@@ -368,9 +373,7 @@ class DatabaseManager:
 
     def get_account_history(self, days: int = 30) -> List[AccountSnapshot]:
         """Get account equity history"""
-        session = get_session()
-
-        try:
+        with session_scope() as session:
             cutoff = datetime.now() - timedelta(days=days)
 
             snapshots = session.query(AccountSnapshot)\
@@ -378,11 +381,10 @@ class DatabaseManager:
                 .order_by(AccountSnapshot.timestamp.asc())\
                 .all()
 
-            return snapshots
+            # Detach objects from session before returning
+            session.expunge_all()
 
-        finally:
-            # BUG FIX: Ensure session is always closed
-            session.close()
+            return snapshots
 
     def get_total_fees(self) -> float:
         """
@@ -394,17 +396,14 @@ class DatabaseManager:
         Returns:
             Total fees from all trades, or 0.0 if no trades
         """
-        session = get_session()
-
         try:
             from sqlalchemy import func
-            total = session.query(func.sum(Trade.fee)).scalar()
-            return float(total) if total is not None else 0.0
+            with session_scope() as session:
+                total = session.query(func.sum(Trade.fee)).scalar()
+                return float(total) if total is not None else 0.0
         except Exception as e:
             logger.error(f"Failed to calculate total fees from database: {e}")
             return 0.0
-        finally:
-            session.close()
 
     def get_performance_stats(self) -> Dict:
         """Get overall performance statistics"""

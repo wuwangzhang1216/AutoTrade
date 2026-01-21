@@ -2,9 +2,11 @@
 Database models for AutoTrade AI system
 """
 from datetime import datetime
+from contextlib import contextmanager
+from typing import Generator
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, Text, JSON, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from config import settings
 
 Base = declarative_base()
@@ -146,23 +148,7 @@ def get_engine():
     else:
         db_url = "sqlite:///autotrade.db"
 
-    # HEROKU FIX: Heroku uses postgres://, but SQLAlchemy 1.4+ requires postgresql://
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-
-    # PostgreSQL connection pooling configuration
-    # Heroku essential-0 tier has 20 connection limit - use conservative pool settings
-    if db_url.startswith("postgresql://"):
-        _engine = create_engine(
-            db_url,
-            echo=False,
-            pool_size=5,           # Maximum 5 connections in pool
-            max_overflow=0,        # No overflow connections
-            pool_pre_ping=True,    # Verify connections before using
-            pool_recycle=3600,     # Recycle connections after 1 hour
-        )
-    else:
-        _engine = create_engine(db_url, echo=False)
+    _engine = create_engine(db_url, echo=False)
 
     return _engine
 
@@ -174,13 +160,42 @@ def init_database():
     return engine
 
 
-def get_session():
+def get_session() -> Session:
     """Get database session from cached session factory"""
     global _session_factory
     if _session_factory is None:
         engine = get_engine()
         _session_factory = sessionmaker(bind=engine)
     return _session_factory()
+
+
+@contextmanager
+def session_scope() -> Generator[Session, None, None]:
+    """
+    Context manager for database sessions.
+
+    Provides automatic transaction management:
+    - Commits on successful completion
+    - Rolls back on exception
+    - Always closes the session
+
+    Usage:
+        with session_scope() as session:
+            session.add(trade)
+            # No need to call commit, rollback, or close
+
+    Yields:
+        SQLAlchemy Session object
+    """
+    session = get_session()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 __all__ = [
@@ -193,4 +208,5 @@ __all__ = [
     "get_engine",
     "init_database",
     "get_session",
+    "session_scope",
 ]

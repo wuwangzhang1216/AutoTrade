@@ -387,7 +387,7 @@ def _restore_capital_from_database(self):
 def _restore_positions_from_database(self):
     """
     从数据库重建未平仓位
-    Heroku/云部署必备功能
+    崩溃恢复必备功能
     """
 ```
 
@@ -411,7 +411,6 @@ def _restore_positions_from_database(self):
 - ✅ 完全自动化
 - ✅ 无需手动操作
 - ✅ 数据一致性检查
-- ✅ 支持 Heroku 等云平台
 - ✅ 防止数据损坏
 
 ---
@@ -955,8 +954,6 @@ MIN_CONFIDENCE=0.7       # 高置信度才交易
 ## 📚 相关文档
 
 - [项目架构](./ARCHITECTURE.md)
-- [性能优化](../OPTIMIZATION_SUMMARY.md)
-- [Heroku 部署](../HEROKU_DEPLOY.md)
 - [主文档](../README.md)
 
 ---

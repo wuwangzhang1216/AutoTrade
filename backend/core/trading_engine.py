@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from utils.logger import logger, log_trade, log_success, log_error
 from utils.helpers import format_currency, format_percentage, calculate_percentage_change
+from config import TradingFeesConfig
 
 
 class PositionSide(Enum):
@@ -46,22 +47,20 @@ class Position:
         """
         Calculate liquidation price with improved accuracy
 
-        With FIXED $2.99 fee structure:
-        1. Opening fee (already paid): $2.99
-        2. Closing fee (will be paid at liquidation): $2.99
-        3. Maintenance margin (using conservative 90% loss threshold)
+        Uses configurable fee structure from TradingFeesConfig:
+        1. Opening fee (already paid)
+        2. Closing fee (will be paid at liquidation)
+        3. Maintenance margin (configurable threshold)
 
         Real exchanges typically liquidate before 100% loss to cover fees and ensure
-        the exchange doesn't lose money. We use 90% loss as a conservative estimate.
+        the exchange doesn't lose money.
         """
-        # Conservative threshold: liquidate when loss reaches 90% of margin
-        # This accounts for closing fees and maintenance margin requirements
-        MAINTENANCE_MARGIN_RATIO = 0.90  # Liquidate at 90% loss instead of 100%
+        # Get configurable values from settings
+        MAINTENANCE_MARGIN_RATIO = TradingFeesConfig.MAINTENANCE_MARGIN_RATIO
+        FIXED_FEE_PER_TRADE = TradingFeesConfig.FIXED_FEE_PER_TRADE
 
-        # Fixed fee structure: $2.99 per trade (open + close = $5.98 total)
         # Calculate fee buffer as percentage of margin
-        FIXED_FEE_PER_TRADE = 2.99
-        total_fees = 2 * FIXED_FEE_PER_TRADE  # Open + close fees = $5.98
+        total_fees = 2 * FIXED_FEE_PER_TRADE  # Open + close fees
         fee_buffer_percent = total_fees / self.margin if self.margin > 0 else 0
 
         # Effective loss percentage before liquidation
@@ -499,12 +498,12 @@ class TradingEngine:
 
     def calculate_fee(self, price: float, amount: float) -> float:
         """
-        Calculate trading fee - FIXED $2.99 per trade
+        Calculate trading fee - uses configurable fixed fee
 
         This is a flat fee structure instead of percentage-based,
         making trading costs predictable and affordable for all position sizes.
         """
-        return 2.99  # Fixed fee per trade
+        return TradingFeesConfig.FIXED_FEE_PER_TRADE
 
     def can_open_position(self, symbol: str, price: float, amount: float, side: Optional[PositionSide] = None) -> Tuple[bool, str]:
         """
@@ -535,9 +534,9 @@ class TradingEngine:
         fee = self.calculate_fee(price, amount)
         total_required = margin + fee
 
-        # Use small tolerance (0.01%) to handle floating point rounding errors
+        # Use configurable tolerance to handle floating point rounding errors
         # This prevents rejection when margin + fee is nearly equal to capital
-        tolerance = self.capital * 0.0001  # 0.01% tolerance
+        tolerance = self.capital * TradingFeesConfig.FEE_BUFFER_PERCENT
         if total_required > self.capital + tolerance:
             return False, f"Insufficient capital. Required: {format_currency(total_required)}, Available: {format_currency(self.capital)}"
 

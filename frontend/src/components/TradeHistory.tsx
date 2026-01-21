@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, memo } from 'react'
 import { format } from 'date-fns'
 import { fetchTrades } from '../api/client'
 
@@ -13,6 +13,43 @@ interface Trade {
   pnl: number | null
   fee: number
 }
+
+// PERFORMANCE: Memoized row component to prevent unnecessary re-renders
+const TradeRow = memo(function TradeRow({ trade }: { trade: Trade }) {
+  return (
+    <tr className="hover:bg-elite-950/30 transition-colors">
+      <td className="px-1 py-1.5 text-[10px] text-silver-300 truncate">
+        {format(new Date(trade.timestamp), 'MMM dd, HH:mm:ss')}
+      </td>
+      <td className="px-1 py-1.5 text-[10px] font-bold text-white truncate">
+        {trade.symbol}
+      </td>
+      <td className="px-1 py-1.5 text-[10px]">
+        <span className={`badge ${trade.order_type.includes('OPEN') ? 'badge-info' : 'badge-warning'}`}>
+          {trade.order_type}
+        </span>
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
+        {trade.amount.toFixed(4)}
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
+        ${trade.price.toLocaleString()}
+      </td>
+      <td className="px-1 py-1.5 text-[10px]">
+        {trade.pnl !== null ? (
+          <span className={`font-semibold ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
+          </span>
+        ) : (
+          <span className="text-silver-600">-</span>
+        )}
+      </td>
+      <td className="px-1 py-1.5 text-[10px] text-silver-400 truncate">
+        ${trade.fee.toFixed(2)}
+      </td>
+    </tr>
+  )
+})
 
 export default function TradeHistory() {
   const [trades, setTrades] = useState<Trade[]>([])
@@ -174,37 +211,7 @@ export default function TradeHistory() {
         </thead>
         <tbody className="divide-y divide-primary-900/10">
           {trades.map((trade) => (
-            <tr key={trade.id} className="hover:bg-elite-950/30 transition-colors">
-              <td className="px-1 py-1.5 text-[10px] text-silver-300 truncate">
-                {format(new Date(trade.timestamp), 'MMM dd, HH:mm:ss')}
-              </td>
-              <td className="px-1 py-1.5 text-[10px] font-bold text-white truncate">
-                {trade.symbol}
-              </td>
-              <td className="px-1 py-1.5 text-[10px]">
-                <span className={`badge ${trade.order_type.includes('OPEN') ? 'badge-info' : 'badge-warning'}`}>
-                  {trade.order_type}
-                </span>
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
-                {trade.amount.toFixed(4)}
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-200 truncate">
-                ${trade.price.toLocaleString()}
-              </td>
-              <td className="px-1 py-1.5 text-[10px]">
-                {trade.pnl !== null ? (
-                  <span className={`font-semibold ${trade.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
-                  </span>
-                ) : (
-                  <span className="text-silver-600">-</span>
-                )}
-              </td>
-              <td className="px-1 py-1.5 text-[10px] text-silver-400 truncate">
-                ${trade.fee.toFixed(2)}
-              </td>
-            </tr>
+            <TradeRow key={trade.id} trade={trade} />
           ))}
         </tbody>
       </table>

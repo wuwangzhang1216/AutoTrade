@@ -1,6 +1,13 @@
-import axios from 'axios'
+import axios, { InternalAxiosRequestConfig } from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8888'
+
+// Extend axios config type to include retry count
+interface RetryConfig extends InternalAxiosRequestConfig {
+  __retryCount?: number
+}
+
+const MAX_RETRIES = 2
 
 // PERFORMANCE: Add timeout and optimizations
 // BUGFIX: Increased timeout to 30s to handle slow initial loads
@@ -15,16 +22,16 @@ const api = axios.create({
 })
 
 // PERFORMANCE: Add retry logic for failed requests
-let retryCount = 0
-const MAX_RETRIES = 2
-
+// FIX: Use per-request retry count instead of global state to prevent race conditions
 api.interceptors.response.use(
-  (response) => {
-    retryCount = 0 // Reset on success
-    return response
-  },
+  (response) => response,
   async (error) => {
-    const config = error.config
+    const config = error.config as RetryConfig | undefined
+
+    // No config means we can't retry
+    if (!config) {
+      return Promise.reject(error)
+    }
 
     // Log different error types
     if (error.code === 'ECONNABORTED') {
@@ -35,18 +42,20 @@ api.interceptors.response.use(
       console.error('Network error - check if backend is running')
     }
 
+    // Initialize retry count for this specific request
+    config.__retryCount = config.__retryCount ?? 0
+
     // PERFORMANCE: Auto-retry on timeout (but not indefinitely)
-    if (error.code === 'ECONNABORTED' && retryCount < MAX_RETRIES) {
-      retryCount++
-      console.log(`Retrying request (attempt ${retryCount}/${MAX_RETRIES})...`)
+    if (error.code === 'ECONNABORTED' && config.__retryCount < MAX_RETRIES) {
+      config.__retryCount++
+      console.log(`Retrying request (attempt ${config.__retryCount}/${MAX_RETRIES})...`)
 
       // Exponential backoff: wait 1s, then 2s
-      await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
+      await new Promise(resolve => setTimeout(resolve, 1000 * config.__retryCount))
 
       return api.request(config)
     }
 
-    retryCount = 0 // Reset for next request
     return Promise.reject(error)
   }
 )

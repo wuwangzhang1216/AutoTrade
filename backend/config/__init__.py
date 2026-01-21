@@ -2,6 +2,7 @@
 from .settings import (
     settings,
     Settings,
+    TradingFeesConfig,
     TradingPairsConfig,
     TechnicalIndicatorsConfig,
     FundamentalDataConfig,
@@ -13,6 +14,7 @@ from .settings import (
 __all__ = [
     "settings",
     "Settings",
+    "TradingFeesConfig",
     "TradingPairsConfig",
     "TechnicalIndicatorsConfig",
     "FundamentalDataConfig",

@@ -1,4 +1,4 @@
-// API configuration - uses VITE_API_URL from Heroku config vars
+// API configuration - uses VITE_API_URL environment variable
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8888'
 
 // Convert HTTP(S) URL to WebSocket URL

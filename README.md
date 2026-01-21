@@ -301,7 +301,7 @@ Visit **http://localhost:8888/docs** for:
 │   │ - REST API calls (Axios + retry logic)       │   │
 │   │ - Smart polling (5-60s intervals)            │   │
 │   └──────────────────────────────────────────────┘   │
-│   Port: 5888 (dev) | Static files (production)       │
+│   Port: 5888 (dev)                                         │
 └─────────────────┬──────────────────────────────────────┘
                   │ WebSocket (ws://localhost:8888/ws)
                   │ REST API (http://localhost:8888/api/*)
@@ -331,7 +331,7 @@ Visit **http://localhost:8888/docs** for:
 │   │ - Lazy AI decision loading                   │   │
 │   │ - Database indexes                           │   │
 │   └──────────────────────────────────────────────┘   │
-│   Port: 8888 | Database: SQLite/PostgreSQL           │
+│   Port: 8888 | Database: SQLite                            │
 └─────────────────┬──────────────────────────────────────┘
                   │
 ┌─────────────────┴──────────────────────────────────────┐
@@ -393,8 +393,7 @@ Visit **http://localhost:8888/docs** for:
 │   └──────────────────────────────────────────────┘   │
 │   ┌──────────────────────────────────────────────┐   │
 │   │ Database Layer (SQLAlchemy 2.0 ORM)          │   │
-│   │ - SQLite (local dev)                         │   │
-│   │ - PostgreSQL (production/Heroku)             │   │
+│   │ - SQLite database                            │   │
 │   │ - Connection pooling                         │   │
 │   │ Tables:                                       │   │
 │   │   • trades (execution records, P&L)          │   │
@@ -439,11 +438,6 @@ AutoTrade/
 │   ├── diagnose_system.py          # System diagnostic tool
 │   ├── check_db.py                 # Database inspection utility
 │   ├── requirements.txt            # Python dependencies (15+ packages)
-│   ├── Procfile                    # Heroku process configuration
-│   ├── runtime.txt                 # Python version for Heroku
-│   ├── Dockerfile                  # Docker container config (AWS App Runner)
-│   ├── apprunner.yaml              # AWS App Runner config
-│   ├── .slugignore                 # Heroku build exclusions
 │   │
 │   ├── config/
 │   │   └── settings.py             # Pydantic configuration classes
@@ -567,10 +561,7 @@ AutoTrade/
 │   ├── tsconfig.json               # TypeScript config (strict mode)
 │   ├── tailwind.config.js          # Tailwind + custom theme (gold/black)
 │   ├── postcss.config.js           # PostCSS config
-│   ├── server.js                   # Express server (Heroku production)
-│   ├── static.json                 # Heroku static config
-│   ├── Procfile                    # Heroku process (web: node server.js)
-│   └── .env.production             # Production environment variables
+│   └── .env.example                # Example environment variables
 │
 ├── cache/                          # Shared cache directory (DiskCache)
 ├── logs/                           # Shared logs directory (daily rotation)
@@ -579,11 +570,7 @@ AutoTrade/
 ├── .env.example                    # Environment variable template
 ├── .gitignore
 ├── README.md                       # This file
-├── HEROKU_DEPLOY.md                # Heroku deployment guide
-├── AWS_DEPLOY.md                   # AWS App Runner deployment guide
-├── deploy_heroku.sh                # Automated Heroku deployment script
-├── deploy_aws.bat                  # Automated AWS deployment (Docker)
-└── deploy_aws_source.bat           # AWS source code deployment
+└── LICENSE                         # MPL-2.0 License
 ```
 
 ### Key File Descriptions
@@ -595,7 +582,6 @@ AutoTrade/
 
 **Frontend Entry Points:**
 - `frontend/src/main.tsx` - React app entry (dev: Vite on port 5888)
-- `frontend/server.js` - Production static file server (Heroku)
 
 **Configuration Files:**
 - `backend/.env` - Backend environment variables (API keys, trading params)
@@ -604,7 +590,6 @@ AutoTrade/
 
 **Database:**
 - `autotrade.db` - SQLite database (auto-created in project root)
-- Or PostgreSQL via `DATABASE_URL` env var (Heroku/production)
 
 ### Independent Deployment Units
 
@@ -629,7 +614,7 @@ Both can be deployed separately or on the same server.
 - **FastAPI 0.109+** - Modern async Python web framework
 - **Uvicorn 0.27+** - Lightning-fast ASGI server
 - **WebSocket** - Real-time bidirectional communication
-- **SQLAlchemy 2.0+** - Database ORM (SQLite for local, PostgreSQL for production)
+- **SQLAlchemy 2.0+** - Database ORM (SQLite)
 - **CCXT 4.2+** - Unified cryptocurrency exchange API (Kraken by default)
 - **pandas-ta 0.3.14b** - Technical analysis indicators library
 - **OpenRouter** - AI model access (DeepSeek Chat v3.1 + Qwen 3 VL 235B)
@@ -651,7 +636,6 @@ Both can be deployed separately or on the same server.
 - **Axios 1.6** - HTTP client with retry logic
 - **Zustand 4.4** - Lightweight state management
 - **date-fns 3.0** - Modern date formatting
-- **Express 4.18** - Production static file server (Heroku deployment)
 
 ---
 
@@ -922,14 +906,7 @@ Example:
 
 - **CoinGecko**: Free tier available - https://www.coingecko.com/en/api
 
-### Hosting (Production)
-
-- **Development**: Free (localhost)
-- **Production**:
-  - VPS: $5-10/month (DigitalOcean, Linode, etc.)
-  - Frontend hosting: Free (Vercel, Netlify)
-
-**Total Monthly Cost**: $5-30 depending on configuration
+**Total Monthly Cost**: $2-20 depending on configuration
 
 ---
 
@@ -1191,7 +1168,6 @@ This project demonstrates:
 - **MAX_POSITIONS**: 5 → 100 (HIGH RISK configuration)
 - **Trading Pairs**: Removed POL/USDT (not available on Kraken exchange)
 - **License**: Changed from MIT to Mozilla Public License 2.0 (MPL-2.0)
-- **Copyright**: Updated to W Axis Inc.
 
 ### Critical Bug Fixes
 
@@ -1292,159 +1268,6 @@ This project demonstrates:
 - Focus states with visible outlines
 - Screen reader friendly
 - Dark theme optimized for 24/7 trading (reduces eye strain)
-
----
-
-## 🚀 Deploy to Heroku
-
-AutoTrade can be deployed to Heroku with both backend and frontend.
-
-### Quick Deploy
-
-```bash
-# Clone repository
-git clone <your-repo-url>
-cd AutoTrade
-
-# Make deploy script executable
-chmod +x deploy_heroku.sh
-
-# Run deployment script
-./deploy_heroku.sh
-```
-
-The script will:
-1. ✅ Deploy backend API to Heroku
-2. ✅ Deploy frontend dashboard to Heroku
-3. ✅ Configure environment variables
-4. ✅ Set up buildpacks
-5. ✅ Connect frontend to backend
-
-### Manual Deployment
-
-See [HEROKU_DEPLOY.md](HEROKU_DEPLOY.md) for detailed step-by-step instructions.
-
-### Deployment Components
-
-**Backend Heroku Config:**
-- [`backend/Procfile`](backend/Procfile) - Process configuration
-- [`backend/runtime.txt`](backend/runtime.txt) - Python version
-- [`backend/.slugignore`](backend/.slugignore) - Excluded files
-
-**Frontend Heroku Config:**
-- [`frontend/static.json`](frontend/static.json) - Static site configuration
-- [`frontend/package.json`](frontend/package.json) - With `heroku-postbuild` script
-
-### Required Environment Variables
-
-**Backend:**
-```bash
-heroku config:set OPENROUTER_API_KEY=your_key_here -a your-backend-app
-```
-
-**Frontend:**
-```bash
-heroku config:set VITE_API_URL=https://your-backend-app.herokuapp.com -a your-frontend-app
-```
-
-### Cost on Heroku
-
-- **Free Tier**: Backend + Frontend on free dynos (with sleep)
-- **Production**: ~$15/month (Basic dyno + Postgres mini)
-
----
-
-## 🚀 Deploy to AWS App Runner
-
-**Recommended for avoiding Binance geographic restrictions**
-
-AWS App Runner provides better global coverage and avoids the Binance 451 errors encountered on Heroku.
-
-### Quick Deploy
-
-#### Option 1: AWS Console (Easiest - No Docker Required)
-
-1. **Push code to GitHub:**
-   ```bash
-   cd backend
-   git init
-   git add .
-   git commit -m "Prepare for AWS deployment"
-   git push -u origin main
-   ```
-
-2. **Deploy via AWS Console:**
-   - Go to [AWS App Runner Console](https://console.aws.amazon.com/apprunner/)
-   - Click "Create service"
-   - Choose "Source code repository"
-   - Connect GitHub and select your repo
-   - Branch: `main`
-   - Configuration file: `apprunner.yaml`
-   - CPU: 1 vCPU, Memory: 2 GB, Port: 8888
-   - Add environment variables from `backend/.env`
-   - Click "Create & deploy"
-
-3. **Update frontend:**
-   ```bash
-   cd frontend
-   heroku config:set VITE_API_URL=https://YOUR-APP-RUNNER-URL.awsapprunner.com
-   git push heroku master
-   ```
-
-#### Option 2: Automated Script (Docker Required)
-
-```bash
-# Install Docker Desktop first
-./deploy_aws.bat  # Windows
-./deploy_aws.sh   # Linux/Mac
-```
-
-### AWS Deployment Files
-
-- [`backend/Dockerfile`](backend/Dockerfile) - Container configuration
-- [`backend/apprunner.yaml`](backend/apprunner.yaml) - App Runner configuration
-- [`deploy_aws.bat`](deploy_aws.bat) - Automated deployment script (Docker)
-- [`deploy_aws_source.bat`](deploy_aws_source.bat) - Source code deployment script
-
-### Detailed Guide
-
-See [AWS_DEPLOY.md](AWS_DEPLOY.md) for complete step-by-step instructions including:
-- Manual AWS CLI deployment
-- Multi-region deployment
-- Cost optimization
-- Monitoring and troubleshooting
-
-### Cost on AWS
-
-- **Development**: ~$5-15/month (auto-pause when idle)
-- **Production**: ~$20-40/month (1 vCPU, 2 GB, running 24/7)
-
-### Why AWS App Runner?
-
-- ✅ **No Binance restrictions** - Better global coverage
-- ✅ **Auto-scaling** - Handles traffic spikes automatically
-- ✅ **Pay-per-use** - Only pay when running
-- ✅ **Managed infrastructure** - No server management
-- ✅ **CI/CD built-in** - Auto-deploy from GitHub
-
----
-
-### Alternative Deployment Options
-
-**Backend:**
-- **AWS App Runner** (Recommended - avoids Binance restrictions)
-- Heroku
-- DigitalOcean App Platform
-- Railway
-- Render
-- AWS EC2
-
-**Frontend:**
-- Heroku
-- Vercel (recommended - free)
-- Netlify (recommended - free)
-- AWS S3 + CloudFront
-- GitHub Pages
 
 ---
 
@@ -1555,8 +1378,6 @@ Contributions welcome! Areas for improvement:
 
 Mozilla Public License 2.0 (MPL-2.0) - See [LICENSE](LICENSE) file for details.
 
-Copyright (C) 2025 W Axis Inc.
-
 This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
 - File-level copyleft: Modified files must be open-sourced
 - Larger works: Can combine with proprietary code
@@ -1626,11 +1447,5 @@ cp .env.example backend/.env
 Built with ❤️ using Python, React, DeepSeek, and Qwen
 
 *Educational software for paper trading only - Not financial advice*
-
----
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=wuwangzhang1216/AutoTrade&type=Date)](https://star-history.com/#wuwangzhang1216/AutoTrade&Date)
 
 </div>

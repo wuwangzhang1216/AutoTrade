@@ -2,7 +2,7 @@
 FastAPI backend for AutoTrade AI
 Provides REST API and WebSocket for real-time updates
 """
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
@@ -19,6 +19,10 @@ from data import MarketDataCollector
 from config import TradingPairsConfig
 from utils.logger import logger, log_error, log_success, log_info
 from ai import AIDecisionScheduler
+
+# Authentication and Rate Limiting
+from auth import APIKeyAuth, optional_api_key
+from middleware import setup_rate_limiting, limiter
 
 # Create FastAPI app
 app = FastAPI(
@@ -39,10 +43,6 @@ if frontend_url:
     allowed_origins.append(frontend_url)
     logger.info(f"CORS: Added frontend URL from environment: {frontend_url}")
 
-# Fallback to old Heroku URL if FRONTEND_URL not set
-if not frontend_url:
-    allowed_origins.append("https://autotrade-frontend-wang-1d47c1aff417.herokuapp.com")
-    logger.info("CORS: Using fallback Heroku frontend URL")
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,6 +51,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Setup rate limiting
+setup_rate_limiting(app)
+
+# Authentication configuration
+# Set REQUIRE_AUTH=true to enforce API key authentication
+REQUIRE_AUTH = os.getenv("REQUIRE_AUTH", "false").lower() == "true"
+api_key_auth = APIKeyAuth(auto_error=REQUIRE_AUTH)
 
 # Global state
 db = get_db_manager()
@@ -264,7 +272,11 @@ async def health_check():
 
 
 @app.get("/api/account", response_model=AccountStatus)
-async def get_account_status():
+@limiter.limit("60/minute")
+async def get_account_status(
+    request: Request,
+    api_key: Optional[str] = Depends(api_key_auth)
+):
     """
     Get current account status with REAL-TIME unrealized PnL
 
@@ -371,7 +383,11 @@ async def get_account_status():
 
 
 @app.get("/api/positions", response_model=List[PositionInfo])
-async def get_positions():
+@limiter.limit("60/minute")
+async def get_positions(
+    request: Request,
+    api_key: Optional[str] = Depends(api_key_auth)
+):
     """
     Get current open positions - OPTIMIZED with caching and batch price fetching
 
@@ -460,10 +476,13 @@ async def get_positions():
 
 
 @app.get("/api/trades", response_model=PaginatedTradesResponse)
+@limiter.limit("30/minute")
 async def get_trades(
+    request: Request,
     page: int = 1,
     per_page: int = 20,
-    symbol: Optional[str] = None
+    symbol: Optional[str] = None,
+    api_key: Optional[str] = Depends(api_key_auth)
 ):
     """
     Get paginated trades with metadata
@@ -530,10 +549,13 @@ async def get_trades(
 
 
 @app.get("/api/ai-decisions", response_model=PaginatedDecisionsResponse)
+@limiter.limit("30/minute")
 async def get_ai_decisions(
+    request: Request,
     page: int = 1,
     per_page: int = 20,
-    symbol: Optional[str] = None
+    symbol: Optional[str] = None,
+    api_key: Optional[str] = Depends(api_key_auth)
 ):
     """
     Get paginated AI decisions with metadata
@@ -602,7 +624,12 @@ async def get_ai_decisions(
 
 
 @app.get("/api/ai-decisions/{decision_id}", response_model=AIDecisionInfo)
-async def get_ai_decision_detail(decision_id: int):
+@limiter.limit("60/minute")
+async def get_ai_decision_detail(
+    request: Request,
+    decision_id: int,
+    api_key: Optional[str] = Depends(api_key_auth)
+):
     """Get full AI decision details including reasoning - for expanded view"""
     try:
         session = get_session()
